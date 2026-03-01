@@ -1,0 +1,13 @@
+export { default as Label } from "./Label";
+export { default as Company } from "./Company";
+export { default as Criteria } from "./Criteria";
+export { default as News } from "./News";
+export { default as CompanyCriteria } from "./CompanyCriteria";
+export { default as User } from "./User";
+
+export type { ILabelDocument } from "./Label";
+export type { ICompanyDocument } from "./Company";
+export type { ICriteriaDocument } from "./Criteria";
+export type { INewsDocument } from "./News";
+export type { ICompanyCriteriaDocument } from "./CompanyCriteria";
+export type { IUserDocument } from "./User";

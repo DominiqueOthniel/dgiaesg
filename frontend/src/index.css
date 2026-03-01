@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+@theme {
+  /* Professional Enterprise Palette */
+  --color-brand-primary: #1e3a8a;
+  /* Deep Trust Blue */
+  --color-brand-secondary: #0f172a;
+  /* Slate Dark */
+  --color-brand-accent: #3b82f6;
+  /* Action Blue */
+
+  --color-surface-base: #f8fafc;
+  /* Very light slate */
+  --color-surface-card: #ffffff;
+  --color-surface-muted: #e2e8f0;
+
+  --color-text-main: #0f172a;
+  --color-text-muted: #475569;
+  --color-text-light: #94a3b8;
+
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+
+  /* Refined Typography */
+  --font-sans: "Inter", "Outfit", ui-sans-serif, system-ui, sans-serif;
+
+  /* Modern Geometry */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Soft Tactile Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+@layer base {
+  body {
+    @apply bg-surface-base text-text-main font-sans antialiased selection:bg-brand-accent/20;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold tracking-tight text-brand-secondary;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-md border border-slate-200/50 shadow-sm rounded-lg;
+  }
+
+  .btn-base {
+    @apply inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98];
+  }
+
+  .data-pane {
+    @apply bg-white border border-slate-200 shadow-sm rounded-lg overflow-hidden;
+  }
+
+  .nav-link {
+    @apply text-text-muted hover:text-brand-accent px-3 py-2 rounded-md text-sm font-medium transition-colors;
+  }
+
+  .nav-link-active {
+    @apply text-brand-accent bg-brand-accent/5;
+  }
+}
