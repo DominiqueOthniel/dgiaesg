@@ -14,6 +14,8 @@ export const createNewsSchema = z.object({
     .min(1, "Author is required")
     .trim(),
   imageUrl: z.string().optional(),
+  sector: z.enum(["finance", "governance", "tech", "energy", "leadership"]).optional(),
+  readingTime: z.string().optional(),
   published: z.boolean().optional(),
   publishedAt: z.string().nullable().optional(),
 });

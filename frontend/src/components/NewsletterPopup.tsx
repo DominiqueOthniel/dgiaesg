@@ -1,0 +1,132 @@
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, Mail, Bell, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
+import { Button } from './ui/Button';
+import api from '../services/api';
+
+export const NewsletterPopup = () => {
+    const [isVisible, setIsVisible] = useState(false);
+    const [email, setEmail] = useState('');
+    const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+    const [message, setMessage] = useState('');
+
+    useEffect(() => {
+        const hasSubscribed = localStorage.getItem('newsletter_subscribed');
+        const hasDismissed = localStorage.getItem('newsletter_dismissed');
+
+        if (!hasSubscribed && !hasDismissed) {
+            const timer = setTimeout(() => {
+                setIsVisible(true);
+            }, 5000); // Show after 5 seconds
+            return () => clearTimeout(timer);
+        }
+    }, []);
+
+    const handleDismiss = () => {
+        setIsVisible(false);
+        localStorage.setItem('newsletter_dismissed', 'true');
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!email) return;
+
+        setStatus('loading');
+        try {
+            await api.post('/newsletter/subscribe', { email });
+            setStatus('success');
+            setMessage('Merci ! Vous êtes maintenant inscrit à notre newsletter.');
+            localStorage.setItem('newsletter_subscribed', 'true');
+            setTimeout(() => setIsVisible(false), 3000);
+        } catch (error) {
+            setStatus('error');
+            setMessage('Une erreur est survenue. Veuillez réessayer.');
+        }
+    };
+
+    return (
+        <AnimatePresence>
+            {isVisible && (
+                <motion.div
+                    initial={{ opacity: 0, y: 100, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 100, scale: 0.9 }}
+                    className="fixed bottom-8 right-8 z-[100] w-full max-w-sm"
+                >
+                    <div className="bg-brand-secondary rounded-3xl p-8 shadow-2xl border border-white/10 relative overflow-hidden">
+                        {/* Background Decoration */}
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-brand-primary/10 rounded-full blur-3xl -mr-16 -mt-16" />
+
+                        <button
+                            onClick={handleDismiss}
+                            className="absolute top-4 right-4 p-2 text-white/40 hover:text-white transition-colors"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+
+                        <div className="relative">
+                            <div className="w-12 h-12 rounded-2xl bg-brand-primary flex items-center justify-center mb-6">
+                                <Bell className="text-white w-6 h-6 animate-bounce" />
+                            </div>
+
+                            <h3 className="text-xl font-bold text-white mb-3">Restez à l'avant-garde</h3>
+                            <p className="text-slate-400 text-sm leading-relaxed mb-8">
+                                Recevez nos analyses exclusives sur la RSE, l'ESG et la durabilité en Afrique directement dans votre boîte mail.
+                            </p>
+
+                            {status === 'success' ? (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="flex flex-col items-center py-4 text-center"
+                                >
+                                    <CheckCircle2 className="w-12 h-12 text-brand-primary mb-4" />
+                                    <p className="text-brand-primary font-bold text-sm uppercase tracking-widest leading-relaxed">
+                                        {message}
+                                    </p>
+                                </motion.div>
+                            ) : (
+                                <form onSubmit={handleSubmit} className="space-y-4">
+                                    <div className="relative group">
+                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-brand-primary transition-colors" />
+                                        <input
+                                            type="email"
+                                            placeholder="votre@email.com"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            required
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-white text-sm outline-none focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary transition-all"
+                                        />
+                                    </div>
+                                    <Button
+                                        type="submit"
+                                        disabled={status === 'loading'}
+                                        className="w-full rounded-2xl h-14 bg-brand-primary hover:bg-white hover:text-brand-secondary transition-all font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-3 group"
+                                    >
+                                        {status === 'loading' ? (
+                                            <Loader2 className="w-5 h-5 animate-spin" />
+                                        ) : (
+                                            <>
+                                                S'abonner maintenant
+                                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                            </>
+                                        )}
+                                    </Button>
+                                    {status === 'error' && (
+                                        <p className="text-[10px] font-bold text-red-500 uppercase tracking-widest text-center">
+                                            {message}
+                                        </p>
+                                    )}
+                                </form>
+                            )}
+
+                            <p className="mt-6 text-[9px] text-slate-500 text-center font-medium uppercase tracking-widest">
+                                🔒 Vos données sont protégées. Pas de spam.
+                            </p>
+                        </div>
+                    </div>
+                </motion.div>
+            )}
+        </AnimatePresence>
+    );
+};

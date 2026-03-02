@@ -17,10 +17,42 @@ import { useNewsArticle } from "../hooks/useNews";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
 import { resolveImageUrl } from "../lib/image";
+import { useAuth } from "../context/AuthContext";
+import { useState, useEffect } from "react";
+import api from "../services/api";
+import { toast } from "react-hot-toast";
+import { cn } from "../lib/utils";
 
 function NewsArticlePage() {
     const { slug } = useParams<{ slug: string }>();
     const { data: article, isLoading } = useNewsArticle(slug);
+    const { user, isAuthenticated } = useAuth();
+    const [isSaved, setIsSaved] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+
+    useEffect(() => {
+        if (user && article) {
+            setIsSaved(user.savedArticles.includes(article._id));
+        }
+    }, [user, article]);
+
+    const handleToggleSave = async () => {
+        if (!isAuthenticated) {
+            toast.error("Veuillez vous connecter pour sauvegarder des articles.");
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            await api.post('/users/save-article', { articleId: article?._id });
+            setIsSaved(!isSaved);
+            toast.success(isSaved ? "Retiré de votre bibliothèque" : "Ajouté à votre bibliothèque");
+        } catch (error) {
+            toast.error("Une erreur est survenue.");
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     if (isLoading) {
         return (
@@ -55,8 +87,8 @@ function NewsArticlePage() {
 
                 <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 relative z-10">
                     <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-                        <Link to="/news" className="inline-flex items-center gap-2 text-slate-400 text-xs font-bold uppercase tracking-widest mb-16 hover:text-brand-accent transition-colors">
-                            <ArrowLeft className="w-4 h-4" /> RETOUR AU JOURNAL D'IMPACT
+                        <Link to={`/news/sector/${article.sector || 'finance'}`} className="inline-flex items-center gap-2 text-slate-400 text-xs font-black uppercase tracking-widest mb-16 hover:text-brand-accent transition-colors">
+                            <ArrowLeft className="w-4 h-4" /> REVENIR AU HUB {article.sector?.toUpperCase() || 'ESG'}
                         </Link>
                     </motion.div>
 
@@ -65,9 +97,11 @@ function NewsArticlePage() {
                         animate={{ opacity: 1, y: 0 }}
                         className="flex flex-wrap items-center gap-6 mb-12"
                     >
-                        <Badge variant="secondary" className="rounded-full px-4 py-1.5 font-bold text-[10px] uppercase tracking-widest bg-brand-primary/20 text-brand-primary border-none">
-                            {article.category || "Actualité"}
-                        </Badge>
+                        <Link to={`/news/sector/${article.sector || 'finance'}`}>
+                            <Badge variant="secondary" className="rounded-full px-4 py-1.5 font-black text-[10px] uppercase tracking-widest bg-brand-primary text-white border-none hover:bg-brand-accent transition-all italic">
+                                {article.sector?.toUpperCase() || "ACTUALITÉ"}
+                            </Badge>
+                        </Link>
                         <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                             <ShieldCheck className="w-4 h-4 text-brand-accent" /> Source Vérifiée
                         </div>
@@ -106,7 +140,7 @@ function NewsArticlePage() {
                             </div>
                             <div className="space-y-1">
                                 <span className="block text-[8px] font-bold text-slate-400 uppercase tracking-widest">Temps de lecture</span>
-                                <span className="text-xs font-bold text-white uppercase tracking-widest">6 MIN</span>
+                                <span className="text-xs font-bold text-white uppercase tracking-widest">{article.readingTime || "6 MIN"}</span>
                             </div>
                         </div>
                     </div>
@@ -141,8 +175,15 @@ function NewsArticlePage() {
                         <button className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-brand-primary hover:text-white transition-all shadow-sm">
                             <Share2 className="w-5 h-5" />
                         </button>
-                        <button className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-brand-primary hover:text-white transition-all shadow-sm">
-                            <Bookmark className="w-5 h-5" />
+                        <button
+                            onClick={handleToggleSave}
+                            disabled={isSaving}
+                            className={cn(
+                                "w-12 h-12 rounded-2xl flex items-center justify-center transition-all shadow-sm",
+                                isSaved ? "bg-brand-primary text-white" : "bg-slate-50 text-slate-400 hover:bg-brand-primary/10"
+                            )}
+                        >
+                            <Bookmark className={cn("w-5 h-5", isSaved && "fill-current")} />
                         </button>
                         <button className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-brand-primary hover:text-white transition-all shadow-sm">
                             <MessageSquare className="w-5 h-5" />
@@ -163,8 +204,17 @@ function NewsArticlePage() {
                             <Button variant="outline" className="rounded-2xl px-8 h-14 border-slate-200 text-brand-secondary font-bold text-xs uppercase tracking-widest hover:border-brand-primary hover:text-brand-primary transition-all">
                                 <Share2 className="w-4 h-4 mr-3" /> Partager
                             </Button>
-                            <Button variant="outline" className="rounded-2xl px-8 h-14 border-slate-200 text-brand-secondary font-bold text-xs uppercase tracking-widest hover:border-brand-primary hover:text-brand-primary transition-all">
-                                <Bookmark className="w-4 h-4 mr-3" /> Sauvegarder
+                            <Button
+                                variant="outline"
+                                onClick={handleToggleSave}
+                                disabled={isSaving}
+                                className={cn(
+                                    "rounded-2xl px-8 h-14 border-slate-200 font-bold text-xs uppercase tracking-widest transition-all",
+                                    isSaved ? "bg-brand-primary text-white border-brand-primary" : "text-brand-secondary hover:border-brand-primary hover:text-brand-primary"
+                                )}
+                            >
+                                <Bookmark className={cn("w-4 h-4 mr-3", isSaved && "fill-current")} />
+                                {isSaved ? "Sauvegardé" : "Sauvegarder"}
                             </Button>
                         </div>
 

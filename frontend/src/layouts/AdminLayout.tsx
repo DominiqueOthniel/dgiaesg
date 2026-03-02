@@ -83,6 +83,8 @@ const AdminLayout = () => {
             title: 'Média',
             items: [
                 { name: 'Gestion Actualités', path: '/admin/news', icon: Newspaper },
+                { name: 'Flash Live', path: '/admin/breaking', icon: ShieldCheck },
+                { name: 'Kiosque Digital', path: '/admin/reviews', icon: FileText },
             ]
         }
     ];

@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   Search,
   Loader2,
+  Bookmark,
   ChevronRight
 } from "lucide-react";
 import { searchEntities } from "../services/SearchService";
@@ -16,15 +17,28 @@ import type { SearchResults } from "../services/SearchService";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "./ui/Button";
 import { cn } from "../lib/utils";
+import NewsTicker from "./NewsTicker";
+import { NewsletterPopup } from "./NewsletterPopup";
+import { useAuth } from "../context/AuthContext";
 
 const navigation = [
   { name: "Accueil", href: "/", icon: ShieldCheck },
+  {
+    name: "Secteurs", href: "#", children: [
+      { name: "ESG & Finance", href: "/news/sector/finance" },
+      { name: "RSE & Gouvernance", href: "/news/sector/governance" },
+      { name: "Tech & Durable", href: "/news/sector/tech" },
+      { name: "Énergie & Bio", href: "/news/sector/energy" },
+      { name: "Leadership & Impact", href: "/news/sector/leadership" }
+    ]
+  },
   { name: "Labels", href: "/labels", icon: Award },
   { name: "Annuaire", href: "/directory", icon: Users },
-  { name: "Actualités", href: "/news", icon: Newspaper },
+  { name: "Journal", href: "/news", icon: Newspaper },
 ];
 
 function Layout() {
+  const { isAuthenticated } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -65,13 +79,15 @@ function Layout() {
 
   return (
     <div className="min-h-screen flex flex-col bg-surface-base">
+      <NewsTicker />
+      <NewsletterPopup />
       {/* Professional Header */}
       <header
         className={cn(
-          "fixed top-0 z-50 w-full transition-all duration-300 border-b",
+          "fixed z-50 w-full transition-all duration-300 border-b",
           isScrolled
-            ? "bg-white/90 backdrop-blur-md py-3 border-slate-200 shadow-sm"
-            : "bg-transparent py-5 border-transparent"
+            ? "bg-white/95 backdrop-blur-md py-3 border-slate-200 shadow-lg shadow-slate-200/20 top-0"
+            : "bg-white py-5 border-slate-100 top-10"
         )}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -95,12 +111,34 @@ function Layout() {
             <nav className="hidden md:flex items-center gap-1">
               {navigation.map((item) => {
                 const isActive = location.pathname === item.href;
+                if (item.children) {
+                  return (
+                    <div key={item.name} className="relative group/nav">
+                      <button
+                        className="px-4 py-2 rounded-md text-sm font-bold text-text-muted hover:text-brand-primary flex items-center gap-1 transition-all"
+                      >
+                        {item.name} <ChevronRight className="w-3.5 h-3.5 rotate-90" />
+                      </button>
+                      <div className="absolute top-full left-0 w-56 bg-white border border-slate-100 rounded-xl shadow-2xl opacity-0 translate-y-2 pointer-events-none group-hover/nav:opacity-100 group-hover/nav:translate-y-0 group-hover/nav:pointer-events-auto transition-all duration-300 p-2 z-[70]">
+                        {item.children.map(child => (
+                          <Link
+                            key={child.name}
+                            to={child.href}
+                            className="block px-4 py-2 text-xs font-bold text-slate-600 hover:text-brand-primary hover:bg-slate-50 rounded-lg transition-all"
+                          >
+                            {child.name}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                }
                 return (
                   <Link
                     key={item.name}
                     to={item.href}
                     className={cn(
-                      "px-4 py-2 rounded-md text-sm font-medium transition-colors",
+                      "px-4 py-2 rounded-md text-sm font-bold transition-all",
                       isActive
                         ? "text-brand-primary bg-brand-primary/5"
                         : "text-text-muted hover:text-brand-primary hover:bg-slate-50"
@@ -129,7 +167,13 @@ function Layout() {
               </form>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-6">
+              {isAuthenticated && (
+                <Link to="/library" className="hidden lg:flex items-center gap-2 text-xs font-black text-brand-secondary hover:text-brand-primary transition-all uppercase tracking-widest italic pt-1 group">
+                  <Bookmark className="w-4 h-4 text-brand-primary group-hover:fill-brand-primary transition-all" /> Ma Bibliothèque
+                </Link>
+              )}
+
               <Link to="/login" className="hidden sm:block">
                 <Button variant="outline" size="sm" className="rounded-full">
                   Se connecter
@@ -173,14 +217,24 @@ function Layout() {
                   />
                 </form>
                 {navigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    className="flex items-center gap-4 p-3 rounded-lg text-lg font-semibold text-text-main hover:bg-slate-50 transition-colors"
-                  >
-                    <item.icon className="w-5 h-5 text-brand-accent" />
-                    {item.name}
-                  </Link>
+                  <div key={item.name} className="space-y-2">
+                    <Link
+                      to={item.href}
+                      className="flex items-center gap-4 p-3 rounded-lg text-lg font-black text-brand-secondary hover:bg-slate-50 transition-colors"
+                    >
+                      {item.icon && <item.icon className="w-5 h-5 text-brand-accent" />}
+                      {item.name}
+                    </Link>
+                    {item.children && (
+                      <div className="pl-12 grid grid-cols-1 gap-2">
+                        {item.children.map(child => (
+                          <Link key={child.name} to={child.href} className="text-sm font-bold text-slate-500 py-1 hover:text-brand-primary">
+                            {child.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 ))}
                 <div className="pt-6 border-t border-slate-100 flex flex-col gap-3">
                   <Link to="/login">
@@ -278,7 +332,7 @@ function Layout() {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 pt-[72px] sm:pt-[84px]">
+      <main className="flex-1 pt-[112px] sm:pt-[124px]">
         <Outlet />
       </main>
 

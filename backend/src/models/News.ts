@@ -7,6 +7,9 @@ export interface INewsDocument extends Document {
   excerpt: string;
   author: string;
   imageUrl: string;
+  sector: string;
+  readingTime: string;
+  premium: boolean;
   published: boolean;
   publishedAt: Date | null;
   deletedAt: Date | null;
@@ -46,6 +49,19 @@ const newsSchema = new Schema<INewsDocument>(
     imageUrl: {
       type: String,
       default: "",
+    },
+    sector: {
+      type: String,
+      enum: ["finance", "governance", "tech", "energy", "leadership"],
+      default: "finance",
+    },
+    readingTime: {
+      type: String,
+      default: "3 min",
+    },
+    premium: {
+      type: Boolean,
+      default: false,
     },
     published: {
       type: Boolean,

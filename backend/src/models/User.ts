@@ -8,6 +8,7 @@ export interface IUserDocument extends Document {
   role: "admin" | "editor" | "viewer";
   createdAt: Date;
   updatedAt: Date;
+  savedArticles: mongoose.Types.ObjectId[];
   comparePassword(password: string): Promise<boolean>;
 }
 
@@ -38,6 +39,12 @@ const userSchema = new Schema<IUserDocument>(
       enum: ["admin", "editor", "viewer"],
       default: "viewer",
     },
+    savedArticles: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "News",
+      },
+    ],
   },
   {
     timestamps: true,

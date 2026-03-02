@@ -48,6 +48,8 @@ export interface INews {
   author: string;
   imageUrl: string;
   category?: string;
+  sector?: string;
+  readingTime?: string;
   published: boolean;
   publishedAt: string | null;
   deletedAt?: string;
@@ -70,6 +72,7 @@ export interface IUser {
   name: string;
   email: string;
   role: "admin" | "editor" | "viewer";
+  savedArticles: string[];
   createdAt: string;
   updatedAt: string;
 }

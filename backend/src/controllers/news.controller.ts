@@ -21,6 +21,7 @@ export const getNews = asyncHandler(async (req: Request, res: Response) => {
     search,
     limit = "10",
     includeDeleted,
+    sector,
   } = req.query;
 
   const isAdmin = (req as any).user?.role === 'admin';
@@ -35,6 +36,9 @@ export const getNews = asyncHandler(async (req: Request, res: Response) => {
   }
   if (search && typeof search === "string") {
     filter.$text = { $search: search };
+  }
+  if (sector && typeof sector === "string") {
+    filter.sector = sector;
   }
 
   const pageNum = Math.max(1, parseInt(page as string, 10) || 1);

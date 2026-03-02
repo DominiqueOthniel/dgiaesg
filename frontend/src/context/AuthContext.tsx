@@ -6,6 +6,7 @@ interface User {
     name: string;
     email: string;
     role: 'admin' | 'editor' | 'viewer';
+    savedArticles: string[];
 }
 
 interface AuthContextType {
@@ -34,7 +35,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 id: userData._id,
                 name: userData.name,
                 email: userData.email,
-                role: userData.role
+                role: userData.role,
+                savedArticles: userData.savedArticles || []
             });
         } catch (error: any) {
             // 401 is expected when token expires — silently log out

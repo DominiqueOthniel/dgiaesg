@@ -4,6 +4,8 @@ export { default as Criteria } from "./Criteria";
 export { default as News } from "./News";
 export { default as CompanyCriteria } from "./CompanyCriteria";
 export { default as User } from "./User";
+export { default as BreakingNews } from "./BreakingNews";
+export { default as MonthlyReview } from "./MonthlyReview";
 
 export type { ILabelDocument } from "./Label";
 export type { ICompanyDocument } from "./Company";
@@ -11,3 +13,5 @@ export type { ICriteriaDocument } from "./Criteria";
 export type { INewsDocument } from "./News";
 export type { ICompanyCriteriaDocument } from "./CompanyCriteria";
 export type { IUserDocument } from "./User";
+export type { IBreakingNews } from "./BreakingNews";
+export type { IMonthlyReviewDocument } from "./MonthlyReview";

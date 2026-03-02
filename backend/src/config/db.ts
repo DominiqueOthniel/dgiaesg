@@ -9,7 +9,7 @@ const connectDB = async (): Promise<void> => {
     }
 
     const conn = await mongoose.connect(mongoURI, {
-      serverSelectionTimeoutMS: 5000, // Fail after 5s instead of 30s
+      serverSelectionTimeoutMS: 20000, // Increased to 20s for Atlas stability
     });
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {

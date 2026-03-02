@@ -1,17 +1,16 @@
 import {
-  Award,
-  ArrowRight,
   ShieldCheck,
   Globe,
   TrendingUp,
+  ArrowRight,
+  ChevronRight,
   Newspaper,
+  Award,
   CheckCircle2,
-  Users,
-  ChevronRight
+  Users
 } from "lucide-react";
-import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Button } from "../components/ui/Button";
 import { Card, CardContent } from "../components/ui/Card";
 import { useLabels } from "../hooks/useLabels";
@@ -41,31 +40,9 @@ const itemVariants = {
 
 function Home() {
   const { data: labels, isLoading: labelsLoading } = useLabels();
-  const { data: newsData, isLoading: newsLoading } = useNews({ page: 1, limit: 4 });
+  const { data: newsData, isLoading: newsLoading } = useNews({ page: 1, limit: 5 });
   const news = newsData?.data || [];
 
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const slides = [
-    {
-      image: "/img/hero_image.jpg",
-      title: "Cooperative excellence at the service of certified cooperation.",
-      description: "Identify, analyze, and validate the performance of your structures through the first global certification registry dedicated to committed cooperatives.",
-      tag: "Cooperative Excellence"
-    },
-    {
-      image: "/img/hero_image2.jpg",
-      title: "The benchmark for sustainable and social impact.",
-      description: "Access a transparent verified network of cooperatives driving socio-economic growth across territories.",
-      tag: "Verified Network"
-    }
-  ];
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, []);
 
   const queryClient = useQueryClient();
 
@@ -81,99 +58,105 @@ function Home() {
   };
 
   return (
-    <div className="flex flex-col">
-      {/* Premium Hero Carousel */}
-      <section className="relative h-[600px] md:h-[800px] w-full overflow-hidden bg-slate-900">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentSlide}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1 }}
-            className="absolute inset-0"
-          >
-            {/* Background Image with Cover */}
-            <div
-              className="absolute inset-0 bg-center bg-cover bg-no-repeat transition-transform duration-[10s] scale-110 animate-slow-zoom"
-              style={{ backgroundImage: `url(${slides[currentSlide].image})` }}
-            />
-            {/* Consistent Overlay (Dark 50%) */}
-            <div className="absolute inset-0 bg-slate-900/50" />
-
-            <div className="relative h-full mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex items-center">
-              <div className="max-w-3xl">
+    <div className="flex flex-col bg-surface-base">
+      {/* High-Contrast Hero Press Grid */}
+      <section className="bg-white border-b border-slate-200">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-auto lg:h-[600px]">
+            {/* Main Featured Article (Left) */}
+            <div className="lg:col-span-7 h-full">
+              {newsLoading ? (
+                <div className="w-full h-full bg-slate-100 animate-pulse rounded-xl" />
+              ) : news[0] ? (
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="mb-6"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="group relative h-full overflow-hidden rounded-xl bg-brand-primary"
+                  onMouseEnter={() => prefetchArticle(news[0].slug)}
                 >
-                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-primary/20 backdrop-blur-md text-white border border-white/10 text-xs font-bold uppercase tracking-wider">
-                    <ShieldCheck className="w-3.5 h-3.5" /> {slides[currentSlide].tag}
-                  </span>
+                  <img
+                    src={resolveImageUrl(news[0].imageUrl) || "/img/hero_image.jpg"}
+                    alt={news[0].title}
+                    className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-brand-primary via-brand-primary/20 to-transparent" />
+
+                  <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full">
+                    <div className="flex items-center gap-3 mb-6">
+                      {(news[0] as any).premium && <span className="premium-badge">Exclusif</span>}
+                      <span className="text-[10px] font-black uppercase tracking-widest text-white/60">
+                        {news[0].sector?.toUpperCase() || "REPORT"}
+                      </span>
+                    </div>
+                    <Link to={`/news/${news[0].slug}`}>
+                      <h2 className="text-3xl md:text-5xl font-serif font-black text-white mb-6 leading-tight group-hover:text-brand-accent transition-colors">
+                        {news[0].title}
+                      </h2>
+                    </Link>
+                    <p className="text-white/70 text-sm md:text-base line-clamp-2 max-w-2xl mb-8 font-medium">
+                      {news[0].excerpt || news[0].content?.substring(0, 160)}
+                    </p>
+                    <div className="flex items-center gap-4 text-white/40 text-[10px] font-bold uppercase tracking-widest">
+                      <span className="text-white/80">Par {news[0].author}</span>
+                      <span className="w-1 h-1 bg-white/20 rounded-full" />
+                      <span>{news[0].readingTime || "3 MIN"} READ</span>
+                      <span className="w-1 h-1 bg-white/20 rounded-full" />
+                      <span>{new Date(news[0].publishedAt || news[0].createdAt).toLocaleDateString()}</span>
+                    </div>
+                  </div>
                 </motion.div>
-
-                <motion.h1
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="text-4xl md:text-7xl font-bold tracking-tight text-white mb-6 leading-[1.1]"
-                >
-                  {slides[currentSlide].title.split('service de la').length > 1 ? (
-                    <>
-                      {slides[currentSlide].title.split('service de la')[0]} service de la <br />
-                      <span className="text-brand-accent italic">{slides[currentSlide].title.split('service de la')[1]}</span>
-                    </>
-                  ) : slides[currentSlide].title}
-                </motion.h1>
-
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                  className="text-lg md:text-xl text-slate-200 leading-relaxed max-w-2xl mb-10"
-                >
-                  {slides[currentSlide].description}
-                </motion.p>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 }}
-                  className="flex flex-col sm:flex-row items-center gap-4"
-                >
-                  <Link to="/directory" className="w-full sm:w-auto">
-                    <Button size="lg" className="w-full sm:w-auto rounded-full px-8 shadow-2xl shadow-brand-primary/20 bg-brand-primary hover:bg-brand-primary/90 border-none h-14">
-                      Explore Directory <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </Link>
-                  <Link to="/labels" className="w-full sm:w-auto">
-                    <Button variant="ghost" size="lg" className="w-full sm:w-auto rounded-full text-white hover:bg-white/10 h-14 border border-white/20">
-                      Discover Labels
-                    </Button>
-                  </Link>
-                </motion.div>
-              </div>
+              ) : null}
             </div>
-          </motion.div>
-        </AnimatePresence>
 
-        {/* Carousel Indicators */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-3 z-20">
-          {slides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentSlide(index)}
-              className={cn(
-                "w-3 h-3 rounded-full transition-all duration-300",
-                currentSlide === index
-                  ? "bg-brand-primary w-8"
-                  : "bg-white/40 hover:bg-white/60"
-              )}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
+            {/* Secondary Articles Grid (Right) */}
+            <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-4 h-full">
+              {newsLoading ? (
+                Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="bg-slate-50 animate-pulse rounded-xl" />
+                ))
+              ) : news.slice(1, 5).map((item, i) => (
+                <motion.div
+                  key={item._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * i }}
+                  className="group relative h-full min-h-[180px] overflow-hidden rounded-xl border border-slate-100 bg-white"
+                  onMouseEnter={() => prefetchArticle(item.slug)}
+                >
+                  <div className="h-1/2 overflow-hidden border-b border-slate-50">
+                    <img
+                      src={resolveImageUrl(item.imageUrl) || "/img/hero_image2.jpg"}
+                      alt={item.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                  </div>
+                  <div className="p-4 flex flex-col justify-between h-1/2">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[9px] font-black text-brand-secondary/40 uppercase tracking-widest">
+                          {item.sector?.toUpperCase() || "ACTU"}
+                        </span>
+                        {(item as any).premium && <span className="premium-badge text-[8px] px-1.5 py-0.5">PRO</span>}
+                      </div>
+                      <Link to={`/news/${item.slug}`}>
+                        <h4 className="text-sm font-serif font-black text-brand-primary group-hover:text-brand-secondary transition-colors line-clamp-2 leading-snug">
+                          {item.title}
+                        </h4>
+                      </Link>
+                    </div>
+                    <div className="flex items-center justify-between mt-auto">
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                        {new Date(item.publishedAt || item.createdAt).toLocaleDateString()}
+                      </span>
+                      <span className="text-[9px] font-black text-brand-primary uppercase italic">
+                        {item.readingTime || "2 MIN"}
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 

@@ -34,10 +34,10 @@ export {
 } from "./companyCriteria.validator";
 
 export {
-  registerUserSchema,
+  createUserSchema,
   loginUserSchema,
   updateUserSchema,
-  type RegisterUserInput,
+  type CreateUserInput,
   type LoginUserInput,
   type UpdateUserInput,
 } from "./user.validator";

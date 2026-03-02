@@ -12,7 +12,9 @@ const DirectoryPage = lazy(() => import("./pages/DirectoryPage"));
 const CompanyDetailPage = lazy(() => import("./pages/CompanyDetailPage"));
 const NewsPage = lazy(() => import("./pages/NewsPage"));
 const NewsArticlePage = lazy(() => import("./pages/NewsArticlePage"));
+const SectorPage = lazy(() => import("./pages/SectorPage"));
 const LoginPage = lazy(() => import("./pages/LoginPage"));
+const SavedArticles = lazy(() => import("./pages/SavedArticles"));
 
 import AdminRoute from "./components/AdminRoute";
 import AdminLayout from "./layouts/AdminLayout";
@@ -23,6 +25,8 @@ const LabelsAdmin = lazy(() => import("./pages/admin/LabelsAdmin"));
 const CompaniesAdmin = lazy(() => import("./pages/admin/CompaniesAdmin"));
 const CriteriaAdmin = lazy(() => import("./pages/admin/CriteriaAdmin"));
 const NewsAdmin = lazy(() => import("./pages/admin/NewsAdmin"));
+const BreakingNewsAdmin = lazy(() => import("./pages/admin/BreakingNewsAdmin"));
+const ReviewAdmin = lazy(() => import("./pages/admin/ReviewAdmin"));
 
 const LoadingPage = () => (
   <div className="min-h-screen bg-white flex items-center justify-center">
@@ -46,6 +50,8 @@ function App() {
           <Route path="directory/:id" element={<CompanyDetailPage />} />
           <Route path="news" element={<NewsPage />} />
           <Route path="news/:slug" element={<NewsArticlePage />} />
+          <Route path="news/sector/:sector" element={<SectorPage />} />
+          <Route path="library" element={<SavedArticles />} />
         </Route>
 
         <Route element={<AdminRoute />}>
@@ -55,6 +61,8 @@ function App() {
             <Route path="companies" element={<CompaniesAdmin />} />
             <Route path="criteria" element={<CriteriaAdmin />} />
             <Route path="news" element={<NewsAdmin />} />
+            <Route path="breaking" element={<BreakingNewsAdmin />} />
+            <Route path="reviews" element={<ReviewAdmin />} />
           </Route>
         </Route>
 
