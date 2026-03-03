@@ -11,7 +11,7 @@ import { toast } from "react-hot-toast";
 import { Button } from "../components/ui/Button";
 
 function SavedArticles() {
-    const { isAuthenticated, isLoading: authLoading } = useAuth();
+    const { isAuthenticated, isLoading: authLoading, updateSavedArticles } = useAuth();
 
     const { data: articles, isLoading, refetch } = useQuery({
         queryKey: ["savedArticles"],
@@ -29,9 +29,12 @@ function SavedArticles() {
         e.preventDefault();
         e.stopPropagation();
         try {
-            await api.post('/users/save-article', { articleId: id });
-            refetch();
-            toast.success("Article retiré de votre bibliothèque");
+            const response = await api.post('/users/save-article', { articleId: id });
+            if (response.data.success) {
+                updateSavedArticles(response.data.data);
+                refetch();
+                toast.success("Article retiré de votre bibliothèque");
+            }
         } catch (error) {
             toast.error("Une erreur est survenue.");
         }

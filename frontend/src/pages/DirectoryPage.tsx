@@ -126,7 +126,7 @@ function DirectoryPage() {
                                                 value={filters.sector}
                                             >
                                                 <option value="">Tous les secteurs</option>
-                                                {['Agriculture', 'Technologie', 'Industrie', 'Services'].map(s => (
+                                                {['Agriculture', 'Technologie', 'Énergie', 'Finance', 'Services'].map(s => (
                                                     <option key={s} value={s}>{s}</option>
                                                 ))}
                                             </select>
@@ -142,7 +142,7 @@ function DirectoryPage() {
                                                 value={filters.region}
                                             >
                                                 <option value="">Toutes les régions</option>
-                                                {['Europe', 'Afrique', 'Amérique', 'Asie'].map(r => (
+                                                {['Afrique de l\'Ouest', 'Afrique de l\'Est', 'Afrique Centrale', 'Afrique du Nord', 'Afrique Australe'].map(r => (
                                                     <option key={r} value={r}>{r}</option>
                                                 ))}
                                             </select>

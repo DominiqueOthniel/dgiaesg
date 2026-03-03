@@ -11,7 +11,6 @@ import { cn } from "../lib/utils";
 import { resolveImageUrl } from "../lib/image";
 import { useQueryClient } from "@tanstack/react-query";
 import api from "../services/api";
-import { ReviewKiosk } from "../components/ReviewKiosk";
 
 const SECTOR_METADATA: Record<string, { title: string; desc: string; color: string }> = {
     finance: {
@@ -192,8 +191,6 @@ function SectorPage() {
                         {/* Sidebar */}
                         <aside className="lg:col-span-4 space-y-12">
                             <div className="sticky top-32">
-                                <ReviewKiosk />
-
                                 <div className="mt-12 p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100">
                                     <h4 className="text-sm font-black text-brand-secondary uppercase tracking-widest mb-6 italic uppercase">En Direct : {sector}</h4>
                                     <p className="text-xs text-slate-400 font-medium leading-relaxed italic uppercase tracking-wider">

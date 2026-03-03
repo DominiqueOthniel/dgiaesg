@@ -67,6 +67,20 @@ export interface ICompanyCriteria {
   updatedAt: string;
 }
 
+export interface IMultimedia {
+  _id: string;
+  title: string;
+  description: string;
+  type: "video" | "audio";
+  embedUrl: string;
+  coverImageUrl: string;
+  sector: "finance" | "governance" | "tech" | "energy" | "leadership";
+  featured: boolean;
+  published: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface IUser {
   _id: string;
   name: string;

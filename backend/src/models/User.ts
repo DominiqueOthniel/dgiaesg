@@ -9,6 +9,7 @@ export interface IUserDocument extends Document {
   createdAt: Date;
   updatedAt: Date;
   savedArticles: mongoose.Types.ObjectId[];
+  interests: string[];
   comparePassword(password: string): Promise<boolean>;
 }
 
@@ -43,6 +44,12 @@ const userSchema = new Schema<IUserDocument>(
       {
         type: Schema.Types.ObjectId,
         ref: "News",
+      },
+    ],
+    interests: [
+      {
+        type: String,
+        enum: ["finance", "governance", "tech", "energy", "leadership", "esg", "csr"],
       },
     ],
   },

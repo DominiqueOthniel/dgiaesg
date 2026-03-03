@@ -20,6 +20,20 @@ A reference platform for the certification and directory of cooperatives committ
 - **JWT** for authentication
 - **Multer** for image uploads
 - **Swagger** (via `swagger-jsdoc` & `swagger-ui-express`) for API documentation
+- **Chalk** for colorized backend logging
+
+---
+
+## ✨ Key Features
+
+- **🛡️ Dynamic Certification**: Complete framework for auditing and certification of cooperatives.
+- **📚 Digital Kiosk & Review**: Dedicated space for monthly digital magazines and impact reports.
+- **📺 Multimedia Hub**: Centralized access to exclusive video and audio (FA TV / Podcasts).
+- **📂 Personalized Library**: Member espace to save and manage articles/resources.
+- **🔍 Advanced Search**: Unified search with real-time filtering by sector and date.
+- **🌍 African Focus**: Data seeded and categorized by African regions and specific impact sectors.
+- **📢 Newsletter System**: Interest-based subscription for targeted communications.
+- **🛡️ Secure Admin Panel**: Role-based access (Admin/Editor) for complete content management.
 
 ---
 

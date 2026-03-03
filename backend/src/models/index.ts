@@ -6,6 +6,8 @@ export { default as CompanyCriteria } from "./CompanyCriteria";
 export { default as User } from "./User";
 export { default as BreakingNews } from "./BreakingNews";
 export { default as MonthlyReview } from "./MonthlyReview";
+export { default as Multimedia } from "./Multimedia";
+export { default as NewsletterSubscription } from "./NewsletterSubscription";
 
 export type { ILabelDocument } from "./Label";
 export type { ICompanyDocument } from "./Company";
@@ -15,3 +17,5 @@ export type { ICompanyCriteriaDocument } from "./CompanyCriteria";
 export type { IUserDocument } from "./User";
 export type { IBreakingNews } from "./BreakingNews";
 export type { IMonthlyReviewDocument } from "./MonthlyReview";
+export type { IMultimediaDocument } from "./Multimedia";
+export type { INewsletterSubscriptionDocument } from "./NewsletterSubscription";

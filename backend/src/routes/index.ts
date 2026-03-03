@@ -11,6 +11,7 @@ import breakingNewsRouter from "./breakingNews.routes";
 import reviewRoutes from "./review.routes";
 import newsletterRoutes from "./newsletter.routes";
 import userRoutes from "./user.routes";
+import multimediaRoutes from "./multimedia.routes";
 
 const router = Router();
 
@@ -34,5 +35,6 @@ router.use("/breaking-news", breakingNewsRouter);
 router.use("/reviews", reviewRoutes);
 router.use("/newsletter", newsletterRoutes);
 router.use("/users", userRoutes);
+router.use("/multimedia", multimediaRoutes);
 
 export default router;

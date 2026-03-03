@@ -10,7 +10,10 @@ import {
   Search,
   Loader2,
   Bookmark,
-  ChevronRight
+  ChevronRight,
+  PlayCircle,
+  LayoutDashboard,
+  Play
 } from "lucide-react";
 import { searchEntities } from "../services/SearchService";
 import type { SearchResults } from "../services/SearchService";
@@ -34,14 +37,15 @@ const navigation = [
   },
   { name: "Labels", href: "/labels", icon: Award },
   { name: "Annuaire", href: "/directory", icon: Users },
-  { name: "Journal", href: "/news", icon: Newspaper },
+  { name: "Journal", href: "/news", icon: Newspaper }
 ];
 
 function Layout() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchSector, setSearchSector] = useState("all");
   const [searchResults, setSearchResults] = useState<SearchResults | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [showSearchResults, setShowSearchResults] = useState(false);
@@ -68,7 +72,10 @@ function Layout() {
     setIsSearching(true);
     setShowSearchResults(true);
     try {
-      const results = await searchEntities(searchQuery);
+      const results = await searchEntities({
+        query: searchQuery,
+        sector: searchSector
+      });
       setSearchResults(results);
     } catch (err) {
       console.error("Search failed", err);
@@ -153,7 +160,7 @@ function Layout() {
             {/* Search & Actions */}
             <div className="flex-1 max-w-sm hidden lg:block">
               <form onSubmit={handleSearch} className="relative group">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-light group-focus-within:text-brand-accent transition-colors" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-light group-focus-within:text-brand-accent transition-colors pointer-events-none" />
                 <input
                   type="text"
                   value={searchQuery}
@@ -216,6 +223,24 @@ function Layout() {
                     className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-10 pr-4 py-3 text-base outline-none focus:ring-2 focus:ring-brand-accent/20 transition-all"
                   />
                 </form>
+
+                {/* Mobile Sector Filters */}
+                <div className="flex flex-wrap gap-2 mb-6 px-1">
+                  {['all', 'finance', 'governance', 'tech', 'energy', 'leadership'].map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => setSearchSector(s)}
+                      className={cn(
+                        "px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all border",
+                        searchSector === s
+                          ? "bg-brand-primary text-white border-brand-primary"
+                          : "bg-slate-50 text-slate-400 border-slate-200"
+                      )}
+                    >
+                      {s === 'all' ? 'Tous' : s}
+                    </button>
+                  ))}
+                </div>
                 {navigation.map((item) => (
                   <div key={item.name} className="space-y-2">
                     <Link
@@ -256,14 +281,41 @@ function Layout() {
               className="absolute top-full left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-4xl bg-white rounded-2xl shadow-2xl border border-slate-200 mt-4 overflow-hidden"
             >
               <div className="p-6 md:p-8">
-                <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-100">
+                <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
                   <h3 className="text-lg font-bold text-brand-secondary">Résultats pour "{searchQuery}"</h3>
                   <button
-                    onClick={() => setShowSearchResults(false)}
+                    onClick={() => {
+                      setShowSearchResults(false);
+                      setSearchSector("all");
+                    }}
                     className="p-2 hover:bg-slate-100 rounded-full transition-colors"
                   >
                     <X className="w-5 h-5 text-text-light" />
                   </button>
+                </div>
+
+                {/* Sector Filters */}
+                <div className="flex flex-wrap gap-2 mb-8">
+                  {['all', 'finance', 'governance', 'tech', 'energy', 'leadership'].map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => {
+                        setSearchSector(s);
+                        // Re-trigger search immediately
+                        searchEntities({ query: searchQuery, sector: s })
+                          .then(setSearchResults)
+                          .catch(console.error);
+                      }}
+                      className={cn(
+                        "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border",
+                        searchSector === s
+                          ? "bg-brand-primary text-white border-brand-primary shadow-lg shadow-brand-primary/20"
+                          : "bg-slate-50 text-slate-400 border-slate-200 hover:border-brand-primary/30"
+                      )}
+                    >
+                      {s === 'all' ? 'Tous les secteurs' : s}
+                    </button>
+                  ))}
                 </div>
 
                 {isSearching ? (
@@ -272,7 +324,7 @@ function Layout() {
                     <span className="text-lg font-medium text-text-muted">Recherche en cours...</span>
                   </div>
                 ) : searchResults && (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {/* Labels */}
                     <div className="space-y-4">
                       <h4 className="flex items-center gap-2 text-xs font-bold text-text-light uppercase tracking-widest">
@@ -313,6 +365,21 @@ function Layout() {
                           <Link key={n._id} to={`/news/${n.slug}`} className="block p-3 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all group">
                             <p className="font-semibold text-text-main group-hover:text-brand-primary transition-colors line-clamp-1">{n.title}</p>
                             <p className="text-xs text-text-muted mt-0.5">Par {n.author}</p>
+                          </Link>
+                        )) : <p className="text-xs text-text-light italic">Aucun résultat</p>}
+                      </div>
+                    </div>
+
+                    {/* Multimedia */}
+                    <div className="space-y-4">
+                      <h4 className="flex items-center gap-2 text-xs font-bold text-text-light uppercase tracking-widest">
+                        <Play className="w-4 h-4" /> Multimédia ({searchResults.multimedia?.length || 0})
+                      </h4>
+                      <div className="space-y-2">
+                        {searchResults.multimedia && searchResults.multimedia.length > 0 ? searchResults.multimedia.map((m: any) => (
+                          <Link key={m._id} to={`/news`} className="block p-3 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all group">
+                            <p className="font-semibold text-text-main group-hover:text-brand-primary transition-colors line-clamp-1">{m.title}</p>
+                            <p className="text-xs text-text-muted mt-0.5 capitalize">{m.type} • {m.sector}</p>
                           </Link>
                         )) : <p className="text-xs text-text-light italic">Aucun résultat</p>}
                       </div>

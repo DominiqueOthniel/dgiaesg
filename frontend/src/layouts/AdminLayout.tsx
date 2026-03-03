@@ -12,7 +12,8 @@ import {
     ShieldCheck,
     Search,
     Loader2,
-    Bell
+    Bell,
+    Play
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/Button';
@@ -29,6 +30,7 @@ const AdminLayout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
+    const [searchSector, setSearchSector] = useState("all");
     const [searchResults, setSearchResults] = useState<SearchResults | null>(null);
     const [isSearching, setIsSearching] = useState(false);
     const [showSearchResults, setShowSearchResults] = useState(false);
@@ -50,7 +52,10 @@ const AdminLayout = () => {
         setIsSearching(true);
         setShowSearchResults(true);
         try {
-            const results = await searchEntities(searchQuery);
+            const results = await searchEntities({
+                query: searchQuery,
+                sector: searchSector
+            });
             setSearchResults(results);
         } catch (err) {
             console.error("Search failed", err);
@@ -83,6 +88,7 @@ const AdminLayout = () => {
             title: 'Média',
             items: [
                 { name: 'Gestion Actualités', path: '/admin/news', icon: Newspaper },
+                { name: 'Multimédia TV/Podcast', path: '/admin/multimedia', icon: Play },
                 { name: 'Flash Live', path: '/admin/breaking', icon: ShieldCheck },
                 { name: 'Kiosque Digital', path: '/admin/reviews', icon: FileText },
             ]
@@ -223,9 +229,35 @@ const AdminLayout = () => {
                             <div className="max-w-6xl mx-auto px-6 py-10">
                                 <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
                                     <h3 className="text-lg font-bold">Résultats d'administration pour "{searchQuery}"</h3>
-                                    <button onClick={() => setShowSearchResults(false)} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+                                    <button onClick={() => {
+                                        setShowSearchResults(false);
+                                        setSearchSector("all");
+                                    }} className="p-2 hover:bg-white/10 rounded-full transition-colors">
                                         <X className="w-5 h-5" />
                                     </button>
+                                </div>
+
+                                {/* Admin Sector Filters */}
+                                <div className="flex flex-wrap gap-2 mb-8">
+                                    {['all', 'finance', 'governance', 'tech', 'energy', 'leadership'].map((s) => (
+                                        <button
+                                            key={s}
+                                            onClick={() => {
+                                                setSearchSector(s);
+                                                searchEntities({ query: searchQuery, sector: s })
+                                                    .then(setSearchResults)
+                                                    .catch(console.error);
+                                            }}
+                                            className={cn(
+                                                "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border",
+                                                searchSector === s
+                                                    ? "bg-brand-accent text-white border-brand-accent shadow-lg shadow-brand-accent/20"
+                                                    : "bg-white/5 text-slate-400 border-white/10 hover:border-brand-accent/30"
+                                            )}
+                                        >
+                                            {s === 'all' ? 'Tous les secteurs' : s}
+                                        </button>
+                                    ))}
                                 </div>
 
                                 {isSearching ? (
@@ -234,7 +266,7 @@ const AdminLayout = () => {
                                         <span className="text-lg">Interrogation de la base...</span>
                                     </div>
                                 ) : searchResults && (
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
                                         {/* Labels */}
                                         <div className="space-y-4">
                                             <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Labels ({searchResults.labels.length})</h4>
@@ -269,6 +301,19 @@ const AdminLayout = () => {
                                                     <Link key={n._id} to={`/admin/news`} className="block p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-all border border-transparent hover:border-brand-accent/30 group">
                                                         <p className="font-bold group-hover:text-brand-accent transition-colors line-clamp-1">{n.title}</p>
                                                         <p className="text-xs text-slate-400 mt-1">Par {n.author}</p>
+                                                    </Link>
+                                                )) : <p className="text-xs text-slate-500 italic">Aucun résultat</p>}
+                                            </div>
+                                        </div>
+
+                                        {/* Multimedia */}
+                                        <div className="space-y-4">
+                                            <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Multimédia ({searchResults.multimedia?.length || 0})</h4>
+                                            <div className="space-y-2">
+                                                {searchResults.multimedia && searchResults.multimedia.length > 0 ? searchResults.multimedia.map((m: any) => (
+                                                    <Link key={m._id} to={`/admin/multimedia`} className="block p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-all border border-transparent hover:border-brand-accent/30 group">
+                                                        <p className="font-bold group-hover:text-brand-accent transition-colors line-clamp-1">{m.title}</p>
+                                                        <p className="text-xs text-slate-400 mt-1 capitalize">{m.type} • {m.sector}</p>
                                                     </Link>
                                                 )) : <p className="text-xs text-slate-500 italic">Aucun résultat</p>}
                                             </div>

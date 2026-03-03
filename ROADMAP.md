@@ -32,8 +32,18 @@ The application follows a modern **MERN** (MongoDB, Express, React, Node.js) arc
 - **Update**: Content editing and publication status.
 - **Delete**: Article removal.
 
-### 📝 Audit Criteria Management
-- **Create/Update/Delete**: Configuration of specific criteria for each label (Weight, Category, Impact).
+### 📺 Multimedia Management
+- **Create**: Add video (YouTube/Vimeo) or audio (Podcast) links with cover images.
+- **Read**: Filterable media feed by sector and type (Audio/Video).
+- **Update/Delete**: Full administrative control over media visibility.
+
+### 📚 Monthly Review (Kiosk)
+- **Archive**: Management of monthly PDF reviews and special editions.
+- **Latest**: Automatic promotion of the most recent review to the portal.
+
+### 📢 Newsletter & Search
+- **Subscription**: Management of user interests and email subscriptions.
+- **Unified Search**: Multi-model indexing for labels, companies, news, and media.
 
 ---
 

@@ -7,75 +7,92 @@ import { Label, Company, Criteria, News, CompanyCriteria, User } from "./models"
 
 const labels = [
   {
-    name: "Coopératives So Responsables",
-    description:
-      "Label créé par Coop FR pour valoriser les coopératives engagées dans une démarche RSE structurée. Il évalue les pratiques de gouvernance, les engagements sociaux et environnementaux à travers un référentiel de 5 chapitres de pratiques et 3 chapitres de résultats.",
-    logoUrl: "",
+    name: "Coopérative Éthique Afrique",
+    description: "Label de référence pour les coopératives africaines engagées dans le développement durable et la transparence de gestion.",
+    logoUrl: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=400&h=400&fit=crop",
     sector: "Multi-sectoriel",
     status: "active" as const,
   },
   {
-    name: "Agri Confiance",
-    description:
-      "Label de La Coopération Agricole, existant depuis 1992, qui certifie les coopératives agricoles engagées dans une démarche de qualité et de développement durable. Le référentiel couvre la qualité de l'eau, la biodiversité, la fertilisation et les pratiques phytosanitaires.",
-    logoUrl: "",
+    name: "Agri-Impact West Africa",
+    description: "Certification spécialisée pour l'agriculture durable en Afrique de l'Ouest, garantissant le respect des sols et la juste rémunération.",
+    logoUrl: "https://images.unsplash.com/photo-1495539406979-bf61750d38ad?w=400&h=400&fit=crop",
     sector: "Agriculture",
     status: "active" as const,
   },
   {
-    name: "B Corp",
-    description:
-      "Certification internationale qui évalue l'impact global d'une entreprise selon cinq domaines : gouvernance, collaborateurs, collectivité, environnement et clients. Un score minimum de 80 points sur 200 est requis pour obtenir la certification.",
-    logoUrl: "",
-    sector: "Multi-sectoriel",
-    status: "active" as const,
-  },
-  {
-    name: "Fairtrade / Max Havelaar",
-    description:
-      "Certification de commerce équitable garantissant des conditions commerciales justes pour les producteurs des pays en développement. La certification couvre toute la chaîne d'approvisionnement et est vérifiée par FLOCERT, organisme accrédité ISO 17065.",
-    logoUrl: "",
-    sector: "Commerce équitable",
-    status: "active" as const,
-  },
-  {
-    name: "Label RSE Engagé",
-    description:
-      "Label généraliste de responsabilité sociétale des entreprises, basé sur la norme ISO 26000. Il évalue la maturité des démarches RSE des organisations à travers une grille de critères couvrant les droits humains, l'environnement et la gouvernance.",
-    logoUrl: "",
-    sector: "Multi-sectoriel",
+    name: "Digital Green Sahara",
+    description: "Reconnaissance pour les entreprises tech sahéliennes utilisant le numérique pour la transition écologique.",
+    logoUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=400&fit=crop",
+    sector: "Technologie",
     status: "active" as const,
   },
 ];
 
 const criteriaData = [
-  { labelIndex: 0, category: "governance" as const, title: "Gouvernance démocratique", description: "Évaluation des pratiques de gouvernance participative et démocratique au sein de la coopérative.", weight: 20 },
-  { labelIndex: 0, category: "social" as const, title: "Engagement social", description: "Mesure des actions en faveur de l'emploi, de la formation, de la diversité.", weight: 20 },
-  { labelIndex: 1, category: "environment" as const, title: "Qualité de l'eau", description: "Protection des ressources en eau.", weight: 25 },
-  { labelIndex: 2, category: "governance" as const, title: "Gouvernance", description: "Mission d'entreprise, éthique, transparence.", weight: 20 },
+  { labelIndex: 0, category: "governance" as const, title: "Transparence Financière", description: "Audit annuel des comptes et accessibilité des rapports aux membres.", weight: 30 },
+  { labelIndex: 0, category: "social" as const, title: "Équité de Genre", description: "Représentation paritaire dans les instances de décision.", weight: 20 },
+  { labelIndex: 1, category: "environment" as const, title: "Gestion de l'Eau", description: "Optimisation de l'irrigation et protection des nappes phréatiques.", weight: 25 },
 ];
 
 const companiesData = [
-  { name: "Coopérative Agricole du Soleil", description: "Coopérative viticole.", sector: "Agriculture", region: "Occitanie", website: "https://example.com/coop-soleil", labelIndex: 0, status: "certified" as const, score: 82, certOffset: -365, expOffset: 730 },
-  { name: "TechCoop Solutions", description: "Coopérative de services numériques.", sector: "Technologie", region: "Île-de-France", website: "https://example.com/techcoop", labelIndex: 2, status: "certified" as const, score: 95, certOffset: -180, expOffset: 900 },
+  { name: "Sénégal Bio Co-op", description: "Leader de l'agriculture biologique à Thiès.", sector: "Agriculture", region: "Afrique de l'Ouest", website: "https://senegalbio.sn", labelIndex: 1, status: "certified" as const, score: 88, certOffset: -400, expOffset: 330 },
+  { name: "Nairobi Tech Hub", description: "Coopérative de développeurs pour l'impact social.", sector: "Technologie", region: "Afrique de l'Est", website: "https://nairobitech.ke", labelIndex: 2, status: "certified" as const, score: 92, certOffset: -100, expOffset: 630 },
+  { name: "Atlas Green Energy", description: "Énergie solaire solidaire au Maroc.", sector: "Énergie", region: "Afrique du Nord", website: "https://atlasgreen.ma", labelIndex: 0, status: "certified" as const, score: 85, certOffset: -200, expOffset: 530 },
 ];
 
 const newsData = [
   {
-    title: "Nouvelle édition du référentiel So Responsables 2026",
-    slug: "nouvelle-edition-referentiel-so-responsables-2026",
-    content: "Coop FR a publié la nouvelle édition du référentiel So Responsables.",
-    excerpt: "Coop FR publie la nouvelle édition du référentiel So Responsables.",
-    author: "Marie Dupont",
+    title: "L'essor de la Fintech Verte au Nigéria",
+    slug: "essor-fintech-verte-nigeria",
+    content: "Une analyse profonde sur comment la finance digitale transforme l'investissement vert à Lagos.",
+    excerpt: "Lagos devient le hub de l'innovation écologique en Afrique de l'Ouest.",
+    author: "Amadou Diallo",
+    sector: "finance",
     published: true,
-    publishedAt: new Date("2026-01-15"),
+    publishedAt: new Date("2026-02-10"),
   },
+  {
+    title: "Gouvernance Coopérative : Le modèle Rwandais",
+    slug: "gouvernance-cooperative-modele-rwandais",
+    content: "Le Rwanda s'impose comme un exemple de gestion démocratique et transparente pour les coopératives.",
+    excerpt: "Découvrez comment Kigali restructure son économie sociale.",
+    author: "Faith Mutoni",
+    sector: "governance",
+    published: true,
+    publishedAt: new Date("2026-02-25"),
+  },
+];
+
+const multimediaData = [
+  {
+    title: "Podcast : L'Innovation RSE au Cameroun",
+    description: "Interview exclusive avec les leaders de la transition éthique à Douala.",
+    type: "audio" as const,
+    embedUrl: "https://open.spotify.com/embed/episode/7btSleJp305m3kFq8vUf2e",
+    coverImageUrl: "https://images.unsplash.com/photo-1478737270239-2fccd2c78623?w=800&fit=crop",
+    sector: "leadership" as const,
+    featured: true,
+    published: true,
+  },
+  {
+    title: "Vidéo : Énergie Solaire au Sahel",
+    description: "Reportage sur le terrain sur les nouvelles installations photovoltaïques.",
+    type: "video" as const,
+    embedUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    coverImageUrl: "https://images.unsplash.com/photo-1509391366360-fe5bb6523e5c?w=800&fit=crop",
+    sector: "energy" as const,
+    featured: true,
+    published: true,
+  }
 ];
 
 async function seed() {
   try {
     await connectDB();
-    console.log("Connected to MongoDB. Starting seed...\n");
+    console.log("Connected to MongoDB. Starting African context seed...\n");
+
+    const { Multimedia } = await import("./models");
 
     // Clear existing data
     await User.deleteMany({});
@@ -84,11 +101,12 @@ async function seed() {
     await Criteria.deleteMany({});
     await News.deleteMany({});
     await CompanyCriteria.deleteMany({});
+    await Multimedia.deleteMany({});
     console.log("Cleared existing data.");
 
     // Seed Users
     await User.create({
-      name: "Admin User",
+      name: "Admin Strategic",
       email: "admin@example.com",
       password: "admin123",
       role: "admin",
@@ -97,7 +115,7 @@ async function seed() {
 
     // Seed Labels
     const createdLabels = await Label.insertMany(labels);
-    console.log(`Created ${createdLabels.length} labels.`);
+    console.log(`Created ${createdLabels.length} African labels.`);
 
     // Seed Criteria
     const criteriaWithIds = criteriaData.map((c) => ({
@@ -105,24 +123,28 @@ async function seed() {
       labelId: createdLabels[c.labelIndex]._id,
     }));
     await Criteria.insertMany(criteriaWithIds.map(({ labelIndex: _, ...rest }) => rest));
-    console.log("Criteria seeded.");
+    console.log("African Criteria seeded.");
 
     // Seed Companies
     const now = new Date();
     const companyDocs = companiesData.map((c) => ({
       ...c,
       labelId: createdLabels[c.labelIndex]._id,
-      certificationDate: new Date(now.getTime() + c.certOffset * 86400000),
-      expiryDate: new Date(now.getTime() + c.expOffset * 86400000),
+      certificationDate: new Date(now.getTime() + (c.certOffset || 0) * 86400000),
+      expiryDate: new Date(now.getTime() + (c.expOffset || 0) * 86400000),
     }));
     await Company.insertMany(companyDocs);
-    console.log("Companies seeded.");
+    console.log("African Companies seeded.");
 
     // Seed News
     await News.insertMany(newsData);
-    console.log("News seeded.");
+    console.log("African News seeded.");
 
-    console.log("\nSeed completed successfully!");
+    // Seed Multimedia
+    await Multimedia.insertMany(multimediaData);
+    console.log("Multimedia seeded.");
+
+    console.log("\nAfrican context seed completed successfully!");
     process.exit(0);
   } catch (error) {
     console.error("Seed failed:", error);

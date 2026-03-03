@@ -9,6 +9,15 @@ export const NewsletterPopup = () => {
     const [email, setEmail] = useState('');
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [message, setMessage] = useState('');
+    const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+
+    const sectors = [
+        { id: 'finance', label: 'Finance' },
+        { id: 'governance', label: 'Gouv.' },
+        { id: 'tech', label: 'Tech' },
+        { id: 'energy', label: 'Énergie' },
+        { id: 'leadership', label: 'Leaders.' }
+    ];
 
     useEffect(() => {
         const hasSubscribed = localStorage.getItem('newsletter_subscribed');
@@ -33,7 +42,10 @@ export const NewsletterPopup = () => {
 
         setStatus('loading');
         try {
-            await api.post('/newsletter/subscribe', { email });
+            await api.post('/newsletter/subscribe', {
+                email,
+                interests: selectedInterests
+            });
             setStatus('success');
             setMessage('Merci ! Vous êtes maintenant inscrit à notre newsletter.');
             localStorage.setItem('newsletter_subscribed', 'true');
@@ -42,6 +54,12 @@ export const NewsletterPopup = () => {
             setStatus('error');
             setMessage('Une erreur est survenue. Veuillez réessayer.');
         }
+    };
+
+    const toggleInterest = (id: string) => {
+        setSelectedInterests(prev =>
+            prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+        );
     };
 
     return (
@@ -95,8 +113,29 @@ export const NewsletterPopup = () => {
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             required
-                                            className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-white text-sm outline-none focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary transition-all"
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-white text-sm outline-none focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary transition-all font-medium"
                                         />
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Vos centres d'intérêt :</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {sectors.map((s) => (
+                                                <button
+                                                    key={s.id}
+                                                    type="button"
+                                                    onClick={() => toggleInterest(s.id)}
+                                                    className={cn(
+                                                        "px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border",
+                                                        selectedInterests.includes(s.id)
+                                                            ? "bg-brand-primary text-white border-brand-primary shadow-lg shadow-brand-primary/20"
+                                                            : "bg-white/5 text-slate-400 border-white/10 hover:border-brand-primary/30"
+                                                    )}
+                                                >
+                                                    {s.label}
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
                                     <Button
                                         type="submit"

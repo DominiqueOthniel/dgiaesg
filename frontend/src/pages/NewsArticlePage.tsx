@@ -26,7 +26,7 @@ import { cn } from "../lib/utils";
 function NewsArticlePage() {
     const { slug } = useParams<{ slug: string }>();
     const { data: article, isLoading } = useNewsArticle(slug);
-    const { user, isAuthenticated } = useAuth();
+    const { user, isAuthenticated, updateSavedArticles } = useAuth();
     const [isSaved, setIsSaved] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
 
@@ -44,9 +44,13 @@ function NewsArticlePage() {
 
         setIsSaving(true);
         try {
-            await api.post('/users/save-article', { articleId: article?._id });
-            setIsSaved(!isSaved);
-            toast.success(isSaved ? "Retiré de votre bibliothèque" : "Ajouté à votre bibliothèque");
+            const response = await api.post('/users/save-article', { articleId: article?._id });
+            if (response.data.success) {
+                // The backend returns the updated savedArticles array
+                updateSavedArticles(response.data.data);
+                setIsSaved(!isSaved);
+                toast.success(isSaved ? "Retiré de votre bibliothèque" : "Ajouté à votre bibliothèque");
+            }
         } catch (error) {
             toast.error("Une erreur est survenue.");
         } finally {

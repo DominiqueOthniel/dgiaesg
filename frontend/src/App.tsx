@@ -15,6 +15,7 @@ const NewsArticlePage = lazy(() => import("./pages/NewsArticlePage"));
 const SectorPage = lazy(() => import("./pages/SectorPage"));
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 const SavedArticles = lazy(() => import("./pages/SavedArticles"));
+const KioskPage = lazy(() => import("./pages/KioskPage"));
 
 import AdminRoute from "./components/AdminRoute";
 import AdminLayout from "./layouts/AdminLayout";
@@ -27,6 +28,7 @@ const CriteriaAdmin = lazy(() => import("./pages/admin/CriteriaAdmin"));
 const NewsAdmin = lazy(() => import("./pages/admin/NewsAdmin"));
 const BreakingNewsAdmin = lazy(() => import("./pages/admin/BreakingNewsAdmin"));
 const ReviewAdmin = lazy(() => import("./pages/admin/ReviewAdmin"));
+const MultimediaAdmin = lazy(() => import("./pages/admin/MultimediaAdmin"));
 
 const LoadingPage = () => (
   <div className="min-h-screen bg-white flex items-center justify-center">
@@ -52,6 +54,7 @@ function App() {
           <Route path="news/:slug" element={<NewsArticlePage />} />
           <Route path="news/sector/:sector" element={<SectorPage />} />
           <Route path="library" element={<SavedArticles />} />
+          <Route path="kiosk" element={<KioskPage />} />
         </Route>
 
         <Route element={<AdminRoute />}>
@@ -63,6 +66,7 @@ function App() {
             <Route path="news" element={<NewsAdmin />} />
             <Route path="breaking" element={<BreakingNewsAdmin />} />
             <Route path="reviews" element={<ReviewAdmin />} />
+            <Route path="multimedia" element={<MultimediaAdmin />} />
           </Route>
         </Route>
 

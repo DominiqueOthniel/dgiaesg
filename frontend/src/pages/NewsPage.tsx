@@ -11,6 +11,7 @@ import { resolveImageUrl } from "../lib/image";
 import { useQueryClient } from "@tanstack/react-query";
 import api from "../services/api";
 import { ReviewKiosk } from "../components/ReviewKiosk";
+import { MultimediaSidebar } from "../components/MultimediaSidebar";
 
 function NewsPage() {
     const [page, setPage] = useState(1);
@@ -191,13 +192,26 @@ function NewsPage() {
                                 <Zap className="w-8 h-8 text-brand-accent mb-8" />
                                 <h4 className="text-xl font-bold mb-4">Analyses Premium</h4>
                                 <p className="text-slate-400 text-sm leading-relaxed mb-8">Accédez à nos rapports trimestriels détaillés sur l'état de la coopération en Afrique.</p>
-                                <Button className="w-full rounded-2xl bg-white text-slate-900 hover:bg-brand-accent hover:text-white transition-all font-black text-[10px] uppercase tracking-widest h-14">
+                                <Button
+                                    onClick={() => document.getElementById('reports')?.scrollIntoView({ behavior: 'smooth' })}
+                                    className="w-full rounded-2xl bg-white text-slate-900 hover:bg-brand-accent hover:text-white transition-all font-black text-[10px] uppercase tracking-widest h-14"
+                                >
                                     Découvrir les Rapports
                                 </Button>
                             </div>
 
+                            {/* FA TV & Podcast */}
+                            <div id="multimedia">
+                                <MultimediaSidebar />
+                            </div>
+
                             {/* Digital Review Kiosk Sidebar Toggle/View */}
-                            <ReviewKiosk />
+                            <div id="reports" className="space-y-4">
+                                <ReviewKiosk />
+                                <Link to="/kiosk" className="flex items-center justify-center gap-2 text-[10px] font-black text-brand-primary uppercase tracking-[0.2em] py-4 border-2 border-dashed border-slate-100 rounded-2xl hover:bg-slate-50 transition-all italic">
+                                    Voir tout le kiosque <ArrowRight className="w-3.5 h-3.5" />
+                                </Link>
+                            </div>
 
                             {/* Trending Topics / Sectors */}
                             <div className="p-10 rounded-[3rem] border border-slate-100 bg-slate-50">
