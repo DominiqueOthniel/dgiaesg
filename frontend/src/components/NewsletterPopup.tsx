@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, Bell, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
 import { Button } from './ui/Button';
+import { cn } from '../lib/utils';
 import api from '../services/api';
 
 export const NewsletterPopup = () => {
