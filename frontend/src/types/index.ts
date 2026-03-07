@@ -2,9 +2,10 @@ export interface ILabel {
   _id: string;
   name: string;
   description: string;
-  logoUrl: string;
+  logoUrl?: string | null;
   sector: string;
   status: "active" | "inactive";
+  validationWorkflow?: { step: string; status: "complete" | "active" | "pending" }[];
   deletedAt?: string;
   createdAt: string;
   updatedAt: string;
@@ -16,12 +17,14 @@ export interface ICompany {
   description: string;
   sector: string;
   region: string;
-  logoUrl: string;
-  website: string;
+  logoUrl?: string | null;
+  website?: string | null;
   labelId: string | ILabel;
   certificationDate: string;
   expiryDate: string;
   score: number | null;
+  socialScore?: number;
+  governanceScore?: number;
   status: "certified" | "pending" | "expired";
   deletedAt?: string;
   createdAt: string;

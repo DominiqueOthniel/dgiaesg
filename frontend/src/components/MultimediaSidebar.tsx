@@ -3,7 +3,9 @@ import api from "../services/api";
 import type { IMultimedia, PaginatedResponse } from "../types";
 import { Play, Mic, Loader2 } from "lucide-react";
 import { Button } from "./ui/Button";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { resolveImageUrl } from "../lib/image";
 
 export const MultimediaSidebar = () => {
     const { data, isLoading } = useQuery<PaginatedResponse<IMultimedia>>({
@@ -39,7 +41,7 @@ export const MultimediaSidebar = () => {
             </div>
 
             <div className="space-y-4">
-                {items.map((item, index) => (
+                {items.map((item: IMultimedia, index: number) => (
                     <motion.div
                         key={item._id}
                         initial={{ opacity: 0, x: 20 }}
@@ -50,7 +52,7 @@ export const MultimediaSidebar = () => {
                     >
                         {item.coverImageUrl ? (
                             <img
-                                src={item.coverImageUrl}
+                                src={resolveImageUrl(item.coverImageUrl) ?? undefined}
                                 alt={item.title}
                                 className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700"
                             />
@@ -82,13 +84,15 @@ export const MultimediaSidebar = () => {
                 ))}
             </div>
 
-            <Button
-                variant="ghost"
-                size="sm"
-                className="w-full rounded-2xl border border-slate-100 text-slate-400 hover:text-brand-primary hover:bg-slate-50 font-black text-[9px] uppercase tracking-widest h-12"
-            >
-                Explorer la Médiathèque
-            </Button>
+            <Link to="/multimedia">
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full rounded-2xl border-2 border-brand-primary/10 text-brand-primary hover:bg-brand-primary hover:text-white font-black text-[9px] uppercase tracking-widest h-12 transition-all"
+                >
+                    Explorer la Médiathèque
+                </Button>
+            </Link>
         </div>
     );
 };

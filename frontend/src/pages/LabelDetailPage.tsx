@@ -21,12 +21,48 @@ import { Card, CardContent } from "../components/ui/Card";
 import { Badge } from "../components/ui/Badge";
 import { cn } from "../lib/utils";
 import { resolveImageUrl } from "../lib/image";
+import { useAuth } from "../context/AuthContext";
+import { useState, useEffect } from "react";
+import api from "../services/api";
+import { toast } from "react-hot-toast";
+import { Bookmark } from "lucide-react";
 
 function LabelDetailPage() {
     const { id } = useParams<{ id: string }>();
     const { data: label, isLoading: labelLoading } = useLabel(id);
     const { data: criteria, isLoading: criteriaLoading } = useCriteria(id);
     const { data: companiesData, isLoading: companiesLoading } = useCompanies({ labelId: id, limit: 10 });
+    const { user, isAuthenticated, updateSavedLabels } = useAuth();
+
+    const [isSaved, setIsSaved] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+
+    useEffect(() => {
+        if (user && label) {
+            setIsSaved((user.savedLabels || []).includes(label._id));
+        }
+    }, [user, label]);
+
+    const handleToggleSave = async () => {
+        if (!isAuthenticated) {
+            toast.error("Veuillez vous connecter pour sauvegarder ce protocole.");
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            const response = await api.post('/users/save-label', { labelId: label?._id });
+            if (response.data.success) {
+                updateSavedLabels(response.data.data);
+                setIsSaved(!isSaved);
+                toast.success(isSaved ? "Retiré de votre bibliothèque" : "Ajouté à votre bibliothèque");
+            }
+        } catch (error) {
+            toast.error("Une erreur est survenue.");
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     const companies = companiesData?.data || [];
 
@@ -62,11 +98,28 @@ function LabelDetailPage() {
                 <div className="absolute top-0 right-0 w-1/3 h-full bg-brand-primary/5 -skew-x-12 translate-x-1/2" />
 
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-                    <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-                        <Link to="/labels" className="inline-flex items-center gap-2 text-slate-400 text-xs font-bold uppercase tracking-widest mb-16 hover:text-brand-accent transition-colors">
-                            <ArrowLeft className="w-4 h-4" /> REVENIR À L'INDEX DES LABELS
-                        </Link>
-                    </motion.div>
+                    <div className="flex justify-between items-start mb-16">
+                        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+                            <Link to="/labels" className="inline-flex items-center gap-2 text-slate-400 text-xs font-bold uppercase tracking-widest hover:text-brand-accent transition-colors">
+                                <ArrowLeft className="w-4 h-4" /> REVENIR À L'INDEX DES LABELS
+                            </Link>
+                        </motion.div>
+
+                        <motion.button
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            onClick={handleToggleSave}
+                            disabled={isSaving}
+                            className={cn(
+                                "w-12 h-12 rounded-2xl flex items-center justify-center transition-all shadow-xl backdrop-blur-md border",
+                                isSaved
+                                    ? "bg-brand-primary border-brand-primary text-white"
+                                    : "bg-white/10 border-white/20 text-white hover:bg-white/20"
+                            )}
+                        >
+                            <Bookmark className={cn("w-5 h-5", isSaved && "fill-current")} />
+                        </motion.button>
+                    </div>
 
                     <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-start lg:items-center">
                         <div className="flex-1 order-2 lg:order-1">
@@ -216,8 +269,9 @@ function LabelDetailPage() {
                                     </div>
 
                                     <Link to="/directory" className="block pt-8 border-t border-white/10">
-                                        <Button className="w-full rounded-2xl py-7 bg-white text-brand-secondary hover:bg-brand-accent hover:text-white shadow-xl shadow-black/20 transition-all font-bold uppercase tracking-widest text-[11px]">
-                                            Explorer le Registre <Target className="w-4 h-4 ml-2" />
+                                        <Button className="w-full rounded-[1.5rem] h-14 bg-brand-primary text-white hover:bg-white hover:text-brand-secondary border border-transparent hover:border-white/20 shadow-xl shadow-black/20 transition-all font-black uppercase tracking-[0.2em] text-[11px] flex items-center justify-center gap-4 group/btn">
+                                            Explorer le Registre
+                                            <Target className="w-5 h-5 shrink-0 group-hover/btn:scale-110 transition-transform text-brand-accent" />
                                         </Button>
                                     </Link>
                                 </CardContent>
@@ -230,12 +284,12 @@ function LabelDetailPage() {
                                     <Zap className="w-4 h-4" /> Workflow de Validation
                                 </h4>
                                 <div className="space-y-8">
-                                    {[
+                                    {(label.validationWorkflow || [
                                         { step: "Analyse documentaire", status: "complete" },
                                         { step: "Inspection sur site", status: "active" },
                                         { step: "Audit de conformité éthique", status: "pending" },
                                         { step: "Certification par le comité", status: "pending" }
-                                    ].map((item, idx) => (
+                                    ]).map((item: any, idx: number) => (
                                         <div key={idx} className="flex items-start gap-5 relative group">
                                             <div className="shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors">
                                                 {item.status === 'complete' ? (
@@ -249,13 +303,13 @@ function LabelDetailPage() {
                                                 )}
                                             </div>
                                             <span className={cn(
-                                                "text-[11px] font-bold uppercase tracking-widest leading-relaxed",
+                                                "text-[11px] font-bold uppercase tracking-widest leading-relaxed text-left",
                                                 item.status === 'complete' ? "text-slate-400 line-through" :
                                                     item.status === 'active' ? "text-brand-secondary" : "text-slate-300"
                                             )}>
                                                 {item.step}
                                             </span>
-                                            {idx < 3 && <div className="absolute left-3 top-6 w-[2px] h-6 bg-slate-100" />}
+                                            {idx < (label.validationWorkflow?.length || 4) - 1 && <div className="absolute left-3 top-6 w-[2px] h-6 bg-slate-100" />}
                                         </div>
                                     ))}
                                 </div>

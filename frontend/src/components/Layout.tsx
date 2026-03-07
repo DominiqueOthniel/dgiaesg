@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
 import {
   Menu,
@@ -13,7 +13,9 @@ import {
   ChevronRight,
   PlayCircle,
   LayoutDashboard,
-  Play
+  Play,
+  User,
+  LogOut
 } from "lucide-react";
 import { searchEntities } from "../services/SearchService";
 import type { SearchResults } from "../services/SearchService";
@@ -40,8 +42,8 @@ const navigation = [
   { name: "Journal", href: "/news", icon: Newspaper }
 ];
 
-function Layout() {
-  const { isAuthenticated, user } = useAuth();
+const Layout = () => {
+  const { user, isAuthenticated, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -49,14 +51,27 @@ function Layout() {
   const [searchResults, setSearchResults] = useState<SearchResults | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   useEffect(() => {
@@ -82,6 +97,83 @@ function Layout() {
     } finally {
       setIsSearching(false);
     }
+  };
+
+  const UserMenu = () => {
+    if (!isAuthenticated) {
+      return (
+        <Link to="/login" className="hidden lg:flex items-center gap-2 group">
+          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-brand-primary transition-colors">Se connecter</span>
+          <div className="w-10 h-10 bg-slate-50 flex items-center justify-center rounded-2xl group-hover:bg-brand-primary group-hover:text-white transition-all shadow-tactile-sm">
+            <User className="w-4 h-4" />
+          </div>
+        </Link>
+      );
+    }
+
+    return (
+      <div className="relative" ref={userMenuRef}>
+        <button
+          onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+          className="flex items-center gap-3 group"
+        >
+          <div className="text-right hidden lg:block">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Bonjour,</p>
+            <p className="text-xs font-bold text-slate-900 group-hover:text-brand-primary transition-colors">{user?.name}</p>
+          </div>
+          <div className="w-10 h-10 bg-brand-primary/10 flex items-center justify-center rounded-2xl group-hover:bg-brand-primary group-hover:text-white transition-all border border-brand-primary/20">
+            <User className="w-4 h-4 text-brand-primary group-hover:text-white" />
+          </div>
+        </button>
+
+        <AnimatePresence>
+          {isUserMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+              className="absolute right-0 mt-3 w-64 bg-white rounded-[2rem] shadow-tactile border border-brand-primary/10 p-2 z-50 overflow-hidden"
+            >
+              <div className="p-6 bg-brand-primary/5 rounded-[1.5rem] mb-2">
+                <p className="text-[10px] font-black text-brand-primary uppercase tracking-widest mb-1">{user?.role}</p>
+                <p className="text-sm font-bold text-slate-900 truncate">{user?.email}</p>
+              </div>
+
+              <Link
+                to="/profile"
+                onClick={() => setIsUserMenuOpen(false)}
+                className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-slate-50 text-slate-600 hover:text-brand-primary transition-all group"
+              >
+                <User className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                <span className="text-xs font-bold uppercase tracking-widest">Mon Profil</span>
+              </Link>
+
+              {user?.role === 'admin' && (
+                <Link
+                  to="/admin"
+                  onClick={() => setIsUserMenuOpen(false)}
+                  className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-slate-50 text-slate-600 hover:text-brand-primary transition-all group"
+                >
+                  <LayoutDashboard className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                  <span className="text-xs font-bold uppercase tracking-widest">Dashboard Admin</span>
+                </Link>
+              )}
+
+              <button
+                onClick={() => {
+                  logout();
+                  setIsUserMenuOpen(false);
+                }}
+                className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-red-50 text-slate-400 hover:text-red-500 transition-all group"
+              >
+                <LogOut className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <span className="text-xs font-bold uppercase tracking-widest">Déconnexion</span>
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
   };
 
   return (
@@ -158,7 +250,7 @@ function Layout() {
             </nav>
 
             {/* Search & Actions */}
-            <div className="flex-1 max-w-sm hidden lg:block">
+            <div className={cn("flex-1 max-w-sm hidden lg:block", location.pathname === "/" && "lg:hidden")}>
               <form onSubmit={handleSearch} className="relative group">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-light group-focus-within:text-brand-accent transition-colors pointer-events-none" />
                 <input
@@ -181,11 +273,8 @@ function Layout() {
                 </Link>
               )}
 
-              <Link to="/login" className="hidden sm:block">
-                <Button variant="outline" size="sm" className="rounded-full">
-                  Se connecter
-                </Button>
-              </Link>
+              <UserMenu />
+
               <Link to="/directory" className="hidden lg:block">
                 <Button variant="primary" size="sm" className="rounded-full">
                   Consulter l'annuaire
@@ -246,6 +335,7 @@ function Layout() {
                     <Link
                       to={item.href}
                       className="flex items-center gap-4 p-3 rounded-lg text-lg font-black text-brand-secondary hover:bg-slate-50 transition-colors"
+                      onClick={() => setIsMenuOpen(false)} // Close menu on navigation
                     >
                       {item.icon && <item.icon className="w-5 h-5 text-brand-accent" />}
                       {item.name}
@@ -253,7 +343,12 @@ function Layout() {
                     {item.children && (
                       <div className="pl-12 grid grid-cols-1 gap-2">
                         {item.children.map(child => (
-                          <Link key={child.name} to={child.href} className="text-sm font-bold text-slate-500 py-1 hover:text-brand-primary">
+                          <Link
+                            key={child.name}
+                            to={child.href}
+                            className="text-sm font-bold text-slate-500 py-1 hover:text-brand-primary"
+                            onClick={() => setIsMenuOpen(false)} // Close menu on navigation
+                          >
                             {child.name}
                           </Link>
                         ))}
@@ -262,9 +357,51 @@ function Layout() {
                   </div>
                 ))}
                 <div className="pt-6 border-t border-slate-100 flex flex-col gap-3">
-                  <Link to="/login">
-                    <Button variant="primary" className="w-full py-4 text-base">Espace Membre</Button>
-                  </Link>
+                  {/* Mobile Auth Sections - similar logic to UserMenu */}
+                  {!isAuthenticated ? (
+                    <>
+                      <Link
+                        to="/login"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <Button variant="primary" className="w-full py-4 text-base">Se Connecter</Button>
+                      </Link>
+                      <Link
+                        to="/register"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <Button variant="outline" className="w-full py-4 text-base">Créer un compte</Button>
+                      </Link>
+                    </>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="p-4 bg-slate-50 rounded-lg mb-2">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Session Active</p>
+                        <p className="text-lg font-bold text-brand-secondary">{user?.name}</p>
+                        <p className="text-xs font-medium text-slate-500">{user?.email}</p>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <Link
+                          to="/profile"
+                          onClick={() => setIsMenuOpen(false)}
+                          className="flex flex-col items-center justify-center gap-2 p-4 bg-white border border-slate-100 rounded-lg hover:border-brand-primary transition-colors group"
+                        >
+                          <User className="w-5 h-5 text-slate-400 group-hover:text-brand-primary transition-colors" />
+                          <span className="text-[10px] font-black uppercase tracking-widest">Profil</span>
+                        </Link>
+                        <button
+                          onClick={() => {
+                            logout();
+                            setIsMenuOpen(false);
+                          }}
+                          className="flex flex-col items-center justify-center gap-2 p-4 bg-white border border-slate-100 rounded-lg hover:border-red-500 transition-colors group"
+                        >
+                          <LogOut className="w-5 h-5 text-slate-400 group-hover:text-red-500 transition-colors" />
+                          <span className="text-[10px] font-black uppercase tracking-widest">Quitter</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>

@@ -9,6 +9,12 @@ interface BreakingNews {
     link?: string;
 }
 
+const ensureExternalLink = (url: string) => {
+    if (!url) return "";
+    if (url.startsWith("http://") || url.startsWith("https://")) return url;
+    return `https://${url}`;
+};
+
 const NewsTicker = () => {
     const [items, setItems] = useState<BreakingNews[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -39,10 +45,11 @@ const NewsTicker = () => {
     if (items.length === 0) return null;
 
     return (
-        <div className="bg-brand-secondary text-white py-2 border-b border-white/5 relative z-[60] overflow-hidden">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-4">
+        <div className="bg-brand-secondary text-white py-2 border-b border-white/5 relative z-[60] overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-r from-brand-primary/10 via-transparent to-brand-primary/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-4 relative">
                 {/* Label */}
-                <div className="flex items-center gap-2 px-3 py-1 bg-brand-accent/20 rounded-full border border-brand-accent/30 shrink-0">
+                <div className="flex items-center gap-2 px-3 py-1 bg-brand-accent/20 rounded-full border border-brand-accent/30 shrink-0 shadow-[0_0_15px_rgba(var(--brand-accent-rgb),0.2)]">
                     <Zap className="w-3 h-3 text-brand-accent animate-pulse" />
                     <span className="text-[10px] font-black uppercase tracking-widest text-brand-accent">
                         Flash Info
@@ -60,15 +67,17 @@ const NewsTicker = () => {
                             transition={{ duration: 0.5, ease: "easeOut" }}
                             className="absolute inset-0 flex items-center"
                         >
-                            <p className="text-xs font-bold text-slate-200 truncate">
+                            <p className="text-xs font-bold text-slate-200 truncate pr-4">
                                 {items[currentIndex].title}
                             </p>
                             {items[currentIndex].link && (
                                 <a
-                                    href={items[currentIndex].link}
-                                    className="ml-4 inline-flex items-center gap-1 text-[10px] font-bold text-brand-accent hover:text-white transition-colors"
+                                    href={ensureExternalLink(items[currentIndex].link)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 text-[10px] font-black text-brand-accent hover:text-white transition-all uppercase tracking-widest border-l border-white/10 pl-4 h-4"
                                 >
-                                    Lire plus <ChevronRight className="w-3 h-3" />
+                                    Poursuivre <ChevronRight className="w-3 h-3" />
                                 </a>
                             )}
                         </motion.div>

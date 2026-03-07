@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Award, ArrowRight, Search, Filter, ShieldCheck, Tag } from "lucide-react";
+import { Award, ArrowRight, Search, Filter, ShieldCheck, Tag, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLabels } from "../hooks/useLabels";
 import { Card, CardContent } from "../components/ui/Card";
@@ -65,23 +65,22 @@ function LabelsPage() {
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
                             </div>
-                            <div className="flex items-center gap-3 px-4 py-3 lg:py-0 overflow-x-auto scrollbar-hide border-t lg:border-t-0 lg:border-l border-slate-100">
-                                <Filter className="w-4 h-4 text-slate-400 shrink-0" />
-                                <div className="flex items-center gap-2">
-                                    {sectors.slice(0, 5).map(s => (
-                                        <button
-                                            key={s}
-                                            onClick={() => setActiveSector(s)}
-                                            className={cn(
-                                                "px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all",
-                                                activeSector === s
-                                                    ? "bg-brand-primary text-white shadow-lg shadow-brand-primary/20"
-                                                    : "bg-transparent text-slate-500 hover:bg-slate-100"
-                                            )}
-                                        >
-                                            {s}
-                                        </button>
-                                    ))}
+                            <div className="flex items-center gap-4 px-6 border-t lg:border-t-0 lg:border-l border-slate-100 min-w-[240px]">
+                                <Filter className="w-4 h-4 text-brand-primary shrink-0" />
+                                <div className="relative flex-1">
+                                    <select
+                                        value={activeSector}
+                                        onChange={(e) => setActiveSector(e.target.value)}
+                                        className="w-full bg-transparent border-none text-sm font-bold text-brand-secondary focus:ring-0 cursor-pointer appearance-none pr-8"
+                                    >
+                                        <option value="Tous">Tous les secteurs</option>
+                                        {sectors.filter(s => s !== "Tous").map(s => (
+                                            <option key={s} value={s}>{s}</option>
+                                        ))}
+                                    </select>
+                                    <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none">
+                                        <ChevronRight className="w-4 h-4 text-slate-400 rotate-90" />
+                                    </div>
                                 </div>
                             </div>
                         </div>

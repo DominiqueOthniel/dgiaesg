@@ -4,6 +4,8 @@ import {
     login,
     getMe,
     updateMe,
+    forgotPassword,
+    resetPassword,
 } from "../controllers/auth.controller";
 import validate from "../middleware/validate";
 import {
@@ -74,5 +76,8 @@ router.post("/login", validate(loginUserSchema), login);
  */
 router.get("/me", protect, getMe);
 router.put("/me", protect, validate(updateUserSchema), updateMe);
+
+router.post("/forgot-password", forgotPassword);
+router.post("/reset-password/:token", resetPassword);
 
 export default router;

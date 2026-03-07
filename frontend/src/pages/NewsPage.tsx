@@ -192,12 +192,13 @@ function NewsPage() {
                                 <Zap className="w-8 h-8 text-brand-accent mb-8" />
                                 <h4 className="text-xl font-bold mb-4">Analyses Premium</h4>
                                 <p className="text-slate-400 text-sm leading-relaxed mb-8">Accédez à nos rapports trimestriels détaillés sur l'état de la coopération en Afrique.</p>
-                                <Button
-                                    onClick={() => document.getElementById('reports')?.scrollIntoView({ behavior: 'smooth' })}
-                                    className="w-full rounded-2xl bg-white text-slate-900 hover:bg-brand-accent hover:text-white transition-all font-black text-[10px] uppercase tracking-widest h-14"
-                                >
-                                    Découvrir les Rapports
-                                </Button>
+                                <Link to="/kiosk" className="w-full">
+                                    <Button
+                                        className="w-full rounded-2xl bg-white text-slate-900 hover:bg-brand-accent hover:text-white transition-all font-black text-[10px] uppercase tracking-widest h-14"
+                                    >
+                                        Découvrir les Rapports
+                                    </Button>
+                                </Link>
                             </div>
 
                             {/* FA TV & Podcast */}
@@ -208,8 +209,8 @@ function NewsPage() {
                             {/* Digital Review Kiosk Sidebar Toggle/View */}
                             <div id="reports" className="space-y-4">
                                 <ReviewKiosk />
-                                <Link to="/kiosk" className="flex items-center justify-center gap-2 text-[10px] font-black text-brand-primary uppercase tracking-[0.2em] py-4 border-2 border-dashed border-slate-100 rounded-2xl hover:bg-slate-50 transition-all italic">
-                                    Voir tout le kiosque <ArrowRight className="w-3.5 h-3.5" />
+                                <Link to="/kiosk" className="flex items-center justify-center gap-3 text-[10px] font-black text-brand-primary uppercase tracking-[0.2em] py-5 border-2 border-brand-primary/10 bg-brand-primary/5 rounded-2xl hover:bg-brand-primary hover:text-white transition-all italic shadow-sm group">
+                                    Voir tout le kiosque <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                 </Link>
                             </div>
 

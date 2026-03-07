@@ -15,7 +15,7 @@ import { useNews } from '../../hooks/useNews';
 import { Button } from '../../components/ui/Button';
 import { Card, CardContent } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
-import { toast, Toaster } from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 import { Modal } from '../../components/Modal';
 import { NewsForm } from '../../components/NewsForm';
 import api from '../../services/api';
@@ -97,7 +97,6 @@ const NewsAdmin = () => {
 
     return (
         <div className="space-y-10 pb-20">
-            <Toaster position="top-right" />
 
             {/* Editorial Command Header */}
             <div className="bg-white rounded-[2.5rem] p-10 md:p-14 border border-slate-200/60 shadow-xl shadow-slate-200/40 relative overflow-hidden">

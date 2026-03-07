@@ -11,6 +11,8 @@ export interface ICompanyDocument extends Document {
   certificationDate: Date;
   expiryDate: Date;
   score: number | null;
+  socialScore: number;
+  governanceScore: number;
   status: "certified" | "pending" | "expired";
   deletedAt: Date | null;
   createdAt: Date;
@@ -67,6 +69,18 @@ const companySchema = new Schema<ICompanyDocument>(
       default: null,
       min: [0, "Score cannot be negative"],
       max: [200, "Score cannot exceed 200"],
+    },
+    socialScore: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100,
+    },
+    governanceScore: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100,
     },
     status: {
       type: String,

@@ -17,6 +17,8 @@ const companySchema = z.object({
     certificationDate: z.string().min(1, 'Date requise'),
     expiryDate: z.string().min(1, 'Date requise'),
     status: z.enum(['certified', 'pending', 'expired']),
+    socialScore: z.number().min(0).max(100).optional().default(0),
+    governanceScore: z.number().min(0).max(100).optional().default(0),
 });
 
 type CompanyFormData = z.infer<typeof companySchema>;
@@ -48,6 +50,8 @@ export const CompanyForm = ({ initialData, labels, onSubmit, isLoading }: Compan
             certificationDate: initialData.certificationDate ? new Date(initialData.certificationDate).toISOString().split('T')[0] : '',
             expiryDate: initialData.expiryDate ? new Date(initialData.expiryDate).toISOString().split('T')[0] : '',
             status: initialData.status || 'pending',
+            socialScore: initialData.socialScore || 0,
+            governanceScore: initialData.governanceScore || 0,
         } : {
             name: '',
             description: '',
@@ -59,6 +63,8 @@ export const CompanyForm = ({ initialData, labels, onSubmit, isLoading }: Compan
             certificationDate: '',
             expiryDate: '',
             status: 'pending',
+            socialScore: 0,
+            governanceScore: 0,
         }
     });
 
@@ -175,13 +181,34 @@ export const CompanyForm = ({ initialData, labels, onSubmit, isLoading }: Compan
                 </div>
             </div>
 
-            <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic ml-1">Statut</label>
-                <select {...register('status')} className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-4 focus:ring-emerald-500/10 transition-all font-bold text-[10px] uppercase tracking-widest italic">
-                    <option value="certified">Certifié</option>
-                    <option value="pending">En attente</option>
-                    <option value="expired">Expiré</option>
-                </select>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic ml-1">Statut</label>
+                    <select {...register('status')} className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-4 focus:ring-emerald-500/10 transition-all font-bold text-[10px] uppercase tracking-widest italic">
+                        <option value="certified">Certifié</option>
+                        <option value="pending">En attente</option>
+                        <option value="expired">Expiré</option>
+                    </select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic ml-1">Score Social (%)</label>
+                        <input
+                            type="number"
+                            {...register('socialScore', { valueAsNumber: true })}
+                            className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-4 focus:ring-emerald-500/10 transition-all font-medium text-sm"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic ml-1">Gouvernance (%)</label>
+                        <input
+                            type="number"
+                            {...register('governanceScore', { valueAsNumber: true })}
+                            className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-4 focus:ring-emerald-500/10 transition-all font-medium text-sm"
+                        />
+                    </div>
+                </div>
             </div>
 
             <div className="space-y-2">

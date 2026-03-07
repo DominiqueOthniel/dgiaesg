@@ -6,6 +6,12 @@ export const createUserSchema = z.object({
     .min(1, "Name is required")
     .max(100, "Name cannot exceed 100 characters")
     .trim(),
+  username: z
+    .string()
+    .min(3, "Username must be at least 3 characters")
+    .max(30, "Username cannot exceed 30 characters")
+    .trim()
+    .toLowerCase(),
   email: z
     .string()
     .min(1, "Email is required")
@@ -19,10 +25,9 @@ export const createUserSchema = z.object({
 });
 
 export const loginUserSchema = z.object({
-  email: z
+  identifier: z
     .string()
-    .min(1, "Email is required")
-    .email("Must be a valid email")
+    .min(1, "Email or Username is required")
     .trim()
     .toLowerCase(),
   password: z
@@ -36,6 +41,13 @@ export const updateUserSchema = z.object({
     .min(1)
     .max(100)
     .trim()
+    .optional(),
+  username: z
+    .string()
+    .min(3)
+    .max(30)
+    .trim()
+    .toLowerCase()
     .optional(),
   email: z.string().email().trim().toLowerCase().optional(),
   password: z.string().min(6).optional(),

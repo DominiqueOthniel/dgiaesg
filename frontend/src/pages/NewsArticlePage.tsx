@@ -38,7 +38,7 @@ function NewsArticlePage() {
 
     const handleToggleSave = async () => {
         if (!isAuthenticated) {
-            toast.error("Veuillez vous connecter pour sauvegarder des articles.");
+            toast.error("Veuillez vous connecter pour sauvegarder cet article.");
             return;
         }
 

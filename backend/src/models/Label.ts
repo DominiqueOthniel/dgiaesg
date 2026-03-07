@@ -6,6 +6,10 @@ export interface ILabelDocument extends Document {
   logoUrl: string;
   sector: string;
   status: "active" | "inactive";
+  validationWorkflow: {
+    step: string;
+    status: "complete" | "active" | "pending";
+  }[];
   deletedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
@@ -38,6 +42,20 @@ const labelSchema = new Schema<ILabelDocument>(
       type: String,
       enum: ["active", "inactive"],
       default: "active",
+    },
+    validationWorkflow: {
+      type: [
+        {
+          step: String,
+          status: { type: String, enum: ["complete", "active", "pending"] },
+        },
+      ],
+      default: [
+        { step: "Analyse documentaire", status: "complete" },
+        { step: "Inspection sur site", status: "active" },
+        { step: "Audit de conformité éthique", status: "pending" },
+        { step: "Certification par le comité", status: "pending" },
+      ],
     },
     deletedAt: {
       type: Date,

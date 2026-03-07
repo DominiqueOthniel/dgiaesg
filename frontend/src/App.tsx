@@ -3,6 +3,7 @@ import { lazy, Suspense } from "react";
 import Layout from "./components/Layout";
 import ScrollToTop from "./components/ScrollToTop";
 import { Loader2 } from "lucide-react";
+import { Toaster } from "react-hot-toast";
 
 // Public pages with lazy loading
 const Home = lazy(() => import("./pages/Home"));
@@ -14,10 +15,16 @@ const NewsPage = lazy(() => import("./pages/NewsPage"));
 const NewsArticlePage = lazy(() => import("./pages/NewsArticlePage"));
 const SectorPage = lazy(() => import("./pages/SectorPage"));
 const LoginPage = lazy(() => import("./pages/LoginPage"));
+const SignupPage = lazy(() => import("./pages/SignupPage"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage"));
+const ForgotPasswordPage = lazy(() => import("./pages/ForgotPasswordPage"));
+const ResetPasswordPage = lazy(() => import("./pages/ResetPasswordPage"));
 const SavedArticles = lazy(() => import("./pages/SavedArticles"));
 const KioskPage = lazy(() => import("./pages/KioskPage"));
+const MultimediaPage = lazy(() => import("./pages/MultimediaPage"));
 
 import AdminRoute from "./components/AdminRoute";
+import ProtectedRoute from "./components/ProtectedRoute";
 import AdminLayout from "./layouts/AdminLayout";
 
 // Admin pages with lazy loading
@@ -42,6 +49,7 @@ const LoadingPage = () => (
 function App() {
   return (
     <Suspense fallback={<LoadingPage />}>
+      <Toaster position="top-right" reverseOrder={false} />
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<Layout />}>
@@ -53,11 +61,16 @@ function App() {
           <Route path="news" element={<NewsPage />} />
           <Route path="news/:slug" element={<NewsArticlePage />} />
           <Route path="news/sector/:sector" element={<SectorPage />} />
-          <Route path="library" element={<SavedArticles />} />
           <Route path="kiosk" element={<KioskPage />} />
+          <Route path="multimedia" element={<MultimediaPage />} />
+
+          <Route element={<ProtectedRoute />}>
+            <Route path="profile" element={<ProfilePage />} />
+            <Route path="library" element={<SavedArticles />} />
+          </Route>
         </Route>
 
-        <Route element={<AdminRoute />}>
+        <Route element={<AdminRoute allowedRoles={['admin']} />}>
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="labels" element={<LabelsAdmin />} />
@@ -71,6 +84,9 @@ function App() {
         </Route>
 
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<SignupPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         <Route path="*" element={<div className="min-h-screen flex items-center justify-center font-bold text-slate-300 tracking-tighter uppercase italic">404 — MATRICE NON RÉFÉRENCÉE</div>} />
       </Routes>
     </Suspense>

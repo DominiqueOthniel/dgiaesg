@@ -167,19 +167,19 @@ function CompanyDetailPage() {
                                             <div className="space-y-4">
                                                 <div className="flex justify-between items-end">
                                                     <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Dimension Sociale</span>
-                                                    <span className="text-xl font-bold text-white tracking-tight">85%</span>
+                                                    <span className="text-xl font-bold text-white tracking-tight">{company.socialScore || 0}%</span>
                                                 </div>
                                                 <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                                                    <motion.div initial={{ width: 0 }} whileInView={{ width: '85%' }} className="h-full bg-brand-primary rounded-full shadow-[0_0_10px_rgba(37,99,235,0.3)]" />
+                                                    <motion.div initial={{ width: 0 }} whileInView={{ width: `${company.socialScore || 0}%` }} className="h-full bg-brand-primary rounded-full shadow-[0_0_10px_rgba(37,99,235,0.3)]" />
                                                 </div>
                                             </div>
                                             <div className="space-y-4">
                                                 <div className="flex justify-between items-end">
                                                     <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Gouvernance Éthique</span>
-                                                    <span className="text-xl font-bold text-white tracking-tight">92%</span>
+                                                    <span className="text-xl font-bold text-white tracking-tight">{company.governanceScore || 0}%</span>
                                                 </div>
                                                 <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                                                    <motion.div initial={{ width: 0 }} whileInView={{ width: '92%' }} className="h-full bg-brand-accent rounded-full shadow-[0_0_10px_rgba(245,158,11,0.3)]" />
+                                                    <motion.div initial={{ width: 0 }} whileInView={{ width: `${company.governanceScore || 0}%` }} className="h-full bg-brand-accent rounded-full shadow-[0_0_10px_rgba(245,158,11,0.3)]" />
                                                 </div>
                                             </div>
                                         </div>
@@ -236,11 +236,65 @@ function CompanyDetailPage() {
                                             </div>
                                         </div>
 
-                                        <div className="pt-8 border-t border-slate-100">
-                                            <Button variant="outline" className="w-full rounded-2xl py-6 text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-brand-secondary hover:bg-slate-50">
-                                                <Download className="w-4 h-4 mr-2" /> Rapports d'impact
+                                        <div className="pt-8 border-t border-slate-100 flex flex-col sm:flex-row gap-4">
+                                            <Button variant="outline" className="flex-1 min-w-0 rounded-2xl py-6 hover:text-brand-secondary hover:bg-slate-50 transition-all group">
+                                                <div className="flex items-center justify-center w-full gap-2">
+                                                    <Download className="w-4 h-4 shrink-0 text-slate-400 group-hover:text-brand-primary" />
+                                                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 group-hover:text-brand-secondary truncate">
+                                                        Rapports d'impact
+                                                    </span>
+                                                </div>
                                             </Button>
                                         </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            {/* Dynamic Validation Workflow */}
+                            <Card className="rounded-[2.5rem] border-slate-200/60 shadow-xl shadow-slate-200/40 overflow-hidden">
+                                <CardContent className="p-8">
+                                    <div className="flex items-center gap-3 mb-8">
+                                        <div className="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary">
+                                            <ShieldCheck className="w-5 h-5" />
+                                        </div>
+                                        <h3 className="text-lg font-bold text-brand-secondary uppercase tracking-tight">Workflow de Validation</h3>
+                                    </div>
+
+                                    <div className="space-y-6">
+                                        {(label?.validationWorkflow || [
+                                            { step: "Analyse documentaire", status: "complete" },
+                                            { step: "Inspection sur site", status: "active" },
+                                            { step: "Audit de conformité éthique", status: "pending" },
+                                            { step: "Certification par le comité", status: "pending" }
+                                        ]).map((step: any, idx: number) => (
+                                            <div key={idx} className="flex items-center gap-4 group">
+                                                <div className={cn(
+                                                    "w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all",
+                                                    step.status === 'complete' ? "bg-emerald-500 border-emerald-500 text-white" :
+                                                        step.status === 'active' ? "border-brand-primary text-brand-primary animate-pulse" :
+                                                            "border-slate-200 text-slate-300"
+                                                )}>
+                                                    {step.status === 'complete' ? (
+                                                        <ShieldCheck className="w-4 h-4" />
+                                                    ) : (
+                                                        <span className="text-xs font-bold">{idx + 1}</span>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1 border-b border-slate-50 pb-4">
+                                                    <p className={cn(
+                                                        "text-xs font-bold uppercase tracking-widest",
+                                                        step.status === 'complete' ? "text-slate-500" :
+                                                            step.status === 'active' ? "text-brand-primary" : "text-slate-400"
+                                                    )}>
+                                                        {step.step}
+                                                    </p>
+                                                    <p className="text-[9px] font-medium text-slate-400 mt-1 uppercase tracking-tight">
+                                                        {step.status === 'complete' ? "Validation effectuée" :
+                                                            step.status === 'active' ? "Phase en cours de traitement" : "En attente de démarrage"}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 </CardContent>
                             </Card>

@@ -7,15 +7,13 @@ import {
     Mic,
     Save,
     X,
-    Globe,
     Star,
     ExternalLink,
-    Loader2,
 } from "lucide-react";
 import api from "../../services/api";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent } from "../../components/ui/Card";
-import { toast, Toaster } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import { cn } from "../../lib/utils";
 import type { IMultimedia } from "../../types";
 
@@ -104,7 +102,6 @@ const MultimediaAdmin = () => {
 
     return (
         <div className="space-y-8 pb-20">
-            <Toaster position="top-right" />
 
             {/* Hero Control */}
             <div className="bg-slate-900 rounded-[2rem] p-8 md:p-12 text-white relative overflow-hidden">
@@ -281,7 +278,7 @@ const MultimediaAdmin = () => {
                                     <div className="flex items-center gap-6 flex-1 min-w-0">
                                         <div className="w-20 h-20 rounded-xl bg-slate-100 overflow-hidden flex-shrink-0 relative group">
                                             {item.coverImageUrl ? (
-                                                <img src={item.coverImageUrl} className="w-full h-full object-cover" alt="" />
+                                                <img src={resolveImageUrl(item.coverImageUrl) || ""} className="w-full h-full object-cover" alt="" />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center">
                                                     {item.type === "video" ? <Play className="w-6 h-6 text-slate-300" /> : <Mic className="w-6 h-6 text-slate-300" />}

@@ -12,7 +12,7 @@ import {
 import api from "../../services/api";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent } from "../../components/ui/Card";
-import { toast, Toaster } from "react-hot-toast";
+import { toast } from 'react-hot-toast';
 import { cn } from "../../lib/utils";
 
 interface BreakingNews {
@@ -91,8 +91,7 @@ const BreakingNewsAdmin = () => {
     };
 
     return (
-        <div className="space-y-8 pb-20">
-            <Toaster position="top-right" />
+        <div className="space-y-10 pb-20">
 
             {/* Hero Control */}
             <div className="bg-brand-primary rounded-[2rem] p-8 md:p-12 text-white relative overflow-hidden">

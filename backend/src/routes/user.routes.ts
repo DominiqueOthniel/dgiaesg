@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { toggleSaveArticle, getSavedArticles } from "../controllers/user.controller";
+import { toggleSaveArticle, toggleSaveLabel, getSavedItems } from "../controllers/user.controller";
 import { protect } from "../middleware/authMiddleware";
 
 const router = Router();
@@ -29,14 +29,38 @@ router.post("/save-article", toggleSaveArticle);
 
 /**
  * @swagger
- * /users/saved-articles:
+ * /users/save-label:
+ *   post:
+ *     summary: Toggle save status of a label for the current user
+ *     tags: [Users]
+ *     security: [{bearerAuth: []}]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [labelId]
+ *             properties:
+ *               labelId: {type: string}
+ *     responses:
+ *       200: {description: Label saved/unsaved}
+ */
+router.post("/save-label", toggleSaveLabel);
+
+/**
+ * @swagger
+ * /users/saved-items:
  *   get:
- *     summary: Get all saved articles for the current user
+ *     summary: Get all saved items (articles and labels) for the current user
  *     tags: [Users]
  *     security: [{bearerAuth: []}]
  *     responses:
  *       200: {description: Success}
  */
-router.get("/saved-articles", getSavedArticles);
+router.get("/saved-items", getSavedItems);
+
+// Keep old route for compatibility if frontend uses it
+router.get("/saved-articles", getSavedItems);
 
 export default router;

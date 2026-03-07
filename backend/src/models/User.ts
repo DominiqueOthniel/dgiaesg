@@ -3,12 +3,14 @@ import bcrypt from "bcryptjs";
 
 export interface IUserDocument extends Document {
   name: string;
+  username: string;
   email: string;
   password: string;
   role: "admin" | "editor" | "viewer";
   createdAt: Date;
   updatedAt: Date;
   savedArticles: mongoose.Types.ObjectId[];
+  savedLabels: mongoose.Types.ObjectId[];
   interests: string[];
   comparePassword(password: string): Promise<boolean>;
 }
@@ -29,6 +31,14 @@ const userSchema = new Schema<IUserDocument>(
       lowercase: true,
       match: [/^\S+@\S+\.\S+$/, "Please provide a valid email"],
     },
+    username: {
+      type: String,
+      required: [true, "Username is required"],
+      unique: true,
+      trim: true,
+      lowercase: true,
+      minlength: [3, "Username must be at least 3 characters"],
+    },
     password: {
       type: String,
       required: [true, "Password is required"],
@@ -44,6 +54,12 @@ const userSchema = new Schema<IUserDocument>(
       {
         type: Schema.Types.ObjectId,
         ref: "News",
+      },
+    ],
+    savedLabels: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Label",
       },
     ],
     interests: [

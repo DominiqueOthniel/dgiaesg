@@ -4,9 +4,11 @@ import api from '../services/api';
 interface User {
     id: string;
     name: string;
+    username: string;
     email: string;
     role: 'admin' | 'editor' | 'viewer';
     savedArticles: string[];
+    savedLabels: string[];
 }
 
 interface AuthContextType {
@@ -17,6 +19,7 @@ interface AuthContextType {
     login: (token: string) => void;
     logout: () => void;
     updateSavedArticles: (articles: string[]) => void;
+    updateSavedLabels: (labels: string[]) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -35,9 +38,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             setUser({
                 id: userData._id,
                 name: userData.name,
+                username: userData.username,
                 email: userData.email,
                 role: userData.role,
-                savedArticles: userData.savedArticles || []
+                savedArticles: userData.savedArticles || [],
+                savedLabels: userData.savedLabels || []
             });
         } catch (error: any) {
             // 401 is expected when token expires — silently log out
@@ -85,6 +90,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    const updateSavedLabels = (newLabels: string[]) => {
+        if (user) {
+            setUser({ ...user, savedLabels: newLabels });
+        }
+    };
+
     return (
         <AuthContext.Provider value={{
             user,
@@ -93,7 +104,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             isLoading,
             login,
             logout,
-            updateSavedArticles
+            updateSavedArticles,
+            updateSavedLabels
         }}>
             {children}
         </AuthContext.Provider>

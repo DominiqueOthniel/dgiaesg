@@ -15,7 +15,7 @@ import { useCriteria } from '../../hooks/useCriteria';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
-import { toast, Toaster } from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 import { Modal } from '../../components/Modal';
 import { CriteriaForm } from '../../components/CriteriaForm';
 import api from '../../services/api';
@@ -33,7 +33,7 @@ const CriteriaAdmin = () => {
 
     const handleCreateCriteria = () => {
         if (!selectedLabelId) {
-            toast.error('Veuillez sélectionner un protocole de référence');
+            toast.error('Veuillez d\'abord choisir un critère/protocole dans la liste');
             return;
         }
         setEditingCriteria(null);
@@ -79,7 +79,6 @@ const CriteriaAdmin = () => {
 
     return (
         <div className="space-y-10 pb-20">
-            <Toaster position="top-right" />
 
             {/* Protocol Architecture Header */}
             <div className="bg-white rounded-[2.5rem] p-10 md:p-14 border border-slate-200/60 shadow-xl shadow-slate-200/40 relative overflow-hidden">
@@ -116,7 +115,10 @@ const CriteriaAdmin = () => {
                             <select
                                 className="w-full bg-transparent border-none p-0 text-base font-bold text-brand-secondary focus:ring-0 appearance-none cursor-pointer pr-10"
                                 value={selectedLabelId}
-                                onChange={(e) => setSelectedLabelId(e.target.value)}
+                                onChange={(e) => {
+                                    console.log("Select changed to:", e.target.value);
+                                    setSelectedLabelId(e.target.value);
+                                }}
                             >
                                 <option value="">Choisir dans le référentiel...</option>
                                 {labels?.map(l => (
