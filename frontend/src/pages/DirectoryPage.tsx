@@ -21,6 +21,8 @@ import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
 import { cn } from "../lib/utils";
 import { resolveImageUrl } from "../lib/image";
+import AdBanner from "../components/AdBanner";
+import { BackButton } from "../components/ui/BackButton";
 
 function DirectoryPage() {
     const [view, setView] = useState<"grid" | "list">("grid");
@@ -51,6 +53,7 @@ function DirectoryPage() {
                 <div className="absolute top-0 right-0 w-1/3 h-full bg-brand-primary/5 -skew-x-12 translate-x-1/2" />
 
                 <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10 relative z-10">
+                    <BackButton />
                     <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-12">
                         <div className="max-w-3xl">
                             <motion.div
@@ -126,8 +129,14 @@ function DirectoryPage() {
                                                 value={filters.sector}
                                             >
                                                 <option value="">Tous les secteurs</option>
-                                                {['Agriculture', 'Technologie', 'Énergie', 'Finance', 'Services'].map(s => (
-                                                    <option key={s} value={s}>{s}</option>
+                                                {[
+                                                    { value: 'finance', label: 'Finance' },
+                                                    { value: 'tech', label: 'Technologie' },
+                                                    { value: 'energy', label: 'Énergie' },
+                                                    { value: 'governance', label: 'Gouvernance' },
+                                                    { value: 'leadership', label: 'Leadership' }
+                                                ].map(s => (
+                                                    <option key={s.value} value={s.value}>{s.label}</option>
                                                 ))}
                                             </select>
                                         </div>
@@ -158,6 +167,10 @@ function DirectoryPage() {
                                     </div>
                                 </CardContent>
                             </Card>
+
+                            <div className="mt-10">
+                                <AdBanner position="sidebar" />
+                            </div>
                         </aside>
 
                         {/* Search & Dynamic Results */}

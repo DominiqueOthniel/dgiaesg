@@ -4,7 +4,7 @@ import api from "../services/api";
 import { Card, CardContent } from "../components/ui/Card";
 import { Badge } from "../components/ui/Badge";
 import { Link, Navigate } from "react-router-dom";
-import { Newspaper, Calendar, ArrowRight, Bookmark, Trash2, Library } from "lucide-react";
+import { Calendar, ArrowRight, Bookmark, Trash2, Library } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { resolveImageUrl } from "../lib/image";
 import { toast } from "react-hot-toast";

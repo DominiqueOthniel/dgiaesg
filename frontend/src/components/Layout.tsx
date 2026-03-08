@@ -11,11 +11,11 @@ import {
   Loader2,
   Bookmark,
   ChevronRight,
-  PlayCircle,
   LayoutDashboard,
   Play,
   User,
-  LogOut
+  LogOut,
+  Crown
 } from "lucide-react";
 import { searchEntities } from "../services/SearchService";
 import type { SearchResults } from "../services/SearchService";
@@ -25,6 +25,7 @@ import { cn } from "../lib/utils";
 import NewsTicker from "./NewsTicker";
 import { NewsletterPopup } from "./NewsletterPopup";
 import { useAuth } from "../context/AuthContext";
+import AdBanner from "./AdBanner";
 
 const navigation = [
   { name: "Accueil", href: "/", icon: ShieldCheck },
@@ -39,7 +40,9 @@ const navigation = [
   },
   { name: "Labels", href: "/labels", icon: Award },
   { name: "Annuaire", href: "/directory", icon: Users },
-  { name: "Journal", href: "/news", icon: Newspaper }
+  { name: "Journal", href: "/news", icon: Newspaper },
+  { name: "Médiatique", href: "/multimedia", icon: Play },
+  { name: "Kiosque", href: "/kiosk", icon: Bookmark }
 ];
 
 const Layout = () => {
@@ -119,10 +122,25 @@ const Layout = () => {
         >
           <div className="text-right hidden lg:block">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Bonjour,</p>
-            <p className="text-xs font-bold text-slate-900 group-hover:text-brand-primary transition-colors">{user?.name}</p>
+            <div className="flex items-center gap-1.5 justify-end">
+              <p className="text-xs font-bold text-slate-900 group-hover:text-brand-primary transition-colors">{user?.name}</p>
+              {user?.isPro && (
+                <motion.div
+                  animate={{ scale: [1, 1.1, 1], filter: ["drop-shadow(0 0 0px #F59E0B)", "drop-shadow(0 0 4px #F59E0B)", "drop-shadow(0 0 0px #F59E0B)"] }}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                  className="flex items-center gap-1 px-1.5 py-0.5 bg-gradient-to-r from-amber-400 to-yellow-600 rounded-md shadow-lg"
+                >
+                  <Crown className="w-2.5 h-2.5 text-white fill-white" />
+                  <span className="text-[8px] font-black text-white tracking-tighter">PRO</span>
+                </motion.div>
+              )}
+            </div>
           </div>
-          <div className="w-10 h-10 bg-brand-primary/10 flex items-center justify-center rounded-2xl group-hover:bg-brand-primary group-hover:text-white transition-all border border-brand-primary/20">
-            <User className="w-4 h-4 text-brand-primary group-hover:text-white" />
+          <div className={cn(
+            "w-10 h-10 flex items-center justify-center rounded-2xl transition-all border",
+            user?.isPro ? "bg-amber-50 border-amber-200" : "bg-brand-primary/10 border-brand-primary/20"
+          )}>
+            <User className={cn("w-4 h-4", user?.isPro ? "text-amber-600" : "text-brand-primary group-hover:text-white")} />
           </div>
         </button>
 
@@ -134,8 +152,13 @@ const Layout = () => {
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
               className="absolute right-0 mt-3 w-64 bg-white rounded-[2rem] shadow-tactile border border-brand-primary/10 p-2 z-50 overflow-hidden"
             >
-              <div className="p-6 bg-brand-primary/5 rounded-[1.5rem] mb-2">
-                <p className="text-[10px] font-black text-brand-primary uppercase tracking-widest mb-1">{user?.role}</p>
+              <div className={cn("p-6 rounded-[1.5rem] mb-2", user?.isPro ? "bg-gradient-to-br from-amber-500/10 to-yellow-600/5 border border-amber-200/20" : "bg-brand-primary/5")}>
+                <div className="flex items-center justify-between mb-1">
+                  <p className={cn("text-[10px] font-black uppercase tracking-widest", user?.isPro ? "text-amber-600" : "text-brand-primary")}>
+                    {user?.isPro ? "MEMBRE PRIVILÈGE PRO" : user?.role}
+                  </p>
+                  {user?.isPro && <Crown className="w-3 h-3 text-amber-500" />}
+                </div>
                 <p className="text-sm font-bold text-slate-900 truncate">{user?.email}</p>
               </div>
 
@@ -252,16 +275,16 @@ const Layout = () => {
             {/* Search & Actions */}
             <div className={cn("flex-1 max-w-sm hidden lg:block", location.pathname === "/" && "lg:hidden")}>
               <form onSubmit={handleSearch} className="relative group">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-light group-focus-within:text-brand-accent transition-colors pointer-events-none" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-brand-primary transition-all pointer-events-none z-10" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Rechercher un label, une société..."
-                  className="w-full bg-slate-100/50 border-transparent focus:bg-white focus:ring-2 focus:ring-brand-accent/20 focus:border-brand-accent rounded-full pl-10 pr-4 py-2 text-sm transition-all outline-none"
+                  className="w-full bg-white/40 backdrop-blur-md border border-white/20 focus:bg-white focus:ring-4 focus:ring-brand-primary/5 focus:border-brand-primary/20 rounded-2xl pl-11 pr-4 py-2.5 text-sm transition-all outline-none shadow-sm group-hover:bg-white/60 font-medium"
                 />
                 {isSearching && (
-                  <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-brand-accent" />
+                  <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-brand-primary" />
                 )}
               </form>
             </div>
@@ -274,12 +297,6 @@ const Layout = () => {
               )}
 
               <UserMenu />
-
-              <Link to="/directory" className="hidden lg:block">
-                <Button variant="primary" size="sm" className="rounded-full">
-                  Consulter l'annuaire
-                </Button>
-              </Link>
 
               {/* Mobile Menu Toggle */}
               <button
@@ -537,6 +554,9 @@ const Layout = () => {
 
       {/* Main Content Area */}
       <main className="flex-1 pt-[112px] sm:pt-[124px]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AdBanner position="top" />
+        </div>
         <Outlet />
       </main>
 

@@ -4,12 +4,10 @@ import api from "../../services/api";
 import {
     Plus,
     Trash2,
-    FileText,
-    Image as ImageIcon,
-    Link as LinkIcon,
     Calendar,
     XCircle,
     Loader2,
+    Search,
     ExternalLink
 } from "lucide-react";
 import { Button } from "../../components/ui/Button";
@@ -18,6 +16,7 @@ import { Badge } from "../../components/ui/Badge";
 import { toast } from "react-hot-toast";
 import { resolveImageUrl } from "../../lib/image";
 import { cn } from "../../lib/utils";
+import { FileUpload } from "../../components/ui/FileUpload";
 
 interface MonthlyReview {
     _id: string;
@@ -32,6 +31,8 @@ interface MonthlyReview {
 const ReviewAdmin = () => {
     const queryClient = useQueryClient();
     const [isFormOpen, setIsFormOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [filterFeatured, setFilterFeatured] = useState<string>("all");
     const [formData, setFormData] = useState({
         title: "",
         coverImageUrl: "",
@@ -117,34 +118,20 @@ const ReviewAdmin = () => {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-4">URL de la Couverture (JPG/PNG)</label>
-                                    <div className="relative">
-                                        <ImageIcon className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                        <input
-                                            required
-                                            type="text"
-                                            placeholder="https://source.unsplash.com/..."
-                                            className="w-full bg-slate-50 border-none rounded-2xl pl-14 pr-6 py-4 text-sm font-bold focus:ring-2 focus:ring-brand-primary/20 transition-all outline-none"
-                                            value={formData.coverImageUrl}
-                                            onChange={e => setFormData({ ...formData, coverImageUrl: e.target.value })}
-                                        />
-                                    </div>
+                                    <FileUpload
+                                        label="Image de la Couverture (JPG/PNG)"
+                                        defaultValue={formData.coverImageUrl}
+                                        onUploadSuccess={(url) => setFormData({ ...formData, coverImageUrl: url })}
+                                    />
                                 </div>
                             </div>
                             <div className="space-y-6">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-4">URL du Document (PDF)</label>
-                                    <div className="relative">
-                                        <LinkIcon className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                        <input
-                                            required
-                                            type="text"
-                                            placeholder="https://drive.google.com/..."
-                                            className="w-full bg-slate-50 border-none rounded-2xl pl-14 pr-6 py-4 text-sm font-bold focus:ring-2 focus:ring-brand-primary/20 transition-all outline-none"
-                                            value={formData.pdfUrl}
-                                            onChange={e => setFormData({ ...formData, pdfUrl: e.target.value })}
-                                        />
-                                    </div>
+                                    <FileUpload
+                                        label="Document de la Revue (PDF)"
+                                        defaultValue={formData.pdfUrl}
+                                        onUploadSuccess={(url) => setFormData({ ...formData, pdfUrl: url })}
+                                    />
                                 </div>
                                 <div className="grid grid-cols-2 gap-6">
                                     <div className="space-y-2">
@@ -185,19 +172,51 @@ const ReviewAdmin = () => {
                 </Card>
             )}
 
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+                <div className="flex-1 w-full max-w-md relative">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <input
+                        type="text"
+                        placeholder="Rechercher une édition..."
+                        className="w-full bg-white border border-slate-200 rounded-2xl pl-12 pr-4 py-3 text-sm font-bold focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all shadow-sm"
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                    />
+                </div>
+                <div className="flex items-center gap-2">
+                    <select
+                        value={filterFeatured}
+                        onChange={e => setFilterFeatured(e.target.value)}
+                        className="bg-white border border-slate-200 rounded-2xl px-4 py-3 text-[10px] font-black uppercase tracking-widest outline-none focus:ring-2 focus:ring-brand-primary/20 shadow-sm"
+                    >
+                        <option value="all">Toutes éditions</option>
+                        <option value="featured">Premium uniquement</option>
+                        <option value="standard">Standard uniquement</option>
+                    </select>
+                </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {isLoading ? (
                     Array.from({ length: 3 }).map((_, i) => (
                         <Card key={i} className="rounded-[2.5rem] bg-slate-50 border-none h-64 animate-pulse" />
                     ))
-                ) : !reviews || reviews.length === 0 ? (
+                ) : reviews.filter((r: MonthlyReview) => {
+                    const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
+                    const matchesFeatured = filterFeatured === "all" || (filterFeatured === "featured" ? r.featured : !r.featured);
+                    return matchesSearch && matchesFeatured;
+                }).length === 0 ? (
                     <div className="col-span-full py-40 text-center rounded-[3rem] border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center">
-                        <FileText className="w-16 h-16 text-slate-200 mb-6" />
-                        <h3 className="text-xl font-bold text-slate-400">Aucune publication</h3>
-                        <p className="text-sm text-slate-400 mt-2">Commencez par ajouter votre première revue mensuelle.</p>
+                        <XCircle className="w-16 h-16 text-slate-200 mb-6" />
+                        <h3 className="text-xl font-bold text-slate-400">Aucun résultat</h3>
+                        <p className="text-sm text-slate-400 mt-2">Essayez d'autres critères de recherche.</p>
                     </div>
                 ) : (
-                    reviews.map((review: MonthlyReview) => (
+                    reviews.filter((r: MonthlyReview) => {
+                        const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
+                        const matchesFeatured = filterFeatured === "all" || (filterFeatured === "featured" ? r.featured : !r.featured);
+                        return matchesSearch && matchesFeatured;
+                    }).map((review: MonthlyReview) => (
                         <Card key={review._id} className="rounded-[2.5rem] border-slate-100 shadow-xl overflow-hidden group hover:shadow-2xl transition-all duration-500 bg-white border border-slate-50 hover:-translate-y-2">
                             <div className="relative aspect-[4/3] overflow-hidden">
                                 <img src={resolveImageUrl(review.coverImageUrl)} alt={review.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
@@ -225,9 +244,9 @@ const ReviewAdmin = () => {
                                     </a>
                                     <button
                                         onClick={() => { if (window.confirm('Supprimer cette publication ?')) deleteMutation.mutate(review._id); }}
-                                        className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white hover:border-rose-600 transition-all text-[10px] font-bold uppercase tracking-wider"
                                     >
-                                        <Trash2 className="w-4 h-4" />
+                                        <Trash2 className="w-3.5 h-3.5" /> Supprimer
                                     </button>
                                 </div>
                             </CardContent>

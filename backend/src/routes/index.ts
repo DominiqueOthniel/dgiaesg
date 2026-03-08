@@ -12,6 +12,7 @@ import reviewRoutes from "./review.routes";
 import newsletterRoutes from "./newsletter.routes";
 import userRoutes from "./user.routes";
 import multimediaRoutes from "./multimedia.routes";
+import adRouter from "./ad.routes";
 
 const router = Router();
 
@@ -36,5 +37,6 @@ router.use("/reviews", reviewRoutes);
 router.use("/newsletter", newsletterRoutes);
 router.use("/users", userRoutes);
 router.use("/multimedia", multimediaRoutes);
+router.use("/ads", adRouter);
 
 export default router;

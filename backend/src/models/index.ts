@@ -8,6 +8,7 @@ export { default as BreakingNews } from "./BreakingNews";
 export { default as MonthlyReview } from "./MonthlyReview";
 export { default as Multimedia } from "./Multimedia";
 export { default as NewsletterSubscription } from "./NewsletterSubscription";
+export { default as Ad } from "./Ad";
 
 export type { ILabelDocument } from "./Label";
 export type { ICompanyDocument } from "./Company";

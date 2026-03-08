@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Plus,
     Search,
@@ -9,7 +9,6 @@ import {
     XCircle,
     Loader2,
     ExternalLink,
-    ChevronRight,
     Download,
     RefreshCcw,
     Building2,
@@ -24,7 +23,7 @@ import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { toast } from 'react-hot-toast';
 import { Modal } from '../../components/Modal';
-import { CompanyForm } from '../../components/CompanyForm';
+import { CompanyForm, type CompanyFormData } from '../../components/CompanyForm';
 import api from '../../services/api';
 import { cn } from '../../lib/utils';
 import { resolveImageUrl } from '../../lib/image';
@@ -40,7 +39,7 @@ const CompaniesAdmin = () => {
     const [showDeleted, setShowDeleted] = useState(false);
     const queryClient = useQueryClient();
 
-    const { data: companiesData, isLoading, refetch } = useCompanies({
+    const { data: companiesData, isLoading } = useCompanies({
         search: searchTerm,
         labelId: labelFilter,
         page,
@@ -52,6 +51,13 @@ const CompaniesAdmin = () => {
     const companies = companiesData?.data || [];
     const pagination = companiesData?.pagination;
 
+    // Scroll to top when page changes
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        const mainEl = document.querySelector('main');
+        if (mainEl) mainEl.scrollTop = 0;
+    }, [page]);
+
     const handleCreateCompany = () => {
         setEditingCompany(null);
         setIsModalOpen(true);
@@ -62,7 +68,7 @@ const CompaniesAdmin = () => {
         setIsModalOpen(true);
     };
 
-    const handleFormSubmit = async (data: any) => {
+    const handleFormSubmit = async (data: CompanyFormData) => {
         setIsSubmitting(true);
         try {
             if (editingCompany) {
@@ -73,8 +79,7 @@ const CompaniesAdmin = () => {
                 toast.success('Nouvelle entité certifiée');
             }
             setIsModalOpen(false);
-            queryClient.invalidateQueries({ queryKey: ['companies'] });
-            refetch();
+            await queryClient.invalidateQueries({ queryKey: ['companies'] });
         } catch (error: any) {
             toast.error(error.response?.data?.message || 'Erreur lors de l\'opération');
         } finally {
@@ -87,8 +92,7 @@ const CompaniesAdmin = () => {
         try {
             await api.delete(`/companies/${id}`);
             toast.success('Entité archivée');
-            queryClient.invalidateQueries({ queryKey: ['companies'] });
-            refetch();
+            await queryClient.invalidateQueries({ queryKey: ['companies'] });
         } catch (error: any) {
             toast.error('Erreur lors de l\'archivage');
         }
@@ -98,8 +102,7 @@ const CompaniesAdmin = () => {
         try {
             await api.put(`/companies/${id}/restore`);
             toast.success('Entité restaurée');
-            queryClient.invalidateQueries({ queryKey: ['companies'] });
-            refetch();
+            await queryClient.invalidateQueries({ queryKey: ['companies'] });
         } catch (error: any) {
             toast.error('Erreur lors de la restauration');
         }
@@ -158,7 +161,7 @@ const CompaniesAdmin = () => {
                 </div>
             </div>
 
-            {/* Query & Matrix Matrix */}
+            {/* Query & Filter */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div className="lg:col-span-5 relative group">
                     <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-brand-primary transition-colors" />
@@ -293,36 +296,32 @@ const CompaniesAdmin = () => {
                                             )}
                                         </td>
                                         <td className="px-10 py-8 text-right">
-                                            <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0">
+                                            <div className="flex items-center justify-end gap-2">
                                                 {company.deletedAt ? (
-                                                    <Button
+                                                    <button
                                                         onClick={() => handleRestoreCompany(company._id)}
-                                                        className="w-10 h-10 p-0 rounded-xl border border-blue-100 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm"
-                                                        title="Restaurer"
+                                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all text-[10px] font-bold uppercase tracking-wider"
                                                     >
-                                                        <RefreshCcw className="w-4 h-4" />
-                                                    </Button>
+                                                        <RefreshCcw className="w-3.5 h-3.5" /> Restaurer
+                                                    </button>
                                                 ) : (
                                                     <>
-                                                        <Button
+                                                        <button
                                                             onClick={() => handleEditCompany(company)}
-                                                            className="w-10 h-10 p-0 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-brand-primary hover:text-white hover:border-brand-primary transition-all shadow-sm"
+                                                            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-brand-primary hover:text-white hover:border-brand-primary transition-all text-[10px] font-bold uppercase tracking-wider"
                                                             title="Modifier"
                                                         >
-                                                            <Edit2 className="w-4 h-4" />
-                                                        </Button>
-                                                        <Button
+                                                            <Edit2 className="w-3.5 h-3.5" /> Modifier
+                                                        </button>
+                                                        <button
                                                             onClick={() => handleDeleteCompany(company._id)}
-                                                            className="w-10 h-10 p-0 rounded-xl border border-rose-100 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition-all shadow-sm"
+                                                            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white hover:border-rose-600 transition-all text-[10px] font-bold uppercase tracking-wider"
                                                             title="Archiver"
                                                         >
-                                                            <Trash2 className="w-4 h-4" />
-                                                        </Button>
+                                                            <Trash2 className="w-3.5 h-3.5" /> Archiver
+                                                        </button>
                                                     </>
                                                 )}
-                                                <Button className="w-10 h-10 p-0 rounded-xl border border-slate-200 bg-white text-slate-400 hover:bg-slate-50 transition-all shadow-sm">
-                                                    <ChevronRight className="w-4 h-4" />
-                                                </Button>
                                             </div>
                                         </td>
                                     </tr>
@@ -371,7 +370,7 @@ const CompaniesAdmin = () => {
                     <CompanyForm
                         initialData={editingCompany}
                         labels={labels || []}
-                        onSubmit={handleFormSubmit}
+                        onSubmit={handleFormSubmit as any}
                         isLoading={isSubmitting}
                     />
                 </div>

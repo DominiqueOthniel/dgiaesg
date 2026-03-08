@@ -12,6 +12,9 @@ export interface IUserDocument extends Document {
   savedArticles: mongoose.Types.ObjectId[];
   savedLabels: mongoose.Types.ObjectId[];
   interests: string[];
+  isPro: boolean;
+  subscriptionId?: string;
+  proExpiry?: Date;
   comparePassword(password: string): Promise<boolean>;
 }
 
@@ -68,6 +71,18 @@ const userSchema = new Schema<IUserDocument>(
         enum: ["finance", "governance", "tech", "energy", "leadership", "esg", "csr"],
       },
     ],
+    isPro: {
+      type: Boolean,
+      default: false,
+    },
+    subscriptionId: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+    proExpiry: {
+      type: Date,
+    },
   },
   {
     timestamps: true,

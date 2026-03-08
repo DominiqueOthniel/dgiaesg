@@ -1,11 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Plus,
     Edit2,
     Trash2,
     Newspaper,
     User,
-    MoreVertical,
     Search,
     RefreshCcw,
     Filter,
@@ -32,7 +31,7 @@ const NewsAdmin = () => {
     const [showDeleted, setShowDeleted] = useState(false);
     const queryClient = useQueryClient();
 
-    const { data: newsData, isLoading, refetch } = useNews({
+    const { data: newsData, isLoading } = useNews({
         page,
         limit: 10,
         search: searchTerm,
@@ -41,6 +40,13 @@ const NewsAdmin = () => {
     });
     const news = newsData?.data || [];
     const pagination = newsData?.pagination;
+
+    // Scroll to top when page changes
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        const mainEl = document.querySelector('main');
+        if (mainEl) mainEl.scrollTop = 0;
+    }, [page]);
 
     const handleCreateNews = () => {
         setEditingArticle(null);
@@ -63,8 +69,7 @@ const NewsAdmin = () => {
                 toast.success('Signal publié sur le réseau');
             }
             setIsModalOpen(false);
-            queryClient.invalidateQueries({ queryKey: ['news'] });
-            refetch();
+            await queryClient.invalidateQueries({ queryKey: ['news'] });
         } catch (error: any) {
             toast.error(error.response?.data?.message || 'Erreur lors de la diffusion');
         } finally {
@@ -77,8 +82,7 @@ const NewsAdmin = () => {
         try {
             await api.delete(`/news/${id}`);
             toast.success('Communiqué archivé');
-            queryClient.invalidateQueries({ queryKey: ['news'] });
-            refetch();
+            await queryClient.invalidateQueries({ queryKey: ['news'] });
         } catch (error) {
             toast.error('Échec de l\'archivage');
         }
@@ -88,8 +92,7 @@ const NewsAdmin = () => {
         try {
             await api.put(`/news/${id}/restore`);
             toast.success('Signal restauré');
-            queryClient.invalidateQueries({ queryKey: ['news'] });
-            refetch();
+            await queryClient.invalidateQueries({ queryKey: ['news'] });
         } catch (error) {
             toast.error('Échec de la restauration');
         }
@@ -216,34 +219,31 @@ const NewsAdmin = () => {
                                 <div className="flex items-center justify-between pt-6 border-t border-slate-100 mt-auto">
                                     <div className="flex gap-2">
                                         {item.deletedAt ? (
-                                            <Button
+                                            <button
                                                 onClick={() => handleRestoreNews(item._id)}
-                                                className="h-10 px-6 rounded-xl border border-blue-100 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all text-[9px] font-bold uppercase tracking-widest flex items-center gap-2"
+                                                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all text-[10px] font-bold uppercase tracking-wider"
                                             >
-                                                <RefreshCcw className="w-3 h-3" /> Restaurer
-                                            </Button>
+                                                <RefreshCcw className="w-3.5 h-3.5" /> Restaurer
+                                            </button>
                                         ) : (
                                             <>
-                                                <Button
+                                                <button
                                                     onClick={() => handleEditNews(item)}
-                                                    className="w-10 h-10 p-0 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-brand-primary hover:text-white transition-all shadow-sm"
+                                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-brand-primary hover:text-white hover:border-brand-primary transition-all text-[10px] font-bold uppercase tracking-wider"
                                                     title="Modifier"
                                                 >
-                                                    <Edit2 className="w-4 h-4" />
-                                                </Button>
-                                                <Button
+                                                    <Edit2 className="w-3.5 h-3.5" /> Modifier
+                                                </button>
+                                                <button
                                                     onClick={() => handleDeleteNews(item._id)}
-                                                    className="w-10 h-10 p-0 rounded-xl border border-rose-100 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition-all shadow-sm"
+                                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white hover:border-rose-600 transition-all text-[10px] font-bold uppercase tracking-wider"
                                                     title="Archiver"
                                                 >
-                                                    <Trash2 className="w-4 h-4" />
-                                                </Button>
+                                                    <Trash2 className="w-3.5 h-3.5" /> Archiver
+                                                </button>
                                             </>
                                         )}
                                     </div>
-                                    <Button className="w-10 h-10 p-0 rounded-xl border border-slate-200 bg-white text-slate-400 hover:bg-slate-50 transition-all shadow-sm">
-                                        <MoreVertical className="w-4 h-4" />
-                                    </Button>
                                 </div>
                             </CardContent>
                         </Card>

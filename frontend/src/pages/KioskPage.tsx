@@ -5,6 +5,10 @@ import api from "../services/api";
 import { resolveImageUrl } from "../lib/image";
 import { Button } from "../components/ui/Button";
 import { Card, CardContent } from "../components/ui/Card";
+import { useAuth } from "../context/AuthContext";
+import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { BackButton } from "../components/ui/BackButton";
 
 interface MonthlyReview {
     _id: string;
@@ -19,6 +23,8 @@ function KioskPage() {
     const [reviews, setReviews] = useState<MonthlyReview[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
+    const { user, isAuthenticated } = useAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchReviews = async () => {
@@ -48,6 +54,7 @@ function KioskPage() {
             <section className="bg-brand-secondary pt-32 pb-20 relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5" />
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
+                    <BackButton />
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                         <div className="max-w-2xl text-center md:text-left">
                             <motion.div
@@ -129,16 +136,24 @@ function KioskPage() {
                                                 </div>
                                             )}
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-8">
-                                                <a
-                                                    href={review.pdfUrl}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="w-full"
+                                                <Button
+                                                    onClick={() => {
+                                                        if (!isAuthenticated) {
+                                                            toast.error("Veuillez vous connecter pour accéder aux revues");
+                                                            navigate("/login");
+                                                            return;
+                                                        }
+                                                        if (!user?.isPro) {
+                                                            toast.error("Cet accès est réservé aux membres PRO");
+                                                            navigate("/pricing");
+                                                            return;
+                                                        }
+                                                        window.open(review.pdfUrl, '_blank');
+                                                    }}
+                                                    className="w-full rounded-2xl bg-white text-slate-900 hover:bg-brand-accent hover:text-white transition-all font-bold text-[10px] uppercase tracking-widest h-12"
                                                 >
-                                                    <Button className="w-full rounded-2xl bg-white text-slate-900 hover:bg-brand-accent hover:text-white transition-all font-bold text-[10px] uppercase tracking-widest h-12">
-                                                        Consulter le PDF
-                                                    </Button>
-                                                </a>
+                                                    Consulter le PDF
+                                                </Button>
                                             </div>
                                         </div>
                                         <CardContent className="p-8">

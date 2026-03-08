@@ -54,6 +54,7 @@ export interface INews {
   sector?: string;
   readingTime?: string;
   published: boolean;
+  premium: boolean;
   publishedAt: string | null;
   deletedAt?: string;
   createdAt: string;
@@ -90,6 +91,9 @@ export interface IUser {
   email: string;
   role: "admin" | "editor" | "viewer";
   savedArticles: string[];
+  isPro?: boolean;
+  subscriptionId?: string;
+  proExpiry?: string;
   createdAt: string;
   updatedAt: string;
 }

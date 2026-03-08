@@ -63,4 +63,97 @@ router.get("/saved-items", getSavedItems);
 // Keep old route for compatibility if frontend uses it
 router.get("/saved-articles", getSavedItems);
 
+// Admin Routes
+import { authorize } from "../middleware/authMiddleware";
+import { getUsers, updateUserSubscription } from "../controllers/user.controller";
+
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     summary: List all registered users (Admin only)
+ *     tags: [Users]
+ *     security: [{bearerAuth: []}]
+ *     responses:
+ *       200:
+ *         description: Array of user objects
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                       username:
+ *                         type: string
+ *                       email:
+ *                         type: string
+ *                       role:
+ *                         type: string
+ *                         enum: [user, admin]
+ *                       isPro:
+ *                         type: boolean
+ *                       subscriptionPlan:
+ *                         type: string
+ *                         enum: [free, starter, professional, enterprise]
+ *                       subscriptionExpiry:
+ *                         type: string
+ *                         format: date-time
+ *       401:
+ *         description: Not authenticated
+ *       403:
+ *         description: Not authorized (admin only)
+ */
+router.get("/", authorize("admin"), getUsers);
+
+/**
+ * @swagger
+ * /users/{id}/subscription:
+ *   put:
+ *     summary: Update a user's subscription plan (Admin only)
+ *     tags: [Users]
+ *     security: [{bearerAuth: []}]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               isPro:
+ *                 type: boolean
+ *                 description: PRO status toggle
+ *               subscriptionPlan:
+ *                 type: string
+ *                 enum: [free, starter, professional, enterprise]
+ *               subscriptionExpiry:
+ *                 type: string
+ *                 format: date-time
+ *                 description: When the subscription expires
+ *     responses:
+ *       200:
+ *         description: Subscription updated
+ *       404:
+ *         description: User not found
+ *       401:
+ *         description: Not authenticated
+ *       403:
+ *         description: Not authorized (admin only)
+ */
+router.put("/:id/subscription", authorize("admin"), updateUserSubscription);
+
 export default router;

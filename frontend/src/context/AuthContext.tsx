@@ -9,6 +9,9 @@ interface User {
     role: 'admin' | 'editor' | 'viewer';
     savedArticles: string[];
     savedLabels: string[];
+    isPro: boolean;
+    subscriptionId?: string;
+    proExpiry?: string;
 }
 
 interface AuthContextType {
@@ -42,7 +45,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 email: userData.email,
                 role: userData.role,
                 savedArticles: userData.savedArticles || [],
-                savedLabels: userData.savedLabels || []
+                savedLabels: userData.savedLabels || [],
+                isPro: userData.isPro || false,
+                subscriptionId: userData.subscriptionId,
+                proExpiry: userData.proExpiry
             });
         } catch (error: any) {
             // 401 is expected when token expires — silently log out

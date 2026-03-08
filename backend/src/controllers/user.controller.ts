@@ -113,6 +113,40 @@ export const getSavedItems = asyncHandler(async (req: Request, res: Response) =>
         data: {
             articles: user.savedArticles,
             labels: user.savedLabels
-        },
+        }
+    });
+});
+
+// GET /api/users - Admin: List all users
+export const getUsers = asyncHandler(async (_req: Request, res: Response) => {
+    const users = await User.find().select("-password").sort("-createdAt");
+    res.json({
+        success: true,
+        data: users
+    });
+});
+
+// PUT /api/users/:id/subscription - Admin: Update user subscription
+export const updateUserSubscription = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { isPro, proExpiry } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id as string)) {
+        throw new AppError("Invalid user ID", 400);
+    }
+
+    const user = await User.findByIdAndUpdate(
+        id,
+        { isPro, proExpiry },
+        { new: true, runValidators: true }
+    ).select("-password");
+
+    if (!user) {
+        throw new AppError("User not found", 404);
+    }
+
+    res.json({
+        success: true,
+        data: user
     });
 });

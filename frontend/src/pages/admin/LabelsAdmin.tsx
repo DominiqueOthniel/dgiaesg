@@ -4,7 +4,6 @@ import {
     Search,
     Edit2,
     Trash2,
-    MoreVertical,
     Award,
     RefreshCcw,
     Download
@@ -27,7 +26,7 @@ const LabelsAdmin = () => {
     const [editingLabel, setEditingLabel] = useState<any>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showDeleted, setShowDeleted] = useState(false);
-    const { data: labels, isLoading, refetch } = useLabels(showDeleted);
+    const { data: labels, isLoading } = useLabels(showDeleted);
     const queryClient = useQueryClient();
 
     const handleCreateLabel = () => {
@@ -51,8 +50,7 @@ const LabelsAdmin = () => {
                 toast.success('Nouveau protocole initialisé');
             }
             setIsModalOpen(false);
-            queryClient.invalidateQueries({ queryKey: ['labels'] });
-            refetch();
+            await queryClient.invalidateQueries({ queryKey: ['labels'] });
         } catch (error: any) {
             toast.error(error.response?.data?.message || 'Erreur lors de l\'opération');
         } finally {
@@ -65,8 +63,7 @@ const LabelsAdmin = () => {
         try {
             await api.delete(`/labels/${id}`);
             toast.success('Protocole archivé');
-            queryClient.invalidateQueries({ queryKey: ['labels'] });
-            refetch();
+            await queryClient.invalidateQueries({ queryKey: ['labels'] });
         } catch (error: any) {
             toast.error(error.response?.data?.message || 'Erreur lors de l\'archivage');
         }
@@ -76,8 +73,7 @@ const LabelsAdmin = () => {
         try {
             await api.put(`/labels/${id}/restore`);
             toast.success('Protocole restauré');
-            queryClient.invalidateQueries({ queryKey: ['labels'] });
-            refetch();
+            await queryClient.invalidateQueries({ queryKey: ['labels'] });
         } catch (error: any) {
             toast.error('Erreur lors de la restauration');
         }
@@ -221,37 +217,33 @@ const LabelsAdmin = () => {
                                                 <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{new Date(label.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                             </div>
                                         </td>
-                                        <td className="px-10 py-8">
-                                            <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0">
+                                        <td className="px-10 py-8 text-right">
+                                            <div className="flex items-center justify-end gap-2">
                                                 {label.deletedAt ? (
-                                                    <Button
+                                                    <button
                                                         onClick={() => handleRestoreLabel(label._id)}
-                                                        className="w-10 h-10 p-0 rounded-xl border border-blue-100 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm"
-                                                        title="Restaurer"
+                                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all text-[10px] font-bold uppercase tracking-wider"
                                                     >
-                                                        <RefreshCcw className="w-4 h-4" />
-                                                    </Button>
+                                                        <RefreshCcw className="w-3.5 h-3.5" /> Restaurer
+                                                    </button>
                                                 ) : (
                                                     <>
-                                                        <Button
+                                                        <button
                                                             onClick={() => handleEditLabel(label)}
-                                                            className="w-10 h-10 p-0 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-brand-primary hover:text-white hover:border-brand-primary transition-all shadow-sm"
+                                                            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-brand-primary hover:text-white hover:border-brand-primary transition-all text-[10px] font-bold uppercase tracking-wider"
                                                             title="Modifier"
                                                         >
-                                                            <Edit2 className="w-4 h-4" />
-                                                        </Button>
-                                                        <Button
+                                                            <Edit2 className="w-3.5 h-3.5" /> Modifier
+                                                        </button>
+                                                        <button
                                                             onClick={() => handleDeleteLabel(label._id)}
-                                                            className="w-10 h-10 p-0 rounded-xl border border-rose-100 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition-all shadow-sm"
+                                                            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white hover:border-rose-600 transition-all text-[10px] font-bold uppercase tracking-wider"
                                                             title="Archiver"
                                                         >
-                                                            <Trash2 className="w-4 h-4" />
-                                                        </Button>
+                                                            <Trash2 className="w-3.5 h-3.5" /> Archiver
+                                                        </button>
                                                     </>
                                                 )}
-                                                <Button className="w-10 h-10 p-0 rounded-xl border border-slate-200 bg-white text-slate-400 hover:bg-slate-50 transition-all shadow-sm">
-                                                    <MoreVertical className="w-4 h-4" />
-                                                </Button>
                                             </div>
                                         </td>
                                     </tr>

@@ -22,6 +22,7 @@ const ResetPasswordPage = lazy(() => import("./pages/ResetPasswordPage"));
 const SavedArticles = lazy(() => import("./pages/SavedArticles"));
 const KioskPage = lazy(() => import("./pages/KioskPage"));
 const MultimediaPage = lazy(() => import("./pages/MultimediaPage"));
+const PricingPage = lazy(() => import("./pages/PricingPage"));
 
 import AdminRoute from "./components/AdminRoute";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -36,6 +37,8 @@ const NewsAdmin = lazy(() => import("./pages/admin/NewsAdmin"));
 const BreakingNewsAdmin = lazy(() => import("./pages/admin/BreakingNewsAdmin"));
 const ReviewAdmin = lazy(() => import("./pages/admin/ReviewAdmin"));
 const MultimediaAdmin = lazy(() => import("./pages/admin/MultimediaAdmin"));
+const AdAdmin = lazy(() => import("@/pages/admin/AdAdmin"));
+const SubscriptionAdmin = lazy(() => import("@/pages/admin/SubscriptionAdmin"));
 
 const LoadingPage = () => (
   <div className="min-h-screen bg-white flex items-center justify-center">
@@ -63,6 +66,7 @@ function App() {
           <Route path="news/sector/:sector" element={<SectorPage />} />
           <Route path="kiosk" element={<KioskPage />} />
           <Route path="multimedia" element={<MultimediaPage />} />
+          <Route path="pricing" element={<PricingPage />} />
 
           <Route element={<ProtectedRoute />}>
             <Route path="profile" element={<ProfilePage />} />
@@ -80,6 +84,8 @@ function App() {
             <Route path="breaking" element={<BreakingNewsAdmin />} />
             <Route path="reviews" element={<ReviewAdmin />} />
             <Route path="multimedia" element={<MultimediaAdmin />} />
+            <Route path="ads" element={<AdAdmin />} />
+            <Route path="subscriptions" element={<SubscriptionAdmin />} />
           </Route>
         </Route>
 

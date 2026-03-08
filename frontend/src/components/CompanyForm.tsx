@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useEffect } from 'react';
 import { Button } from './ui/Button';
 import { Loader2 } from 'lucide-react';
 import { cn } from '../lib/utils';
@@ -17,18 +18,40 @@ const companySchema = z.object({
     certificationDate: z.string().min(1, 'Date requise'),
     expiryDate: z.string().min(1, 'Date requise'),
     status: z.enum(['certified', 'pending', 'expired']),
-    socialScore: z.number().min(0).max(100).optional().default(0),
-    governanceScore: z.number().min(0).max(100).optional().default(0),
+    socialScore: z.coerce.number().min(0).max(100),
+    governanceScore: z.coerce.number().min(0).max(100),
 });
 
-type CompanyFormData = z.infer<typeof companySchema>;
+export type CompanyFormData = z.infer<typeof companySchema>;
 
 interface CompanyFormProps {
     initialData?: any;
     labels: any[];
-    onSubmit: (data: CompanyFormData) => void;
+    onSubmit: (data: any) => void;
     isLoading?: boolean;
 }
+
+const buildDefaults = (data?: any): CompanyFormData => {
+    if (!data) return {
+        name: '', description: '', sector: '', region: '', website: '', logoUrl: '',
+        labelId: '', certificationDate: '', expiryDate: '', status: 'pending',
+        socialScore: 0, governanceScore: 0,
+    };
+    return {
+        name: data.name || '',
+        description: data.description || '',
+        sector: data.sector || '',
+        region: data.region || '',
+        website: data.website || '',
+        logoUrl: data.logoUrl || '',
+        labelId: typeof data.labelId === 'object' ? data.labelId._id : (data.labelId || ''),
+        certificationDate: data.certificationDate ? new Date(data.certificationDate).toISOString().split('T')[0] : '',
+        expiryDate: data.expiryDate ? new Date(data.expiryDate).toISOString().split('T')[0] : '',
+        status: data.status || 'pending',
+        socialScore: data.socialScore ?? 0,
+        governanceScore: data.governanceScore ?? 0,
+    };
+};
 
 export const CompanyForm = ({ initialData, labels, onSubmit, isLoading }: CompanyFormProps) => {
     const {
@@ -36,37 +59,17 @@ export const CompanyForm = ({ initialData, labels, onSubmit, isLoading }: Compan
         handleSubmit,
         setValue,
         watch,
+        reset,
         formState: { errors }
     } = useForm<CompanyFormData>({
-        resolver: zodResolver(companySchema),
-        defaultValues: initialData ? {
-            name: initialData.name || '',
-            description: initialData.description || '',
-            sector: initialData.sector || '',
-            region: initialData.region || '',
-            website: initialData.website || '',
-            logoUrl: initialData.logoUrl || '',
-            labelId: typeof initialData.labelId === 'object' ? initialData.labelId._id : initialData.labelId,
-            certificationDate: initialData.certificationDate ? new Date(initialData.certificationDate).toISOString().split('T')[0] : '',
-            expiryDate: initialData.expiryDate ? new Date(initialData.expiryDate).toISOString().split('T')[0] : '',
-            status: initialData.status || 'pending',
-            socialScore: initialData.socialScore || 0,
-            governanceScore: initialData.governanceScore || 0,
-        } : {
-            name: '',
-            description: '',
-            sector: '',
-            region: '',
-            website: '',
-            logoUrl: '',
-            labelId: '',
-            certificationDate: '',
-            expiryDate: '',
-            status: 'pending',
-            socialScore: 0,
-            governanceScore: 0,
-        }
+        resolver: zodResolver(companySchema) as any,
+        defaultValues: buildDefaults(initialData),
     });
+
+    // Reset the whole form whenever initialData changes (e.g. open modal for a different company)
+    useEffect(() => {
+        reset(buildDefaults(initialData));
+    }, [initialData, reset]);
 
     const logoUrl = watch('logoUrl');
 
@@ -196,6 +199,8 @@ export const CompanyForm = ({ initialData, labels, onSubmit, isLoading }: Compan
                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic ml-1">Score Social (%)</label>
                         <input
                             type="number"
+                            min={0}
+                            max={100}
                             {...register('socialScore', { valueAsNumber: true })}
                             className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-4 focus:ring-emerald-500/10 transition-all font-medium text-sm"
                         />
@@ -204,6 +209,8 @@ export const CompanyForm = ({ initialData, labels, onSubmit, isLoading }: Compan
                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic ml-1">Gouvernance (%)</label>
                         <input
                             type="number"
+                            min={0}
+                            max={100}
                             {...register('governanceScore', { valueAsNumber: true })}
                             className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-4 focus:ring-emerald-500/10 transition-all font-medium text-sm"
                         />
@@ -227,6 +234,6 @@ export const CompanyForm = ({ initialData, labels, onSubmit, isLoading }: Compan
             <Button type="submit" disabled={isLoading} className="w-full rounded-2xl h-14 shadow-xl shadow-emerald-100 uppercase text-xs font-black tracking-widest italic">
                 {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : initialData ? 'Mettre à jour' : 'Enregistrer Certificat'}
             </Button>
-        </form >
+        </form>
     );
 };

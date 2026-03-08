@@ -13,7 +13,9 @@ import {
     Search,
     Loader2,
     Bell,
-    Play
+    Play,
+    Megaphone,
+    Zap
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/Button';
@@ -91,6 +93,13 @@ const AdminLayout = () => {
                 { name: 'Multimédia TV/Podcast', path: '/admin/multimedia', icon: Play },
                 { name: 'Flash Live', path: '/admin/breaking', icon: ShieldCheck },
                 { name: 'Kiosque Digital', path: '/admin/reviews', icon: FileText },
+            ]
+        },
+        {
+            title: 'Monétisation',
+            items: [
+                { name: 'Gestion Publicité', path: '/admin/ads', icon: Megaphone },
+                { name: 'Abonnements PRO', path: '/admin/subscriptions', icon: Zap },
             ]
         }
     ];

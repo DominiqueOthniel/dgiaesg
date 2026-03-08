@@ -8,10 +8,13 @@ import { Card, CardContent } from "../components/ui/Card";
 import { useState } from "react";
 import { cn } from "../lib/utils";
 import { resolveImageUrl } from "../lib/image";
+import { BackButton } from "../components/ui/BackButton";
+import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import api from "../services/api";
 import { ReviewKiosk } from "../components/ReviewKiosk";
 import { MultimediaSidebar } from "../components/MultimediaSidebar";
+import AdBanner from "../components/AdBanner";
 
 function NewsPage() {
     const [page, setPage] = useState(1);
@@ -19,6 +22,10 @@ function NewsPage() {
     const news = newsData?.data || [];
     const pagination = newsData?.pagination;
     const queryClient = useQueryClient();
+
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [page]);
 
     const prefetchArticle = (slug: string) => {
         queryClient.prefetchQuery({
@@ -39,6 +46,7 @@ function NewsPage() {
                 <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-brand-primary/10 rounded-full blur-[100px] pointer-events-none" />
 
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10 text-center md:text-left">
+                    <BackButton />
                     <div className="max-w-4xl">
                         <motion.div
                             initial={{ opacity: 0, y: 10 }}
@@ -79,70 +87,81 @@ function NewsPage() {
                                     </div>
                                 ) : (
                                     news.map((item, idx) => (
-                                        <motion.article
-                                            key={item._id}
-                                            initial={{ opacity: 0, y: 20 }}
-                                            whileInView={{ opacity: 1, y: 0 }}
-                                            viewport={{ once: true }}
-                                            transition={{ delay: idx * 0.05 }}
-                                            className="group"
-                                            onMouseEnter={() => prefetchArticle(item.slug)}
-                                        >
-                                            <Link to={`/news/${item.slug}`} className="block h-full">
-                                                <Card className="rounded-[2.5rem] border-slate-100 shadow-xl shadow-slate-200/40 hover:shadow-2xl hover:shadow-brand-primary/10 transition-all duration-500 overflow-hidden flex flex-col h-full bg-white group-hover:-translate-y-2">
-                                                    <div className="relative aspect-[16/10] overflow-hidden">
-                                                        {item.imageUrl ? (
-                                                            <img src={resolveImageUrl(item.imageUrl)} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                                                        ) : (
-                                                            <div className="w-full h-full bg-slate-50 flex items-center justify-center text-slate-200">
-                                                                <Newspaper className="w-16 h-16" />
-                                                            </div>
-                                                        )}
-                                                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                                                        <div className="absolute top-6 left-6">
-                                                            <Badge className="rounded-full px-4 py-1.5 bg-brand-primary text-white border-none font-black text-[9px] uppercase tracking-widest shadow-lg italic">
-                                                                {item.sector || 'ACTUALITÉ'}
-                                                            </Badge>
-                                                        </div>
-                                                    </div>
-
-                                                    <CardContent className="p-8 md:p-10 flex flex-col flex-1">
-                                                        <div className="flex items-center gap-4 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6 italic">
-                                                            <span className="flex items-center gap-2">
-                                                                <Calendar className="w-3.5 h-3.5 text-brand-primary" />
-                                                                {item.publishedAt ? new Date(item.publishedAt).toLocaleDateString("fr-FR", { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase() : "RÉCENT"}
-                                                            </span>
-                                                            <div className="w-1 h-1 rounded-full bg-brand-primary" />
-                                                            <span className="text-slate-900 font-black">
-                                                                {item.readingTime || "3 MIN"} READ
-                                                            </span>
-                                                        </div>
-
-                                                        <h3 className="text-2xl font-bold text-brand-secondary mb-6 leading-tight group-hover:text-brand-primary transition-colors">
-                                                            {item?.title}
-                                                        </h3>
-
-                                                        <p className="text-slate-500 font-medium leading-relaxed line-clamp-3 mb-8">
-                                                            {item?.excerpt || (item?.content ? item.content.substring(0, 150).replace(/<[^>]*>/g, '') + "..." : "Consultez l'intégralité de cet article pour découvrir les détails de cette actualité.")}
-                                                        </p>
-
-                                                        <div className="mt-auto pt-8 border-t border-slate-50 flex items-center justify-between">
-                                                            <span className="inline-flex items-center gap-2 text-[10px] font-bold text-brand-primary uppercase tracking-widest group-hover:gap-4 transition-all">
-                                                                Lire l'article <ArrowRight className="w-4 h-4" />
-                                                            </span>
-                                                            <div className="flex items-center gap-3">
-                                                                <button className="p-2 rounded-full hover:bg-slate-50 transition-colors">
-                                                                    <Share2 className="w-4 h-4 text-slate-300" />
-                                                                </button>
-                                                                <button className="p-2 rounded-full hover:bg-slate-50 transition-colors">
-                                                                    <Bookmark className="w-4 h-4 text-slate-300" />
-                                                                </button>
+                                        <div key={item._id}>
+                                            <motion.article
+                                                initial={{ opacity: 0, y: 20 }}
+                                                whileInView={{ opacity: 1, y: 0 }}
+                                                viewport={{ once: true }}
+                                                transition={{ delay: idx * 0.05 }}
+                                                className="group"
+                                                onMouseEnter={() => prefetchArticle(item.slug)}
+                                            >
+                                                <Link to={`/news/${item.slug}`} className="block h-full">
+                                                    <Card className="rounded-[2.5rem] border-slate-100 shadow-xl shadow-slate-200/40 hover:shadow-2xl hover:shadow-brand-primary/10 transition-all duration-500 overflow-hidden flex flex-col h-full bg-white group-hover:-translate-y-2">
+                                                        <div className="relative aspect-[16/10] overflow-hidden">
+                                                            {item.imageUrl ? (
+                                                                <img src={resolveImageUrl(item.imageUrl)} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                                            ) : (
+                                                                <div className="w-full h-full bg-slate-50 flex items-center justify-center text-slate-200">
+                                                                    <Newspaper className="w-16 h-16" />
+                                                                </div>
+                                                            )}
+                                                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                                                            <div className="absolute top-6 left-6 flex flex-col gap-2">
+                                                                <Badge className="rounded-full px-4 py-1.5 bg-brand-primary text-white border-none font-black text-[9px] uppercase tracking-widest shadow-lg italic">
+                                                                    {item.sector || 'ACTUALITÉ'}
+                                                                </Badge>
+                                                                {item.premium && (
+                                                                    <Badge className="rounded-full px-4 py-1.5 bg-brand-secondary text-brand-accent border-none font-black text-[9px] uppercase tracking-widest shadow-lg italic flex items-center gap-1">
+                                                                        <Zap className="w-3 h-3 fill-brand-accent" /> PREMIUM
+                                                                    </Badge>
+                                                                )}
                                                             </div>
                                                         </div>
-                                                    </CardContent>
-                                                </Card>
-                                            </Link>
-                                        </motion.article>
+
+                                                        <CardContent className="p-8 md:p-10 flex flex-col flex-1">
+                                                            <div className="flex items-center gap-4 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6 italic">
+                                                                <span className="flex items-center gap-2">
+                                                                    <Calendar className="w-3.5 h-3.5 text-brand-primary" />
+                                                                    {item.publishedAt ? new Date(item.publishedAt).toLocaleDateString("fr-FR", { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase() : "RÉCENT"}
+                                                                </span>
+                                                                <div className="w-1 h-1 rounded-full bg-brand-primary" />
+                                                                <span className="text-slate-900 font-black">
+                                                                    {item.readingTime || "3 MIN"} READ
+                                                                </span>
+                                                            </div>
+
+                                                            <h3 className="text-2xl font-bold text-brand-secondary mb-6 leading-tight group-hover:text-brand-primary transition-colors">
+                                                                {item?.title}
+                                                            </h3>
+
+                                                            <p className="text-slate-500 font-medium leading-relaxed line-clamp-3 mb-8">
+                                                                {item?.excerpt || (item?.content ? item.content.substring(0, 150).replace(/<[^>]*>/g, '') + "..." : "Consultez l'intégralité de cet article pour découvrir les détails de cette actualité.")}
+                                                            </p>
+
+                                                            <div className="mt-auto pt-8 border-t border-slate-50 flex items-center justify-between">
+                                                                <span className="inline-flex items-center gap-2 text-[10px] font-bold text-brand-primary uppercase tracking-widest group-hover:gap-4 transition-all">
+                                                                    Lire l'article <ArrowRight className="w-4 h-4" />
+                                                                </span>
+                                                                <div className="flex items-center gap-3">
+                                                                    <button className="p-2 rounded-full hover:bg-slate-50 transition-colors">
+                                                                        <Share2 className="w-4 h-4 text-slate-300" />
+                                                                    </button>
+                                                                    <button className="p-2 rounded-full hover:bg-slate-50 transition-colors">
+                                                                        <Bookmark className="w-4 h-4 text-slate-300" />
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </CardContent>
+                                                    </Card>
+                                                </Link>
+                                            </motion.article>
+                                            {idx === 2 && (
+                                                <div className="col-span-1 md:col-span-2 mt-8">
+                                                    <AdBanner position="inline" />
+                                                </div>
+                                            )}
+                                        </div>
                                     ))
                                 )}
                             </div>
@@ -186,6 +205,9 @@ function NewsPage() {
 
                         {/* Sidebar */}
                         <aside className="lg:col-span-4 space-y-12">
+                            {/* Ad Banner Sidebar */}
+                            <AdBanner position="sidebar" className="mb-12" />
+
                             {/* Premium Analysis Widget */}
                             <div className="p-10 rounded-[3rem] bg-slate-900 text-white relative overflow-hidden group">
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-brand-primary/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-brand-primary/30 transition-colors" />

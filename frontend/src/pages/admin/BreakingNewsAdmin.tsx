@@ -7,6 +7,8 @@ import {
     Save,
     X,
     Clock,
+    Search,
+    Filter,
     ExternalLink,
 } from "lucide-react";
 import api from "../../services/api";
@@ -26,6 +28,8 @@ interface BreakingNews {
 
 const BreakingNewsAdmin = () => {
     const [items, setItems] = useState<BreakingNews[]>([]);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [filterStatus, setFilterStatus] = useState<string>("all");
     const [isEditing, setIsEditing] = useState<string | null>(null);
     const [formData, setFormData] = useState<Partial<BreakingNews>>({
         title: "",
@@ -89,6 +93,12 @@ const BreakingNewsAdmin = () => {
             toast.error("Échec de la suppression");
         }
     };
+
+    const filteredItems = items.filter(item => {
+        const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesStatus = filterStatus === "all" || (filterStatus === "active" ? item.active : !item.active);
+        return matchesSearch && matchesStatus;
+    });
 
     return (
         <div className="space-y-10 pb-20">
@@ -197,10 +207,32 @@ const BreakingNewsAdmin = () => {
 
                 {/* List Panel */}
                 <div className="lg:col-span-2 space-y-4">
-                    <div className="flex items-center justify-between px-4 mb-2">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-4 px-4 mb-2">
                         <h2 className="text-xs font-black text-brand-primary uppercase tracking-widest">
-                            Messages Récents ({items.length})
+                            Messages Récents ({filteredItems.length})
                         </h2>
+
+                        <div className="flex flex-1 max-w-md items-center gap-2">
+                            <div className="relative flex-1">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                <input
+                                    type="text"
+                                    placeholder="Rechercher..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs font-medium focus:ring-2 focus:ring-brand-primary/10 transition-all outline-none"
+                                />
+                            </div>
+                            <select
+                                value={filterStatus}
+                                onChange={(e) => setFilterStatus(e.target.value)}
+                                className="bg-white border border-slate-200 rounded-xl px-2 py-2 text-[10px] font-bold uppercase tracking-widest outline-none focus:ring-2 focus:ring-brand-primary/10"
+                            >
+                                <option value="all">Tous status</option>
+                                <option value="active">Actifs</option>
+                                <option value="inactive">Désactivés</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div className="space-y-4">
@@ -208,12 +240,12 @@ const BreakingNewsAdmin = () => {
                             Array.from({ length: 3 }).map((_, i) => (
                                 <div key={i} className="h-24 bg-slate-100 animate-pulse rounded-2xl" />
                             ))
-                        ) : items.length === 0 ? (
+                        ) : filteredItems.length === 0 ? (
                             <div className="py-20 text-center opacity-30">
-                                <p className="text-sm font-bold">Aucun flash info en attente.</p>
+                                <p className="text-sm font-bold">Aucun résultat.</p>
                             </div>
                         ) : (
-                            items.map((item) => (
+                            filteredItems.map((item) => (
                                 <div
                                     key={item._id}
                                     className={cn(
@@ -242,18 +274,17 @@ const BreakingNewsAdmin = () => {
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Button
-                                            variant="ghost"
+                                        <button
                                             onClick={() => handleEdit(item)}
-                                            className="w-10 h-10 p-0 rounded-xl hover:bg-brand-primary hover:text-white transition-all"
+                                            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-brand-primary hover:text-white hover:border-brand-primary transition-all text-[10px] font-bold uppercase tracking-wider"
                                         >
-                                            <Edit2 className="w-4 h-4" />
-                                        </Button>
+                                            <Edit2 className="w-3.5 h-3.5" /> Modifier
+                                        </button>
                                         <button
                                             onClick={() => handleDelete(item._id)}
-                                            className="w-10 h-10 flex items-center justify-center rounded-xl bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white transition-all"
+                                            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white hover:border-rose-600 transition-all text-[10px] font-bold uppercase tracking-wider"
                                         >
-                                            <Trash2 className="w-4 h-4" />
+                                            <Trash2 className="w-3.5 h-3.5" /> Supprimer
                                         </button>
                                     </div>
                                 </div>

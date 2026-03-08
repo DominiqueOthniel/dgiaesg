@@ -17,6 +17,7 @@ export const createNewsSchema = z.object({
   sector: z.enum(["finance", "governance", "tech", "energy", "leadership"]).optional(),
   readingTime: z.string().optional(),
   published: z.boolean().optional(),
+  premium: z.boolean().optional(),
   publishedAt: z.string().nullable().optional(),
 });
 

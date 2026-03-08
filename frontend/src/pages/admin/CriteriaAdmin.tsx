@@ -7,7 +7,8 @@ import {
     Dna,
     Scale,
     Layers,
-    ChevronDown
+    ChevronDown,
+    Search
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLabels } from '../../hooks/useLabels';
@@ -24,6 +25,7 @@ import { useQueryClient } from '@tanstack/react-query';
 const CriteriaAdmin = () => {
     const { data: labels } = useLabels();
     const [selectedLabelId, setSelectedLabelId] = useState('');
+    const [searchQuery, setSearchQuery] = useState("");
     const { data: criteria, isLoading, refetch } = useCriteria(selectedLabelId);
     const queryClient = useQueryClient();
 
@@ -130,6 +132,21 @@ const CriteriaAdmin = () => {
                     </div>
                 </div>
 
+                {/* Filter Input */}
+                <div className="flex-1 relative flex items-center p-4 bg-slate-50/50 rounded-2xl group border-2 border-slate-100 focus-within:border-brand-primary/20 focus-within:bg-white focus-within:shadow-lg focus-within:shadow-brand-primary/5 transition-all">
+                    <Search className="w-5 h-5 text-brand-primary/40 mr-4 group-focus-within:text-brand-primary transition-colors" />
+                    <div className="flex-1 flex flex-col">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1 ml-1">Rechercher un critère</span>
+                        <input
+                            type="text"
+                            placeholder="Titre ou catégorie..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full bg-transparent border-none p-0 text-base font-bold text-brand-secondary focus:ring-0 placeholder:text-slate-300"
+                        />
+                    </div>
+                </div>
+
                 <div className="hidden lg:flex items-center px-10 border-x border-slate-100">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary">
@@ -168,21 +185,20 @@ const CriteriaAdmin = () => {
                         <Award className="w-20 h-20 mx-auto mb-8" />
                         <p className="text-sm font-bold uppercase tracking-widest">En attente de sélection de protocole</p>
                     </div>
-                ) : !criteria || criteria.length === 0 ? (
-                    <Card className="rounded-[3rem] border-dashed border-slate-200 py-40 text-center bg-white">
-                        <Plus className="w-16 h-16 mx-auto mb-6 text-slate-200" />
-                        <p className="text-sm font-bold uppercase tracking-widest text-slate-400">Aucun critère paramétré pour ce protocole</p>
-                        <Button
-                            onClick={handleCreateCriteria}
-                            variant="outline"
-                            className="mt-10 rounded-2xl h-14 px-10 border-brand-primary/20 text-brand-primary hover:bg-brand-primary hover:text-white transition-all font-bold uppercase tracking-widest text-[10px]"
-                        >
-                            Initialiser le Premier Critère
-                        </Button>
-                    </Card>
+                ) : criteria?.filter((c: any) =>
+                    c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    c.category.toLowerCase().includes(searchQuery.toLowerCase())
+                ).length === 0 ? (
+                    <div className="py-40 text-center rounded-[3rem] border border-dashed border-slate-200 opacity-30">
+                        <Search className="w-20 h-20 mx-auto mb-8" />
+                        <p className="text-sm font-bold uppercase tracking-widest">Aucun critère ne correspond à votre recherche</p>
+                    </div>
                 ) : (
                     <AnimatePresence mode="popLayout">
-                        {criteria?.map((item, idx) => (
+                        {criteria?.filter((c: any) =>
+                            c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            c.category.toLowerCase().includes(searchQuery.toLowerCase())
+                        ).map((item, idx) => (
                             <motion.div
                                 key={item._id}
                                 initial={{ opacity: 0, y: 20 }}

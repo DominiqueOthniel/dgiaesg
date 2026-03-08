@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
-import { Award, ArrowRight, Search, Filter, ShieldCheck, Tag, ChevronRight } from "lucide-react";
+import { Award, ArrowRight, Search, Filter, ShieldCheck, Tag, ChevronRight, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLabels } from "../hooks/useLabels";
+import { BackButton } from "../components/ui/BackButton";
 import { Card, CardContent } from "../components/ui/Card";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
@@ -13,14 +14,25 @@ function LabelsPage() {
     const { data: labels, isLoading } = useLabels();
     const [searchTerm, setSearchTerm] = useState("");
     const [activeSector, setActiveSector] = useState("Tous");
+    const [activeRegion, setActiveRegion] = useState("Tous");
 
-    const sectors = ["Tous", ...Array.from(new Set(labels?.map(l => l.sector).filter(Boolean) || []))];
+    const sectors = [
+        { value: 'Tous', label: 'Tous les secteurs' },
+        { value: 'finance', label: 'Finance' },
+        { value: 'tech', label: 'Technologie' },
+        { value: 'energy', label: 'Énergie' },
+        { value: 'governance', label: 'Gouvernance' },
+        { value: 'leadership', label: 'Leadership' }
+    ];
+
+    const regions = ["Tous", 'Afrique de l\'Ouest', 'Afrique de l\'Est', 'Afrique Centrale', 'Afrique du Nord', 'Afrique Australe'];
 
     const filteredLabels = labels?.filter(label => {
         const matchesSearch = (label?.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
             (label?.description?.toLowerCase() || "").includes(searchTerm.toLowerCase());
         const matchesSector = activeSector === "Tous" || label?.sector === activeSector;
-        return matchesSearch && matchesSector;
+        const matchesRegion = activeRegion === "Tous" || (label as any)?.region === activeRegion;
+        return matchesSearch && matchesSector && matchesRegion;
     }) || [];
 
     return (
@@ -31,6 +43,7 @@ function LabelsPage() {
                 <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-brand-primary/10 rounded-full blur-3xl" />
 
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
+                    <BackButton />
                     <div className="max-w-3xl">
                         <motion.div
                             initial={{ opacity: 0, y: -10 }}
@@ -65,7 +78,7 @@ function LabelsPage() {
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
                             </div>
-                            <div className="flex items-center gap-4 px-6 border-t lg:border-t-0 lg:border-l border-slate-100 min-w-[240px]">
+                            <div className="flex items-center gap-4 px-6 border-t lg:border-t-0 lg:border-l border-slate-100 min-w-[200px]">
                                 <Filter className="w-4 h-4 text-brand-primary shrink-0" />
                                 <div className="relative flex-1">
                                     <select
@@ -73,9 +86,26 @@ function LabelsPage() {
                                         onChange={(e) => setActiveSector(e.target.value)}
                                         className="w-full bg-transparent border-none text-sm font-bold text-brand-secondary focus:ring-0 cursor-pointer appearance-none pr-8"
                                     >
-                                        <option value="Tous">Tous les secteurs</option>
-                                        {sectors.filter(s => s !== "Tous").map(s => (
-                                            <option key={s} value={s}>{s}</option>
+                                        {sectors.map(s => (
+                                            <option key={s.value} value={s.value}>{s.label}</option>
+                                        ))}
+                                    </select>
+                                    <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none">
+                                        <ChevronRight className="w-4 h-4 text-slate-400 rotate-90" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-4 px-6 border-t lg:border-t-0 lg:border-l border-slate-100 min-w-[200px]">
+                                <Globe className="w-4 h-4 text-brand-primary shrink-0" />
+                                <div className="relative flex-1">
+                                    <select
+                                        value={activeRegion}
+                                        onChange={(e) => setActiveRegion(e.target.value)}
+                                        className="w-full bg-transparent border-none text-sm font-bold text-brand-secondary focus:ring-0 cursor-pointer appearance-none pr-8"
+                                    >
+                                        <option value="Tous">Toutes les régions</option>
+                                        {regions.filter(r => r !== "Tous").map(r => (
+                                            <option key={r} value={r}>{r}</option>
                                         ))}
                                     </select>
                                     <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none">
@@ -104,7 +134,7 @@ function LabelsPage() {
                             </div>
                             <h3 className="text-xl font-bold text-brand-secondary mb-2">Aucun résultat trouvé</h3>
                             <p className="text-slate-500 max-w-xs mx-auto">Nous n'avons trouvé aucun label correspondant à vos critères de recherche.</p>
-                            <Button variant="outline" className="mt-8 rounded-full" onClick={() => { setSearchTerm(""); setActiveSector("Tous"); }}>
+                            <Button variant="outline" className="mt-8 rounded-full" onClick={() => { setSearchTerm(""); setActiveSector("Tous"); setActiveRegion("Tous"); }}>
                                 Réinitialiser les filtres
                             </Button>
                         </div>

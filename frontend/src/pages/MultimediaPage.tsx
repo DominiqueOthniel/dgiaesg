@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Play, Mic, Filter, PlayCircle, Clock, Tag, ArrowRight } from "lucide-react";
@@ -6,6 +6,7 @@ import api from "../services/api";
 import type { IMultimedia, PaginatedResponse } from "../types";
 import { resolveImageUrl } from "../lib/image";
 import { Badge } from "../components/ui/Badge";
+import { BackButton } from "../components/ui/BackButton";
 import { cn } from "../lib/utils";
 
 const MultimediaPage = () => {
@@ -28,8 +29,18 @@ const MultimediaPage = () => {
         },
     });
 
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [page]);
+
     const items = data?.data || [];
-    const sectors = ["finance", "governance", "tech", "energy", "leadership"];
+    const sectors = [
+        { value: 'finance', label: 'Finance' },
+        { value: 'tech', label: 'Technologie' },
+        { value: 'energy', label: 'Énergie' },
+        { value: 'governance', label: 'Gouvernance' },
+        { value: 'leadership', label: 'Leadership' }
+    ];
 
     return (
         <div className="bg-white min-h-screen">
@@ -37,6 +48,9 @@ const MultimediaPage = () => {
             <section className="bg-brand-secondary pt-24 pb-32 md:pb-40 relative overflow-hidden text-white">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5 pointer-events-none" />
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+                    <div className="flex justify-start mb-6">
+                        <BackButton />
+                    </div>
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -104,14 +118,14 @@ const MultimediaPage = () => {
                                     </button>
                                     {sectors.map(s => (
                                         <button
-                                            key={s}
-                                            onClick={() => { setSector(s); setPage(1); }}
+                                            key={s.value}
+                                            onClick={() => { setSector(s.value); setPage(1); }}
                                             className={cn(
                                                 "px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all",
-                                                sector === s ? "bg-brand-primary text-white" : "bg-slate-50 text-slate-500 hover:bg-slate-100"
+                                                sector === s.value ? "bg-brand-primary text-white" : "bg-slate-50 text-slate-500 hover:bg-slate-100"
                                             )}
                                         >
-                                            {s}
+                                            {s.label}
                                         </button>
                                     ))}
                                 </div>
