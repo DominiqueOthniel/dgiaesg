@@ -9,27 +9,35 @@ import { Button } from "../components/ui/Button";
 import { useState } from "react";
 import { cn } from "../lib/utils";
 import { resolveImageUrl } from "../lib/image";
+import { useTranslation } from "react-i18next";
+import { getLocalized } from "../lib/utils";
 
 function LabelsPage() {
+    const { t, i18n } = useTranslation();
     const { data: labels, isLoading } = useLabels();
     const [searchTerm, setSearchTerm] = useState("");
     const [activeSector, setActiveSector] = useState("Tous");
     const [activeRegion, setActiveRegion] = useState("Tous");
 
     const sectors = [
-        { value: 'Tous', label: 'Tous les secteurs' },
-        { value: 'finance', label: 'Finance' },
-        { value: 'tech', label: 'Technologie' },
-        { value: 'energy', label: 'Énergie' },
-        { value: 'governance', label: 'Gouvernance' },
-        { value: 'leadership', label: 'Leadership' }
+        { value: 'Tous', label: t('common.all_sectors') || 'Tous les secteurs' },
+        { value: 'finance', label: t('sectors.finance') || 'Finance' },
+        { value: 'tech', label: t('sectors.tech') || 'Technologie' },
+        { value: 'energy', label: t('sectors.energy') || 'Énergie' },
+        { value: 'governance', label: t('sectors.governance') || 'Gouvernance' },
+        { value: 'leadership', label: t('sectors.leadership') || 'Leadership' }
     ];
 
     const regions = ["Tous", 'Afrique de l\'Ouest', 'Afrique de l\'Est', 'Afrique Centrale', 'Afrique du Nord', 'Afrique Australe'];
 
     const filteredLabels = labels?.filter(label => {
-        const matchesSearch = (label?.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
-            (label?.description?.toLowerCase() || "").includes(searchTerm.toLowerCase());
+        const nameLocalized = getLocalized(label?.name, i18n.language);
+        const descLocalized = getLocalized(label?.description, i18n.language);
+        
+        const matchesSearch = 
+            nameLocalized.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            descLocalized.toLowerCase().includes(searchTerm.toLowerCase());
+            
         const matchesSector = activeSector === "Tous" || label?.sector === activeSector;
         const matchesRegion = activeRegion === "Tous" || (label as any)?.region === activeRegion;
         return matchesSearch && matchesSector && matchesRegion;
@@ -51,13 +59,13 @@ function LabelsPage() {
                             className="flex items-center gap-2 text-brand-accent text-xs font-bold uppercase tracking-widest mb-8"
                         >
                             <ShieldCheck className="w-4 h-4" />
-                            Certification & Standards
+                            {t('labels.certification_standards')}
                         </motion.div>
                         <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white mb-6">
-                            Référentiel des <span className="text-brand-accent">Labels</span>
+                            {t('labels.registry_title_prefix')} <span className="text-brand-accent">{t('labels.registry_title_accent')}</span>
                         </h1>
                         <p className="text-lg text-slate-300 font-medium leading-relaxed max-w-xl">
-                            Explorez notre index exhaustif des standards de certification. Nous analysons les critères de performance pour garantir l'excellence de l'écosystème coopératif.
+                            {t('labels.hero_desc')}
                         </p>
                     </div>
                 </div>
@@ -72,7 +80,7 @@ function LabelsPage() {
                                 <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-brand-primary transition-colors" />
                                 <input
                                     type="text"
-                                    placeholder="Rechercher un label ou une certification..."
+                                    placeholder={t('labels.search_placeholder') || "Rechercher un label..."}
                                     className="w-full pl-14 pr-6 py-5 bg-slate-50 border-none rounded-2xl text-brand-secondary font-medium placeholder:text-slate-400 focus:ring-2 focus:ring-brand-primary/20 transition-all"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -103,7 +111,7 @@ function LabelsPage() {
                                         onChange={(e) => setActiveRegion(e.target.value)}
                                         className="w-full bg-transparent border-none text-sm font-bold text-brand-secondary focus:ring-0 cursor-pointer appearance-none pr-8"
                                     >
-                                        <option value="Tous">Toutes les régions</option>
+                                        <option value="Tous">{t('common.all_regions')}</option>
                                         {regions.filter(r => r !== "Tous").map(r => (
                                             <option key={r} value={r}>{r}</option>
                                         ))}
@@ -132,10 +140,10 @@ function LabelsPage() {
                             <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm mb-8">
                                 <Search className="w-8 h-8 text-slate-300" />
                             </div>
-                            <h3 className="text-xl font-bold text-brand-secondary mb-2">Aucun résultat trouvé</h3>
-                            <p className="text-slate-500 max-w-xs mx-auto">Nous n'avons trouvé aucun label correspondant à vos critères de recherche.</p>
+                            <h3 className="text-xl font-bold text-brand-secondary mb-2">{t('common.no_results')}</h3>
+                            <p className="text-slate-500 max-w-xs mx-auto">{t('common.no_results_desc')}</p>
                             <Button variant="outline" className="mt-8 rounded-full" onClick={() => { setSearchTerm(""); setActiveSector("Tous"); setActiveRegion("Tous"); }}>
-                                Réinitialiser les filtres
+                                {t('common.reset_filters')}
                             </Button>
                         </div>
                     ) : (
@@ -158,25 +166,29 @@ function LabelsPage() {
                                                         </div>
                                                     </div>
                                                     {label.logoUrl ? (
-                                                        <img src={resolveImageUrl(label.logoUrl)} alt={label.name} className="w-full h-full object-cover transition-all duration-500" />
+                                                        <img src={resolveImageUrl(label.logoUrl)} alt={getLocalized(label.name, i18n.language)} className="w-full h-full object-cover transition-all duration-500" />
                                                     ) : (
                                                         <Award className="w-16 h-16 text-slate-300 group-hover:text-brand-primary transition-colors" />
                                                     )}
                                                 </div>
                                                 <div className="p-8 space-y-4 flex-1 flex flex-col">
                                                     <div className="flex justify-between items-center">
-                                                        <Badge variant="outline" className="rounded-full px-3 py-1 text-[10px] font-bold border-slate-200 text-slate-500 bg-white">
+                                                        <Badge variant="outline" className="rounded-full px-3 py-1 text-[10px] font-bold border-slate-200 text-slate-400 bg-white">
                                                             {label?.sector || "Secteur"}
                                                         </Badge>
                                                         <div className="flex items-center gap-1.5">
                                                             <div className={cn("w-2 h-2 rounded-full", (label?.status || 'active') === 'active' ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-red-500")} />
-                                                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Certifié</span>
+                                                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{t('labels.certified')}</span>
                                                         </div>
                                                     </div>
-                                                    <h3 className="text-xl font-bold text-brand-secondary group-hover:text-brand-primary transition-colors leading-tight">{label?.name}</h3>
-                                                    <p className="text-sm text-slate-500 leading-relaxed line-clamp-3 flex-1">{label?.description || "Description non disponible."}</p>
+                                                    <h3 className="text-xl font-bold text-brand-secondary group-hover:text-brand-primary transition-colors leading-tight">
+                                                        {getLocalized(label?.name, i18n.language)}
+                                                    </h3>
+                                                    <p className="text-sm text-slate-500 leading-relaxed line-clamp-3 flex-1">
+                                                        {getLocalized(label?.description, i18n.language) || t('common.no_description')}
+                                                    </p>
                                                     <div className="pt-6 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-brand-primary uppercase tracking-widest">
-                                                        <span>Détails du protocole</span>
+                                                        <span>{t('labels.protocol_details')}</span>
                                                         <Tag className="w-4 h-4 text-slate-300" />
                                                     </div>
                                                 </div>

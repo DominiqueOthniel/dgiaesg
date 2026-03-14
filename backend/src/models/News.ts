@@ -1,13 +1,24 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface INewsDocument extends Document {
-  title: string;
+  title: {
+    fr: string;
+    en: string;
+  };
   slug: string;
-  content: string;
-  excerpt: string;
+  content: {
+    fr: string;
+    en: string;
+  };
+  excerpt: {
+    fr: string;
+    en: string;
+  };
   author: string;
   imageUrl: string;
   sector: string;
+  category?: mongoose.Types.ObjectId;
+  subCategory?: mongoose.Types.ObjectId;
   readingTime: string;
   premium: boolean;
   published: boolean;
@@ -20,10 +31,8 @@ export interface INewsDocument extends Document {
 const newsSchema = new Schema<INewsDocument>(
   {
     title: {
-      type: String,
-      required: [true, "Title is required"],
-      trim: true,
-      maxlength: [500, "Title cannot exceed 500 characters"],
+      fr: { type: String, required: true },
+      en: { type: String, required: true },
     },
     slug: {
       type: String,
@@ -33,13 +42,12 @@ const newsSchema = new Schema<INewsDocument>(
       lowercase: true,
     },
     content: {
-      type: String,
-      required: [true, "Content is required"],
+      fr: { type: String, required: true },
+      en: { type: String, required: true },
     },
     excerpt: {
-      type: String,
-      default: "",
-      maxlength: [500, "Excerpt cannot exceed 500 characters"],
+      fr: { type: String, default: "" },
+      en: { type: String, default: "" },
     },
     author: {
       type: String,
@@ -54,6 +62,14 @@ const newsSchema = new Schema<INewsDocument>(
       type: String,
       enum: ["finance", "governance", "tech", "energy", "leadership"],
       default: "finance",
+    },
+    category: {
+      type: Schema.Types.ObjectId,
+      ref: "Category",
+    },
+    subCategory: {
+      type: Schema.Types.ObjectId,
+      ref: "SubCategory",
     },
     readingTime: {
       type: String,

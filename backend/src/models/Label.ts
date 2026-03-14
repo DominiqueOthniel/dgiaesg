@@ -1,8 +1,14 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface ILabelDocument extends Document {
-  name: string;
-  description: string;
+  name: {
+    fr: string;
+    en: string;
+  };
+  description: {
+    fr: string;
+    en: string;
+  };
   logoUrl: string;
   sector: string;
   status: "active" | "inactive";
@@ -18,16 +24,12 @@ export interface ILabelDocument extends Document {
 const labelSchema = new Schema<ILabelDocument>(
   {
     name: {
-      type: String,
-      required: [true, "Label name is required"],
-      trim: true,
-      unique: true,
-      maxlength: [200, "Name cannot exceed 200 characters"],
+      fr: { type: String, required: true },
+      en: { type: String, required: true },
     },
     description: {
-      type: String,
-      required: [true, "Description is required"],
-      trim: true,
+      fr: { type: String, required: true },
+      en: { type: String, required: true },
     },
     logoUrl: {
       type: String,

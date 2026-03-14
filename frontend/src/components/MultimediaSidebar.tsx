@@ -6,8 +6,11 @@ import { Button } from "./ui/Button";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { resolveImageUrl } from "../lib/image";
+import { useTranslation } from "react-i18next";
+import { getLocalized } from "../lib/utils";
 
 export const MultimediaSidebar = () => {
+    const { i18n } = useTranslation();
     const { data, isLoading } = useQuery<PaginatedResponse<IMultimedia>>({
         queryKey: ["multimedia", "featured"],
         queryFn: async () => {
@@ -53,7 +56,7 @@ export const MultimediaSidebar = () => {
                         {item.coverImageUrl ? (
                             <img
                                 src={resolveImageUrl(item.coverImageUrl) ?? undefined}
-                                alt={item.title}
+                                alt={getLocalized(item.title, i18n.language)}
                                 className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700"
                             />
                         ) : (
@@ -77,7 +80,7 @@ export const MultimediaSidebar = () => {
                                 {item.type === "video" ? "Vidéo" : "Podcast"} • {item.sector}
                             </span>
                             <h5 className="text-sm font-bold text-white line-clamp-1 group-hover:text-brand-accent transition-colors">
-                                {item.title}
+                                {getLocalized(item.title, i18n.language)}
                             </h5>
                         </div>
                     </motion.div>

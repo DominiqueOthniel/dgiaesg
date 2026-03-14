@@ -13,23 +13,26 @@ import {
     Users
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useLabel } from "../hooks/useLabels";
+import { useTranslation } from "react-i18next";
+import { useLabel, useLabels } from "../hooks/useLabels";
 import { useCriteria } from "../hooks/useCriteria";
 import { useCompanies } from "../hooks/useCompanies";
 import { Button } from "../components/ui/Button";
 import { Card, CardContent } from "../components/ui/Card";
 import { Badge } from "../components/ui/Badge";
-import { cn } from "../lib/utils";
+import { cn, getLocalized } from "../lib/utils";
 import { resolveImageUrl } from "../lib/image";
 import { useAuth } from "../context/AuthContext";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import api from "../services/api";
 import { toast } from "react-hot-toast";
 import { Bookmark } from "lucide-react";
 
 function LabelDetailPage() {
+    const { i18n } = useTranslation();
     const { id } = useParams<{ id: string }>();
     const { data: label, isLoading: labelLoading } = useLabel(id);
+    const { data: labelsData, isLoading: labelsLoading } = useLabels();
     const { data: criteria, isLoading: criteriaLoading } = useCriteria(id);
     const { data: companiesData, isLoading: companiesLoading } = useCompanies({ labelId: id, limit: 10 });
     const { user, isAuthenticated, updateSavedLabels } = useAuth();
@@ -65,6 +68,15 @@ function LabelDetailPage() {
     };
 
     const companies = companiesData?.data || [];
+    const relatedLabels = useMemo(() => {
+        if (!labelsData || !label) return [];
+        const sameSector = labelsData.filter((item) => item._id !== label._id && item.sector === label.sector);
+        const fallback = labelsData.filter((item) => item._id !== label._id);
+        const source = sameSector.length ? sameSector : fallback;
+        return [...source]
+            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+            .slice(0, 6);
+    }, [labelsData, label]);
 
     if (labelLoading) {
         return (
@@ -129,17 +141,17 @@ function LabelDetailPage() {
                                 className="flex flex-wrap items-center gap-4 mb-8"
                             >
                                 <Badge variant="secondary" className="rounded-full px-4 py-1.5 font-bold text-[10px] uppercase tracking-widest bg-brand-primary/20 text-brand-primary border-none">
-                                    {label.sector}
+                                    {getLocalized(label.sector, i18n.language)}
                                 </Badge>
                                 <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                                     <ShieldCheck className="w-4 h-4 text-brand-accent" /> Standard de Conformité V2.4
                                 </div>
                             </motion.div>
                             <h1 className="text-4xl md:text-8xl font-bold tracking-tight text-white mb-8 leading-none">
-                                {label.name}
+                                {getLocalized(label.name, i18n.language)}
                             </h1>
                             <p className="text-xl text-slate-300 font-medium leading-relaxed max-w-3xl">
-                                {label.description}
+                                {getLocalized(label.description, i18n.language)}
                             </p>
                         </div>
                         <motion.div
@@ -150,7 +162,7 @@ function LabelDetailPage() {
                             <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-12 rounded-[3rem] flex items-center justify-center shadow-2xl relative group">
                                 <div className="absolute inset-0 bg-brand-primary/10 rounded-[3rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
                                 {label.logoUrl ? (
-                                    <img src={resolveImageUrl(label.logoUrl)} alt={label.name} className="w-full h-full object-cover relative z-10" />
+                                    <img src={resolveImageUrl(label.logoUrl)} alt={getLocalized(label.name, i18n.language)} className="w-full h-full object-cover relative z-10" />
                                 ) : (
                                     <Award className="w-48 h-48 text-white/5 relative z-10" />
                                 )}
@@ -210,10 +222,10 @@ function LabelDetailPage() {
                                                                     {item.category}
                                                                 </Badge>
                                                                 <div className="w-1 h-1 rounded-full bg-slate-200" />
-                                                                <h3 className="text-xl font-bold text-brand-secondary group-hover:text-brand-primary transition-colors">{item.title}</h3>
+                                                                 <h3 className="text-xl font-bold text-brand-secondary group-hover:text-brand-primary transition-colors">{getLocalized(item.title, i18n.language)}</h3>
                                                             </div>
                                                             <p className="text-slate-500 leading-relaxed font-medium">
-                                                                {item.description}
+                                                                {getLocalized(item.description, i18n.language)}
                                                             </p>
                                                         </div>
                                                         <div className="shrink-0 flex md:flex-col items-center md:items-end gap-3 bg-slate-50 group-hover:bg-brand-primary/5 px-6 py-4 rounded-2xl transition-colors min-w-[120px]">
@@ -254,13 +266,13 @@ function LabelDetailPage() {
                                             </div>
                                         ) : (
                                             companies.map((company) => (
-                                                <Link key={company._id} to={`/directory/${company._id}`} className="flex items-center gap-5 p-5 bg-white/5 rounded-[1.5rem] border border-white/5 hover:bg-white hover:text-brand-secondary transition-all group/item">
+                                                 <Link key={company._id} to={`/directory/${company._id}`} className="flex items-center gap-5 p-5 bg-white/5 rounded-[1.5rem] border border-white/5 hover:bg-white hover:text-brand-secondary transition-all group/item">
                                                     <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center font-bold text-[11px] text-white group-hover/item:bg-brand-secondary group-hover/item:text-white transition-colors">
-                                                        {company.name.substring(0, 2).toUpperCase()}
+                                                        {getLocalized(company.name, i18n.language).substring(0, 2).toUpperCase()}
                                                     </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <p className="text-sm font-bold uppercase tracking-tight truncate">{company.name}</p>
-                                                        <p className="text-[10px] font-bold text-slate-400 group-hover/item:text-slate-500 uppercase tracking-widest">{company.sector}</p>
+                                                    <div className="flex-1 min-0">
+                                                        <p className="text-sm font-bold uppercase tracking-tight truncate">{getLocalized(company.name, i18n.language)}</p>
+                                                        <p className="text-[10px] font-bold text-slate-400 group-hover/item:text-slate-500 uppercase tracking-widest">{getLocalized(company.sector, i18n.language)}</p>
                                                     </div>
                                                     <ChevronRight className="w-4 h-4 text-white/20 group-hover/item:text-brand-primary transition-colors" />
                                                 </Link>
@@ -315,6 +327,63 @@ function LabelDetailPage() {
                                 </div>
                             </Card>
                         </aside>
+                    </div>
+                </div>
+            </section>
+
+            <section className="pb-32">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="flex items-center justify-between mb-10">
+                        <div>
+                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Related Labels</p>
+                            <h2 className="text-2xl md:text-3xl font-bold text-brand-secondary tracking-tight mt-2">Other labels to explore</h2>
+                        </div>
+                        <Link to="/labels" className="text-xs font-bold uppercase tracking-widest text-brand-primary hover:text-brand-secondary transition-colors">
+                            View all labels
+                        </Link>
+                    </div>
+
+                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        {labelsLoading ? (
+                            Array.from({ length: 6 }).map((_, i) => (
+                                <div key={i} className="h-40 rounded-[2rem] bg-slate-50 animate-pulse" />
+                            ))
+                        ) : relatedLabels.length === 0 ? (
+                            <div className="col-span-full py-16 text-center rounded-[2rem] border border-dashed border-slate-200 bg-slate-50">
+                                <p className="text-sm font-semibold text-slate-400">No related labels found.</p>
+                            </div>
+                        ) : (
+                            relatedLabels.map((item) => (
+                                <Link
+                                    key={item._id}
+                                    to={`/labels/${item._id}`}
+                                    className="group rounded-[2rem] border border-slate-100 bg-white hover:border-brand-primary/30 hover:shadow-xl hover:shadow-brand-primary/5 transition-all overflow-hidden"
+                                >
+                                    <div className="aspect-[16/9] bg-slate-50 flex items-center justify-center">
+                                        {item.logoUrl ? (
+                                            <img
+                                                src={resolveImageUrl(item.logoUrl)}
+                                                alt={getLocalized(item.name, i18n.language)}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <Award className="w-16 h-16 text-slate-200" />
+                                        )}
+                                    </div>
+                                    <div className="p-6 space-y-3">
+                                        <Badge variant="outline" className="rounded-full px-3 py-1 text-[9px] font-bold uppercase tracking-widest text-brand-primary border-brand-primary/20 bg-brand-primary/5">
+                                            {getLocalized(item.sector, i18n.language)}
+                                        </Badge>
+                                        <h3 className="text-lg font-bold text-brand-secondary group-hover:text-brand-primary transition-colors">
+                                            {getLocalized(item.name, i18n.language)}
+                                        </h3>
+                                        <p className="text-sm text-slate-500 leading-relaxed line-clamp-3">
+                                            {getLocalized(item.description, i18n.language)}
+                                        </p>
+                                    </div>
+                                </Link>
+                            ))
+                        )}
                     </div>
                 </div>
             </section>

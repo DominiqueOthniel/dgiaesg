@@ -9,26 +9,54 @@ import {
     AtSign,
     Save
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
 import { toast } from "react-hot-toast";
+import { resolveImageUrl } from "../lib/image";
+
 
 function ProfilePage() {
-    const { user } = useAuth();
+    const { t } = useTranslation();
+    const { user, updateUser } = useAuth();
     const [name, setName] = useState("");
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
+    const [avatar, setAvatar] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
 
     useEffect(() => {
         if (user) {
             setName(user.name);
             setUsername(user.username);
             setEmail(user.email);
+            setAvatar(user.avatar || "");
         }
     }, [user]);
+
+    const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("image", file);
+
+        setIsUploading(true);
+        try {
+            const response = await api.post("/upload", formData, {
+                headers: { "Content-Type": "multipart/form-data" }
+            });
+            setAvatar(response.data.data);
+            toast.success("AVATAR TÉLÉCHARGÉ");
+        } catch (error: any) {
+            toast.error("ERREUR DE TÉLÉCHARGEMENT");
+        } finally {
+            setIsUploading(false);
+        }
+    };
 
     const handleUpdate = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -41,10 +69,11 @@ function ProfilePage() {
         setIsLoading(true);
 
         try {
-            const updateData: any = { name, username, email };
+            const updateData: any = { name, username, email, avatar };
             if (password) updateData.password = password;
 
-            await api.put("/auth/me", updateData);
+            const response = await api.put("/auth/me", updateData);
+            updateUser(response.data.data);
             toast.success("PROFIL MIS À JOUR AVEC SUCCÈS");
             setPassword("");
             setConfirmPassword("");
@@ -62,11 +91,28 @@ function ProfilePage() {
                     {/* Sidebar */}
                     <div className="w-full md:w-1/3">
                         <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm sticky top-32">
-                            <div className="w-20 h-20 bg-brand-primary rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg shadow-brand-primary/20">
-                                <User className="w-10 h-10" />
+                            <div className="relative group mb-8">
+                                <div className="w-24 h-24 bg-brand-primary rounded-3xl flex items-center justify-center text-white shadow-lg shadow-brand-primary/20 overflow-hidden mx-auto">
+                                    {avatar ? (
+                                        <img src={resolveImageUrl(avatar)} alt={name} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <User className="w-10 h-10" />
+                                    )}
+                                    {isUploading && (
+                                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                            <Loader2 className="w-6 h-6 animate-spin text-white" />
+                                        </div>
+                                    )}
+                                </div>
+                                <label className="absolute -bottom-2 -right-2 w-10 h-10 bg-white rounded-2xl shadow-tactile border border-slate-100 flex items-center justify-center cursor-pointer hover:bg-slate-50 transition-all text-brand-primary">
+                                    <AtSign className="w-4 h-4" />
+                                    <input type="file" className="hidden" accept="image/*" onChange={handleAvatarUpload} />
+                                </label>
                             </div>
-                            <h1 className="text-2xl font-bold text-slate-900 mb-1">{user?.name}</h1>
-                            <p className="text-sm text-slate-400 font-medium mb-8">@{user?.username}</p>
+                            <div className="text-center">
+                                <h1 className="text-2xl font-bold text-slate-900 mb-1">{user?.name}</h1>
+                                <p className="text-sm text-slate-400 font-medium mb-8">@{user?.username}</p>
+                            </div>
 
                             <div className="space-y-4">
                                 <div className="flex items-center gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-100">
@@ -166,6 +212,46 @@ function ProfilePage() {
                                     <p className="mt-4 text-[10px] text-slate-400 font-bold uppercase tracking-widest italic">Laissez vide pour conserver l'actuel.</p>
                                 </div>
 
+                                {/* Theme Selection Section */}
+                                <div className="pt-8 border-t border-slate-100">
+                                    <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
+                                        <Palette className="w-5 h-5 text-brand-primary" /> {t('theme.subtitle')}
+                                    </h3>
+                                    <p className="text-xs text-slate-500 mb-6 italic">{t('theme.appearance_desc')}</p>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {themes.map((theme) => (
+                                            <button
+                                                key={theme.id}
+                                                type="button"
+                                                onClick={() => applyTheme(theme)}
+                                                className={cn(
+                                                    "flex items-center gap-3 px-4 py-4 transition-all text-left border rounded-2xl group",
+                                                    activeTheme === theme.id
+                                                        ? "bg-slate-50 border-brand-primary"
+                                                        : "bg-white border-slate-100 hover:border-brand-primary/30"
+                                                )}
+                                            >
+                                                <div className="flex gap-1 shrink-0">
+                                                    {theme.preview.map((color, i) => (
+                                                        <div
+                                                            key={i}
+                                                            className="w-4 h-4 rounded-full border border-white shadow-sm"
+                                                            style={{ backgroundColor: color }}
+                                                        />
+                                                    ))}
+                                                </div>
+                                                <span className={cn(
+                                                    "text-[10px] font-bold uppercase tracking-widest",
+                                                    activeTheme === theme.id ? "text-brand-primary" : "text-slate-600 group-hover:text-brand-primary"
+                                                )}>
+                                                    {t(`theme.themes.${theme.id}`)}
+                                                </span>
+                                                {activeTheme === theme.id && <Check className="w-3 h-3 text-brand-primary ml-auto" />}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
                                 <button
                                     type="submit"
                                     disabled={isLoading}
@@ -189,3 +275,4 @@ function ProfilePage() {
 }
 
 export default ProfilePage;
+

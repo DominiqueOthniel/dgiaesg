@@ -1,4 +1,5 @@
 import { useParams, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
     ArrowLeft,
     Calendar,
@@ -14,23 +15,41 @@ import {
     Zap
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useNewsArticle } from "../hooks/useNews";
+import { useNews, useNewsArticle } from "../hooks/useNews";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
 import { resolveImageUrl } from "../lib/image";
 import { useAuth } from "../context/AuthContext";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import api from "../services/api";
 import { toast } from "react-hot-toast";
-import { cn } from "../lib/utils";
+import { cn, getLocalized } from "../lib/utils";
 import AdBanner from "../components/AdBanner";
 
 function NewsArticlePage() {
+    const { i18n } = useTranslation();
     const { slug } = useParams<{ slug: string }>();
     const { data: article, isLoading } = useNewsArticle(slug);
+    const { data: relatedNewsData, isLoading: relatedLoading } = useNews({
+        sector: article?.sector,
+        limit: 12,
+        published: true,
+    });
     const { user, isAuthenticated, updateSavedArticles } = useAuth();
     const [isSaved, setIsSaved] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+
+    const relatedArticles = useMemo(() => {
+        if (!relatedNewsData?.data || !article) return [];
+        const filtered = relatedNewsData.data.filter((item) => item._id !== article._id);
+        return [...filtered]
+            .sort((a, b) => {
+                const aDate = new Date(a.publishedAt || a.createdAt).getTime();
+                const bDate = new Date(b.publishedAt || b.createdAt).getTime();
+                return bDate - aDate;
+            })
+            .slice(0, 6);
+    }, [relatedNewsData, article]);
 
     useEffect(() => {
         if (user && article) {
@@ -114,7 +133,7 @@ function NewsArticlePage() {
                     </motion.div>
 
                     <h1 className="text-4xl md:text-7xl font-bold tracking-tight text-white mb-16 leading-[1.1]">
-                        {article.title}
+                        {getLocalized(article.title, i18n.language)}
                     </h1>
 
                     <div className="flex flex-wrap items-center gap-12 pt-12 border-t border-white/10">
@@ -162,7 +181,7 @@ function NewsArticlePage() {
                         className="rounded-[3rem] overflow-hidden shadow-2xl shadow-brand-secondary/20 border-8 border-white/5 backdrop-blur-xl relative aspect-[21/9]"
                     >
                         {article.imageUrl ? (
-                            <img src={resolveImageUrl(article.imageUrl)} alt={article.title} className="w-full h-full object-cover" />
+                            <img src={resolveImageUrl(article.imageUrl)} alt={getLocalized(article.title, i18n.language)} className="w-full h-full object-cover" />
                         ) : (
                             <div className="w-full h-full bg-slate-50 flex items-center justify-center text-slate-100">
                                 <Newspaper className="w-48 h-48" />
@@ -183,7 +202,7 @@ function NewsArticlePage() {
                             <div className="relative overflow-hidden max-h-[400px]">
                                 <div
                                     className="prose prose-xl md:prose-2xl prose-slate max-w-none prose-p:text-slate-600 prose-p:font-medium prose-p:leading-[1.8] prose-p:mb-10"
-                                    dangerouslySetInnerHTML={{ __html: article.content.split('\n').slice(0, 3).map(p => p.trim() ? `<p>${p}</p>` : '').join('') }}
+                                    dangerouslySetInnerHTML={{ __html: getLocalized(article.content, i18n.language).split('\n').slice(0, 3).map((p: string) => p.trim() ? `<p>${p}</p>` : '').join('') }}
                                 />
                                 <div className="my-10">
                                     <AdBanner position="inline" />
@@ -191,24 +210,31 @@ function NewsArticlePage() {
                                 <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-white via-white/80 to-transparent z-10" />
                             </div>
 
-                            {/* Premium Lock Card */}
+                            {/* Premium Lock Card — Financial Afrik style */}
                             <div className="mt-12 p-10 md:p-14 rounded-[3rem] bg-brand-secondary text-white text-center shadow-2xl shadow-brand-secondary/40 relative overflow-hidden group">
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-brand-primary/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:bg-brand-primary/40 transition-colors" />
                                 <div className="relative z-10">
                                     <div className="w-16 h-16 bg-brand-primary/20 rounded-2xl flex items-center justify-center text-brand-primary mx-auto mb-8">
                                         <Zap className="w-8 h-8 fill-brand-primary" />
                                     </div>
-                                    <h3 className="text-3xl md:text-4xl font-bold mb-6 tracking-tight italic">Débloquez l'Analyse Premium</h3>
-                                    <p className="text-slate-400 font-medium text-lg mb-10 max-w-2xl mx-auto leading-relaxed">
-                                        Rejoignez le réseau COOP_LOGIC PRO pour accéder à l'intégralité de nos analyses stratégiques, rapports ESG et insights exclusifs sur la transition africaine.
+                                    <h3 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight italic">Ce contenu est réservé aux membres</h3>
+                                    <p className="text-slate-400 font-medium text-sm md:text-base mb-8 max-w-2xl mx-auto leading-relaxed">
+                                        Ce contenu est réservé aux membres du niveau Premium, Semestriel, Trimestriel, Mensuel, Hebdomadaire, et Télécharger un MAGAZINE (PDF) uniquement.
                                     </p>
-                                    <Link to="/pricing">
-                                        <Button className="rounded-2xl px-12 h-16 bg-brand-primary text-white hover:bg-white hover:text-brand-secondary transition-all font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-brand-primary/30">
-                                            DEVENIR MEMBRE PRO
-                                        </Button>
-                                    </Link>
-                                    <p className="mt-6 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                                        DÉJÀ MEMBRE ? <Link to="/login" className="text-brand-primary hover:text-white transition-colors underline underline-offset-4">CONNECTEZ-VOUS</Link>
+                                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
+                                        <Link to="/pricing">
+                                            <Button className="rounded-2xl px-12 h-16 bg-brand-primary text-white hover:bg-white hover:text-brand-secondary transition-all font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-brand-primary/30 w-full sm:w-auto">
+                                                Adhérer
+                                            </Button>
+                                        </Link>
+                                        <Link to="/login">
+                                            <Button variant="outline" className="rounded-2xl px-12 h-16 border-2 border-white/30 text-white hover:bg-white hover:text-brand-secondary transition-all font-black text-xs uppercase tracking-[0.2em] w-full sm:w-auto">
+                                                Déjà membre ? Connectez-vous
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                                        Accédez à l&apos;intégralité des analyses ESG, rapports d&apos;impact et éditions du kiosque digital.
                                     </p>
                                 </div>
                             </div>
@@ -217,7 +243,7 @@ function NewsArticlePage() {
                         <>
                             <div
                                 className="prose prose-xl md:prose-2xl prose-slate max-w-none prose-p:text-slate-600 prose-p:font-medium prose-p:leading-[1.8] prose-p:mb-10 prose-headings:font-bold prose-headings:text-brand-secondary prose-headings:tracking-tight prose-headings:mb-10 prose-blockquote:border-l-4 prose-blockquote:border-brand-primary prose-blockquote:bg-brand-primary/5 prose-blockquote:rounded-r-3xl prose-blockquote:p-12 prose-blockquote:not-prose prose-blockquote:text-brand-secondary prose-blockquote:font-bold prose-blockquote:italic"
-                                dangerouslySetInnerHTML={{ __html: article.content.split('\n').map(p => p.trim() ? `<p>${p}</p>` : '').join('') }}
+                                dangerouslySetInnerHTML={{ __html: getLocalized(article.content, i18n.language).split('\n').map((p: string) => p.trim() ? `<p>${p}</p>` : '').join('') }}
                             />
                             <div className="my-12">
                                 <AdBanner position="inline" />
@@ -306,6 +332,65 @@ function NewsArticlePage() {
                         </div>
                     </div>
                 </aside>
+            </section>
+
+            <section className="mt-24 border-t border-slate-100 pt-16">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="flex items-center justify-between mb-10">
+                        <div>
+                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Related Articles</p>
+                            <h2 className="text-2xl md:text-3xl font-bold text-brand-secondary tracking-tight mt-2">More to read next</h2>
+                        </div>
+                        <Link to="/news" className="text-xs font-bold uppercase tracking-widest text-brand-primary hover:text-brand-secondary transition-colors">
+                            View all articles
+                        </Link>
+                    </div>
+
+                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        {relatedLoading ? (
+                            Array.from({ length: 6 }).map((_, i) => (
+                                <div key={i} className="h-52 rounded-[2rem] bg-slate-50 animate-pulse" />
+                            ))
+                        ) : relatedArticles.length === 0 ? (
+                            <div className="col-span-full py-16 text-center rounded-[2rem] border border-dashed border-slate-200 bg-slate-50">
+                                <p className="text-sm font-semibold text-slate-400">No related articles available.</p>
+                            </div>
+                        ) : (
+                            relatedArticles.map((item) => (
+                                <Link
+                                    key={item._id}
+                                    to={`/news/${item.slug}`}
+                                    className="group rounded-[2rem] border border-slate-100 bg-white hover:border-brand-primary/30 hover:shadow-xl hover:shadow-brand-primary/5 transition-all overflow-hidden"
+                                >
+                                    <div className="aspect-[16/9] bg-slate-50 overflow-hidden">
+                                        {item.imageUrl ? (
+                                            <img
+                                                src={resolveImageUrl(item.imageUrl)}
+                                                alt={getLocalized(item.title, i18n.language)}
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-slate-200">
+                                                <Newspaper className="w-16 h-16" />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="p-6 space-y-3">
+                                        <Badge variant="outline" className="rounded-full px-3 py-1 text-[9px] font-bold uppercase tracking-widest text-brand-primary border-brand-primary/20 bg-brand-primary/5">
+                                            {item.sector?.toUpperCase() || "NEWS"}
+                                        </Badge>
+                                        <h3 className="text-lg font-bold text-brand-secondary group-hover:text-brand-primary transition-colors line-clamp-2">
+                                            {getLocalized(item.title, i18n.language)}
+                                        </h3>
+                                        <p className="text-sm text-slate-500 leading-relaxed line-clamp-3">
+                                            {getLocalized(item.excerpt, i18n.language)}
+                                        </p>
+                                    </div>
+                                </Link>
+                            ))
+                        )}
+                    </div>
+                </div>
             </section>
         </article >
     );

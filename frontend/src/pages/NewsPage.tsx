@@ -1,260 +1,340 @@
-import { motion } from "framer-motion";
-import { Newspaper, Calendar, ArrowRight, Share2, Bookmark, Zap } from "lucide-react";
+﻿import { Newspaper, Calendar, MapPin, Play } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useNews } from "../hooks/useNews";
-import { Badge } from "../components/ui/Badge";
-import { Button } from "../components/ui/Button";
-import { Card, CardContent } from "../components/ui/Card";
 import { useState } from "react";
-import { cn } from "../lib/utils";
-import { resolveImageUrl } from "../lib/image";
-import { BackButton } from "../components/ui/BackButton";
-import { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import api from "../services/api";
-import { ReviewKiosk } from "../components/ReviewKiosk";
-import { MultimediaSidebar } from "../components/MultimediaSidebar";
+import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
+import { useNews } from "../hooks/useNews";
 import AdBanner from "../components/AdBanner";
+import { TwoColumnPage } from "@/components/layout/TwoColumnPage";
+import { SidebarStack } from "@/components/layout/SidebarStack";
+import { useEvents } from "../hooks/useEvents";
+import { useMagazines } from "../hooks/useMagazines";
+import { resolveImageUrl } from "../lib/image";
+import { getLocalized } from "../lib/utils";
+import api from "../services/api";
+import { toast } from "react-hot-toast";
 
 function NewsPage() {
-    const [page, setPage] = useState(1);
-    const { data: newsData, isLoading } = useNews({ page, limit: 9 });
+    const { t, i18n } = useTranslation();
+    const [sectorFilter, setSectorFilter] = useState("all");
+    const [email, setEmail] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const { data: newsData, isLoading } = useNews({
+        page: 1,
+        limit: 9,
+        sector: sectorFilter === "all" ? undefined : sectorFilter,
+    });
     const news = newsData?.data || [];
-    const pagination = newsData?.pagination;
-    const queryClient = useQueryClient();
 
-    useEffect(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, [page]);
+    const { data: eventsData } = useEvents({ published: true, limit: 2 });
+    const events = eventsData || [];
+    const { data: magazines = [] } = useMagazines();
 
-    const prefetchArticle = (slug: string) => {
-        queryClient.prefetchQuery({
-            queryKey: ["news", "slug", slug],
-            queryFn: async () => {
-                const response = await api.get(`/news/slug/${slug}`);
-                return response.data.data;
-            },
-            staleTime: 1000 * 60 * 5,
-        });
+    const { data: relatedMedia } = useQuery({
+        queryKey: ["news-related-media"],
+        queryFn: async () => {
+            const res = await api.get("/multimedia?limit=2&published=true");
+            return res.data.data || [];
+        },
+    });
+
+    const { data: latestNewsletter } = useQuery({
+        queryKey: ["latest-newsletter"],
+        queryFn: async () => {
+            const res = await api.get("/newsletter/latest");
+            return res.data.data;
+        },
+    });
+
+    const handleSubscribe = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!email.trim()) return;
+        setIsSubmitting(true);
+        try {
+            await api.post("/newsletter/subscribe", { email });
+            toast.success("Merci ! Vous êtes inscrit à la newsletter.");
+            setEmail("");
+        } catch (error) {
+            toast.error("Impossible d'inscrire cet email.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
-    return (
-        <div className="bg-white min-h-screen">
-            {/* Editorial Hero Header */}
-            <section className="bg-brand-secondary pt-32 pb-48 md:pb-64 relative overflow-hidden">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5 pointer-events-none" />
-                <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-brand-primary/10 rounded-full blur-[100px] pointer-events-none" />
+    const sectors = [
+        { id: "all", label: t("common.all", "Tous") },
+        { id: "finance", label: t("sectors.finance") },
+        { id: "governance", label: t("sectors.governance") },
+        { id: "tech", label: t("sectors.tech") },
+        { id: "energy", label: t("sectors.energy") },
+        { id: "leadership", label: t("sectors.leadership") },
+    ];
 
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10 text-center md:text-left">
-                    <BackButton />
-                    <div className="max-w-4xl">
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-brand-accent text-[10px] font-bold uppercase tracking-[0.3em] mb-12"
-                        >
-                            <div className="w-1.5 h-1.5 rounded-full bg-brand-accent animate-pulse" />
-                            Journal d'Impact & Actualités
-                        </motion.div>
-                        <h1 className="text-5xl md:text-8xl font-bold tracking-tight text-white mb-10 leading-[0.9]">
-                            Éclairer la <br /> <span className="text-brand-primary">Transition éthique.</span>
-                        </h1>
-                        <p className="text-xl text-slate-300 font-medium leading-relaxed max-w-2xl">
-                            Analyses de fond, actualités du réseau et archives de certification. Suivez l'évolution des standards de la coopération éthique.
+    const hasNoNews = !isLoading && news.length === 0;
+
+    return (
+        <TwoColumnPage
+            title="Journal"
+            subtitle="Analyses, décryptages et actualités ESG & finance en Afrique."
+            headerMeta="Dernières publications"
+            children={{
+                main: isLoading ? (
+                    <div className="space-y-4">
+                        <div className="h-40 bg-slate-100 animate-pulse" />
+                        <div className="h-40 bg-slate-100 animate-pulse" />
+                        <div className="h-40 bg-slate-100 animate-pulse" />
+                    </div>
+                ) : hasNoNews ? (
+                    <div className="py-32 text-center rounded-3xl border-2 border-dashed border-slate-100 bg-slate-50 flex flex-col items-center justify-center">
+                        <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center shadow-sm mb-6">
+                            <Newspaper className="w-8 h-8 text-slate-200" />
+                        </div>
+                        <h3 className="text-xl font-bold text-slate-400">Aucun article trouvé</h3>
+                        <p className="text-sm text-slate-300 mt-2">
+                            Le flux d'actualités est en cours de mise à jour.
                         </p>
                     </div>
-                </div>
-            </section>
-
-            {/* Editorial Stream Grid */}
-            <section className="-mt-24 md:-mt-32 relative z-20 pb-32">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                        {/* Main Feed */}
-                        <div className="lg:col-span-8">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                {isLoading ? (
-                                    Array.from({ length: 4 }).map((_, i) => (
-                                        <div key={i} className="bg-slate-50 aspect-[4/5] rounded-[2.5rem] animate-pulse shadow-sm" />
-                                    ))
-                                ) : news.length === 0 ? (
-                                    <div className="col-span-full py-48 text-center rounded-[3rem] border-2 border-dashed border-slate-100 bg-slate-50 flex flex-col items-center justify-center">
-                                        <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center shadow-sm mb-8">
-                                            <Newspaper className="w-8 h-8 text-slate-200" />
-                                        </div>
-                                        <h3 className="text-xl font-bold text-slate-400">Aucun article trouvé</h3>
-                                        <p className="text-sm text-slate-300 mt-2">Le flux d'actualités est en cours de mise à jour.</p>
-                                    </div>
-                                ) : (
-                                    news.map((item, idx) => (
-                                        <div key={item._id}>
-                                            <motion.article
-                                                initial={{ opacity: 0, y: 20 }}
-                                                whileInView={{ opacity: 1, y: 0 }}
-                                                viewport={{ once: true }}
-                                                transition={{ delay: idx * 0.05 }}
-                                                className="group"
-                                                onMouseEnter={() => prefetchArticle(item.slug)}
-                                            >
-                                                <Link to={`/news/${item.slug}`} className="block h-full">
-                                                    <Card className="rounded-[2.5rem] border-slate-100 shadow-xl shadow-slate-200/40 hover:shadow-2xl hover:shadow-brand-primary/10 transition-all duration-500 overflow-hidden flex flex-col h-full bg-white group-hover:-translate-y-2">
-                                                        <div className="relative aspect-[16/10] overflow-hidden">
-                                                            {item.imageUrl ? (
-                                                                <img src={resolveImageUrl(item.imageUrl)} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                                                            ) : (
-                                                                <div className="w-full h-full bg-slate-50 flex items-center justify-center text-slate-200">
-                                                                    <Newspaper className="w-16 h-16" />
-                                                                </div>
-                                                            )}
-                                                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                                                            <div className="absolute top-6 left-6 flex flex-col gap-2">
-                                                                <Badge className="rounded-full px-4 py-1.5 bg-brand-primary text-white border-none font-black text-[9px] uppercase tracking-widest shadow-lg italic">
-                                                                    {item.sector || 'ACTUALITÉ'}
-                                                                </Badge>
-                                                                {item.premium && (
-                                                                    <Badge className="rounded-full px-4 py-1.5 bg-brand-secondary text-brand-accent border-none font-black text-[9px] uppercase tracking-widest shadow-lg italic flex items-center gap-1">
-                                                                        <Zap className="w-3 h-3 fill-brand-accent" /> PREMIUM
-                                                                    </Badge>
-                                                                )}
-                                                            </div>
-                                                        </div>
-
-                                                        <CardContent className="p-8 md:p-10 flex flex-col flex-1">
-                                                            <div className="flex items-center gap-4 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6 italic">
-                                                                <span className="flex items-center gap-2">
-                                                                    <Calendar className="w-3.5 h-3.5 text-brand-primary" />
-                                                                    {item.publishedAt ? new Date(item.publishedAt).toLocaleDateString("fr-FR", { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase() : "RÉCENT"}
-                                                                </span>
-                                                                <div className="w-1 h-1 rounded-full bg-brand-primary" />
-                                                                <span className="text-slate-900 font-black">
-                                                                    {item.readingTime || "3 MIN"} READ
-                                                                </span>
-                                                            </div>
-
-                                                            <h3 className="text-2xl font-bold text-brand-secondary mb-6 leading-tight group-hover:text-brand-primary transition-colors">
-                                                                {item?.title}
-                                                            </h3>
-
-                                                            <p className="text-slate-500 font-medium leading-relaxed line-clamp-3 mb-8">
-                                                                {item?.excerpt || (item?.content ? item.content.substring(0, 150).replace(/<[^>]*>/g, '') + "..." : "Consultez l'intégralité de cet article pour découvrir les détails de cette actualité.")}
-                                                            </p>
-
-                                                            <div className="mt-auto pt-8 border-t border-slate-50 flex items-center justify-between">
-                                                                <span className="inline-flex items-center gap-2 text-[10px] font-bold text-brand-primary uppercase tracking-widest group-hover:gap-4 transition-all">
-                                                                    Lire l'article <ArrowRight className="w-4 h-4" />
-                                                                </span>
-                                                                <div className="flex items-center gap-3">
-                                                                    <button className="p-2 rounded-full hover:bg-slate-50 transition-colors">
-                                                                        <Share2 className="w-4 h-4 text-slate-300" />
-                                                                    </button>
-                                                                    <button className="p-2 rounded-full hover:bg-slate-50 transition-colors">
-                                                                        <Bookmark className="w-4 h-4 text-slate-300" />
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </CardContent>
-                                                    </Card>
-                                                </Link>
-                                            </motion.article>
-                                            {idx === 2 && (
-                                                <div className="col-span-1 md:col-span-2 mt-8">
-                                                    <AdBanner position="inline" />
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))
-                                )}
-                            </div>
-
-                            {/* Pagination Interface */}
-                            {pagination && pagination.pages > 1 && (
-                                <div className="mt-24 flex items-center justify-center gap-4">
-                                    <Button
-                                        variant="outline"
-                                        disabled={page === 1}
-                                        onClick={() => setPage(p => p - 1)}
-                                        className="rounded-xl px-6 border-slate-200 text-brand-secondary font-black text-[10px] uppercase tracking-widest transition-all"
-                                    >
-                                        Précédent
-                                    </Button>
-                                    <div className="flex gap-2">
-                                        {Array.from({ length: pagination.pages }).map((_, i) => (
-                                            <button
-                                                key={i}
-                                                onClick={() => setPage(i + 1)}
-                                                className={cn(
-                                                    "w-10 h-10 rounded-xl font-black text-[10px] transition-all",
-                                                    page === i + 1 ? "bg-brand-secondary text-white shadow-lg" : "bg-slate-50 text-slate-400 hover:bg-slate-100"
-                                                )}
-                                            >
-                                                {i + 1}
-                                            </button>
-                                        ))}
-                                    </div>
-                                    <Button
-                                        variant="outline"
-                                        disabled={page === pagination.pages}
-                                        onClick={() => setPage(p => p + 1)}
-                                        className="rounded-xl px-6 border-slate-200 text-brand-secondary font-black text-[10px] uppercase tracking-widest transition-all"
-                                    >
-                                        Suivant
-                                    </Button>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Sidebar */}
-                        <aside className="lg:col-span-4 space-y-12">
-                            {/* Ad Banner Sidebar */}
-                            <AdBanner position="sidebar" className="mb-12" />
-
-                            {/* Premium Analysis Widget */}
-                            <div className="p-10 rounded-[3rem] bg-slate-900 text-white relative overflow-hidden group">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-brand-primary/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-brand-primary/30 transition-colors" />
-                                <Zap className="w-8 h-8 text-brand-accent mb-8" />
-                                <h4 className="text-xl font-bold mb-4">Analyses Premium</h4>
-                                <p className="text-slate-400 text-sm leading-relaxed mb-8">Accédez à nos rapports trimestriels détaillés sur l'état de la coopération en Afrique.</p>
-                                <Link to="/kiosk" className="w-full">
-                                    <Button
-                                        className="w-full rounded-2xl bg-white text-slate-900 hover:bg-brand-accent hover:text-white transition-all font-black text-[10px] uppercase tracking-widest h-14"
-                                    >
-                                        Découvrir les Rapports
-                                    </Button>
-                                </Link>
-                            </div>
-
-                            {/* FA TV & Podcast */}
-                            <div id="multimedia">
-                                <MultimediaSidebar />
-                            </div>
-
-                            {/* Digital Review Kiosk Sidebar Toggle/View */}
-                            <div id="reports" className="space-y-4">
-                                <ReviewKiosk />
-                                <Link to="/kiosk" className="flex items-center justify-center gap-3 text-[10px] font-black text-brand-primary uppercase tracking-[0.2em] py-5 border-2 border-brand-primary/10 bg-brand-primary/5 rounded-2xl hover:bg-brand-primary hover:text-white transition-all italic shadow-sm group">
-                                    Voir tout le kiosque <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                                </Link>
-                            </div>
-
-                            {/* Trending Topics / Sectors */}
-                            <div className="p-10 rounded-[3rem] border border-slate-100 bg-slate-50">
-                                <h4 className="text-[10px] font-black text-brand-primary uppercase tracking-[0.3em] mb-8 italic">Thématiques Clés</h4>
-                                <div className="flex flex-wrap gap-3">
-                                    {['Governance', 'Environment', 'Social Impact', 'Agro-Business', 'Financial Inclusion'].map(tag => (
-                                        <Link key={tag} to={`/news?search=${tag}`}>
-                                            <span className="px-5 py-2.5 rounded-full bg-white border border-slate-100 text-[10px] font-bold text-slate-500 hover:border-brand-primary hover:text-brand-primary transition-all cursor-pointer shadow-sm">
-                                                {tag}
+                ) : (
+                    <div className="space-y-12">
+                        {news[0] && (
+                            <section className="rounded-3xl overflow-hidden border border-surface-muted bg-white shadow-sm">
+                                <Link to={`/news/${news[0].slug}`} className="block">
+                                    <div className="relative aspect-[21/9] bg-slate-100">
+                                        <img
+                                            src={resolveImageUrl(news[0].imageUrl) || "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1400"}
+                                            alt={getLocalized(news[0].title, i18n.language)}
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                                        <div className="absolute bottom-0 left-0 right-0 p-8 md:p-10">
+                                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-accent">
+                                                {news[0].sector || "ACTUALITÉ"}
+                                            </p>
+                                            <h2 className="text-2xl md:text-4xl font-serif font-black text-white mt-3">
+                                                {getLocalized(news[0].title, i18n.language)}
+                                            </h2>
+                                            <p className="text-sm text-white/70 mt-3 line-clamp-2 max-w-3xl">
+                                                {getLocalized(news[0].excerpt, i18n.language) ||
+                                                    getLocalized(news[0].content, i18n.language)
+                                                        .replace(/<[^>]*>/g, "")
+                                                        .slice(0, 160) + "..."}
+                                            </p>
+                                            <span className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-brand-primary mt-5">
+                                                Lire l'article
                                             </span>
-                                        </Link>
-                                    ))}
-                                </div>
+                                        </div>
+                                    </div>
+                                </Link>
+                            </section>
+                        )}
+
+                        <section className="border-b border-surface-muted pb-6">
+                            <div className="flex flex-wrap gap-2">
+                                {sectors.map((s) => (
+                                    <button
+                                        key={s.id}
+                                        onClick={() => setSectorFilter(s.id)}
+                                        className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border ${
+                                            sectorFilter === s.id
+                                                ? "bg-brand-primary text-white border-brand-primary"
+                                                : "bg-slate-50 text-slate-500 border-slate-200 hover:border-brand-primary/30"
+                                        }`}
+                                    >
+                                        {s.label}
+                                    </button>
+                                ))}
                             </div>
-                        </aside>
+                        </section>
+
+                        <section>
+                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                                {news.slice(1).map((item) => (
+                                    <Link
+                                        key={item._id}
+                                        to={`/news/${item.slug}`}
+                                        className="group rounded-2xl border border-surface-muted bg-white overflow-hidden hover:shadow-xl hover:shadow-brand-primary/10 transition-all"
+                                    >
+                                        <div className="aspect-video bg-slate-100 overflow-hidden">
+                                            <img
+                                                src={resolveImageUrl(item.imageUrl)}
+                                                alt={getLocalized(item.title, i18n.language)}
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                            />
+                                        </div>
+                                        <div className="p-6">
+                                            <p className="text-[9px] font-black uppercase tracking-widest text-brand-primary">
+                                                {item.sector || "ACTUALITÉ"}
+                                            </p>
+                                            <h3 className="mt-3 text-lg font-serif font-bold text-brand-secondary group-hover:text-brand-primary transition-colors line-clamp-2">
+                                                {getLocalized(item.title, i18n.language)}
+                                            </h3>
+                                            <p className="mt-3 text-sm text-text-muted leading-relaxed line-clamp-3">
+                                                {getLocalized(item.excerpt, i18n.language) ||
+                                                    getLocalized(item.content, i18n.language)
+                                                        .replace(/<[^>]*>/g, "")
+                                                        .slice(0, 140) + "..."}
+                                            </p>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        </section>
+
+                        <section className="mt-12 rounded-3xl border border-surface-muted bg-white p-8 md:p-10">
+                            <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
+                                <div className="flex-1">
+                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-primary">
+                                        Stay Updated
+                                    </p>
+                                    <h3 className="text-2xl font-bold text-brand-secondary mt-3">
+                                        Abonnez-vous à la newsletter
+                                    </h3>
+                                    <p className="text-sm text-text-muted mt-3">
+                                        Recevez les insights, annonces et analyses directement dans votre boîte mail.
+                                    </p>
+                                    {latestNewsletter && (
+                                        <Link
+                                            to={`/newsletter/${latestNewsletter._id}`}
+                                            className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-brand-primary mt-4"
+                                        >
+                                            Lire la dernière newsletter
+                                        </Link>
+                                    )}
+                                </div>
+                                <form onSubmit={handleSubscribe} className="w-full md:w-auto flex flex-col sm:flex-row gap-3">
+                                    <input
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        placeholder="Votre email"
+                                        className="w-full sm:w-72 px-4 py-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20"
+                                    />
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="px-6 py-3 rounded-xl bg-brand-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-brand-secondary transition-colors"
+                                    >
+                                        {isSubmitting ? "Envoi..." : "S'abonner"}
+                                    </button>
+                                </form>
+                            </div>
+                        </section>
                     </div>
-                </div>
-            </section>
-        </div>
+                ),
+                sidebar: (
+                    <SidebarStack>
+                        <section className="rounded-2xl border border-surface-muted bg-white p-6">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-primary">Related Media</h3>
+                                <Link to="/multimedia" className="text-[9px] font-bold uppercase tracking-widest text-text-muted hover:text-brand-primary">
+                                    Voir tout
+                                </Link>
+                            </div>
+                            <div className="space-y-4">
+                                {(relatedMedia || []).slice(0, 2).map((item) => (
+                                    <a
+                                        key={item._id}
+                                        href={item.embedUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex gap-4 items-center group"
+                                    >
+                                        <div className="w-16 h-12 bg-slate-100 overflow-hidden">
+                                            <img
+                                                src={resolveImageUrl(item.coverImageUrl)}
+                                                alt={item.title}
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                            />
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="text-[9px] font-bold uppercase tracking-widest text-brand-primary">
+                                                {item.type}
+                                            </p>
+                                            <p className="text-sm font-bold text-brand-secondary line-clamp-2 group-hover:text-brand-primary transition-colors">
+                                                {item.title}
+                                            </p>
+                                        </div>
+                                        <Play className="w-4 h-4 text-brand-primary" />
+                                    </a>
+                                ))}
+                            </div>
+                        </section>
+
+                        <section className="rounded-2xl border border-surface-muted bg-white p-6">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-primary">Publications</h3>
+                                <Link to="/kiosk" className="text-[9px] font-bold uppercase tracking-widest text-text-muted hover:text-brand-primary">
+                                    Voir tout
+                                </Link>
+                            </div>
+                            <div className="space-y-4">
+                                {magazines.slice(0, 2).map((mag) => (
+                                    <a
+                                        key={mag._id}
+                                        href={mag.pdfUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex gap-4 items-center group"
+                                    >
+                                        <div className="w-12 h-16 bg-slate-100 overflow-hidden border border-surface-muted">
+                                            <img
+                                                src={resolveImageUrl(mag.coverImageUrl)}
+                                                alt={mag.title}
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                            />
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="text-[9px] font-bold uppercase tracking-widest text-text-muted">
+                                                {new Date(mag.publishDate).toLocaleDateString(i18n.language, {
+                                                    month: "long",
+                                                    year: "numeric",
+                                                })}
+                                            </p>
+                                            <p className="text-sm font-bold text-brand-secondary line-clamp-2 group-hover:text-brand-primary transition-colors">
+                                                {mag.title}
+                                            </p>
+                                        </div>
+                                    </a>
+                                ))}
+                            </div>
+                        </section>
+
+                        <section className="rounded-2xl border border-surface-muted bg-white p-6">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-primary">Upcoming Events</h3>
+                                <Link to="/events" className="text-[9px] font-bold uppercase tracking-widest text-text-muted hover:text-brand-primary">
+                                    Voir tout
+                                </Link>
+                            </div>
+                            <div className="space-y-4">
+                                {events.slice(0, 2).map((ev) => (
+                                    <Link key={ev._id} to={`/events/${ev._id}`} className="block group">
+                                        <p className="text-[9px] font-bold uppercase tracking-widest text-text-muted flex items-center gap-2">
+                                            <Calendar className="w-3.5 h-3.5 text-brand-primary" />
+                                            {new Date(ev.startDate).toLocaleDateString(i18n.language, {
+                                                day: "numeric",
+                                                month: "short",
+                                            })}
+                                            <span className="flex items-center gap-1 text-[8px]">
+                                                <MapPin className="w-3 h-3" /> {getLocalized(ev.location, i18n.language)}
+                                            </span>
+                                        </p>
+                                        <p className="text-sm font-bold text-brand-secondary line-clamp-2 group-hover:text-brand-primary transition-colors">
+                                            {getLocalized(ev.title, i18n.language)}
+                                        </p>
+                                    </Link>
+                                ))}
+                            </div>
+                        </section>
+
+                        <AdBanner position="sidebar" />
+                    </SidebarStack>
+                ),
+            }}
+        />
     );
 }
 
 export default NewsPage;
+

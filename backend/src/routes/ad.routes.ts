@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { getRandomAd, trackAdClick, getAds, createAd, updateAd, deleteAd } from "../controllers/ad.controller";
-import { protect, authorize } from "../middleware/authMiddleware";
+import { protect } from "../middleware/authMiddleware";
+import { authorize } from "../middleware/roleMiddleware";
 
 const router = Router();
 

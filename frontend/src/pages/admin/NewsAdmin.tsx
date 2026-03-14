@@ -21,8 +21,12 @@ import api from '../../services/api';
 import { cn } from '../../lib/utils';
 import { resolveImageUrl } from '../../lib/image';
 import { useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 const NewsAdmin = () => {
+    const { i18n } = useTranslation();
+    const lang = i18n.language.startsWith('fr') ? 'fr' : 'en';
+
     const [page, setPage] = useState(1);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingArticle, setEditingArticle] = useState<any>(null);
@@ -174,7 +178,7 @@ const NewsAdmin = () => {
                         <Card key={item._id} className="group overflow-hidden rounded-[2.5rem] border-slate-200/60 hover:shadow-2xl hover:shadow-slate-200/60 transition-all duration-500 flex flex-col h-full bg-white">
                             <div className="aspect-[16/10] relative overflow-hidden shrink-0">
                                 {item.imageUrl ? (
-                                    <img src={resolveImageUrl(item.imageUrl)} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                    <img src={resolveImageUrl(item.imageUrl)} alt={item.title[lang]} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                                 ) : (
                                     <div className="w-full h-full bg-slate-50 flex items-center justify-center text-slate-200">
                                         <Newspaper className="w-12 h-12" />
@@ -208,12 +212,22 @@ const NewsAdmin = () => {
                                     </span>
                                 </div>
 
+                                <div className="flex flex-wrap gap-2 mb-4">
+                                    <span className="text-[8px] font-black bg-brand-primary/5 text-brand-primary border border-brand-primary/10 px-2 py-0.5 rounded-sm uppercase tracking-widest">{item.sector}</span>
+                                    {item.category && (
+                                        <span className="text-[8px] font-black bg-slate-100 text-slate-600 border border-slate-200 px-2 py-0.5 rounded-sm uppercase tracking-widest">{(item.category as any).name[lang]}</span>
+                                    )}
+                                    {item.subCategory && (
+                                        <span className="text-[8px] font-black bg-brand-accent/10 text-brand-accent border border-brand-accent/20 px-2 py-0.5 rounded-sm uppercase tracking-widest">{(item.subCategory as any).name[lang]}</span>
+                                    )}
+                                </div>
+
                                 <h3 className="text-xl font-bold text-brand-secondary group-hover:text-brand-primary transition-colors leading-snug line-clamp-2 mb-4">
-                                    {item.title}
+                                    {item.title[lang]}
                                 </h3>
 
                                 <p className="text-sm text-slate-400 font-medium line-clamp-2 mb-8 flex-1">
-                                    {item.excerpt || item.content.substring(0, 100) + '...'}
+                                    {item.excerpt[lang] || item.content[lang].substring(0, 100) + '...'}
                                 </p>
 
                                 <div className="flex items-center justify-between pt-6 border-t border-slate-100 mt-auto">

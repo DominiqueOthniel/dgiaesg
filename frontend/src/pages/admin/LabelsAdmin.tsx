@@ -16,11 +16,13 @@ import { toast } from 'react-hot-toast';
 import { Modal } from '../../components/Modal';
 import { LabelForm } from '../../components/LabelForm';
 import api from '../../services/api';
-import { cn } from '../../lib/utils';
 import { resolveImageUrl } from '../../lib/image';
+import { useTranslation } from "react-i18next";
 import { useQueryClient } from '@tanstack/react-query';
+import { cn, getLocalized } from '../../lib/utils';
 
 const LabelsAdmin = () => {
+    const { i18n } = useTranslation();
     const [searchTerm, setSearchTerm] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingLabel, setEditingLabel] = useState<any>(null);
@@ -80,8 +82,8 @@ const LabelsAdmin = () => {
     };
 
     const filteredLabels = labels?.filter(l =>
-        l.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        l.sector.toLowerCase().includes(searchTerm.toLowerCase())
+        getLocalized(l.name, i18n.language).toLowerCase().includes(searchTerm.toLowerCase()) ||
+        getLocalized(l.sector, i18n.language).toLowerCase().includes(searchTerm.toLowerCase())
     ) || [];
 
     return (
@@ -178,22 +180,22 @@ const LabelsAdmin = () => {
                                     <tr key={label._id} className="hover:bg-slate-50/50 transition-colors group">
                                         <td className="px-10 py-8">
                                             <div className="flex items-center gap-6">
-                                                <div className="w-14 h-14 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-center p-3 transition-all group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-slate-200 group-hover:bg-white">
+                                                 <div className="w-14 h-14 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-center p-3 transition-all group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-slate-200 group-hover:bg-white">
                                                     {label.logoUrl ? (
-                                                        <img src={resolveImageUrl(label.logoUrl)} alt={label.name} className="w-full h-full object-cover" />
+                                                        <img src={resolveImageUrl(label.logoUrl)} alt={getLocalized(label.name, i18n.language)} className="w-full h-full object-cover" />
                                                     ) : (
                                                         <Award className="w-6 h-6 text-slate-200" />
                                                     )}
                                                 </div>
-                                                <div className="space-y-1">
-                                                    <span className="text-sm font-bold text-brand-secondary block group-hover:text-brand-primary transition-colors">{label.name}</span>
+                                                 <div className="space-y-1">
+                                                    <span className="text-sm font-bold text-brand-secondary block group-hover:text-brand-primary transition-colors">{getLocalized(label.name, i18n.language)}</span>
                                                     <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">ID: {label._id.substring(0, 8)}</span>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-10 py-8">
+                                         <td className="px-10 py-8">
                                             <Badge variant="outline" className="rounded-full px-3 py-1 border-slate-200 text-slate-500 font-bold text-[9px] uppercase tracking-widest bg-slate-50/50">
-                                                {label.sector}
+                                                {getLocalized(label.sector, i18n.language)}
                                             </Badge>
                                         </td>
                                         <td className="px-10 py-8">

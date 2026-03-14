@@ -77,12 +77,3 @@ export const optionalProtect = asyncHandler(
     }
 );
 
-export const authorize = (...roles: string[]) => {
-    return (req: Request, _res: Response, next: NextFunction) => {
-        const user = (req as any).user;
-        if (!user || !roles.includes(user.role)) {
-            throw new AppError("Not authorized for this action", 403);
-        }
-        next();
-    };
-};

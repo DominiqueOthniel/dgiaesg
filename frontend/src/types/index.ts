@@ -1,7 +1,9 @@
+export type LocalizedString = string | { fr: string; en: string; [key: string]: string };
+
 export interface ILabel {
   _id: string;
-  name: string;
-  description: string;
+  name: LocalizedString;
+  description: LocalizedString;
   logoUrl?: string | null;
   sector: string;
   status: "active" | "inactive";
@@ -13,10 +15,10 @@ export interface ILabel {
 
 export interface ICompany {
   _id: string;
-  name: string;
-  description: string;
-  sector: string;
-  region: string;
+  name: LocalizedString;
+  description: LocalizedString;
+  sector: LocalizedString;
+  region: LocalizedString;
   logoUrl?: string | null;
   website?: string | null;
   labelId: string | ILabel;
@@ -25,7 +27,7 @@ export interface ICompany {
   score: number | null;
   socialScore?: number;
   governanceScore?: number;
-  status: "certified" | "pending" | "expired";
+  status: "certified" | "pending" | "expired" | LocalizedString;
   deletedAt?: string;
   createdAt: string;
   updatedAt: string;
@@ -35,8 +37,8 @@ export interface ICriteria {
   _id: string;
   labelId: string | ILabel;
   category: "governance" | "environment" | "social" | "economic" | "quality";
-  title: string;
-  description: string;
+  title: LocalizedString;
+  description: LocalizedString;
   weight: number;
   createdAt: string;
   updatedAt: string;
@@ -44,13 +46,14 @@ export interface ICriteria {
 
 export interface INews {
   _id: string;
-  title: string;
+  title: { fr: string; en: string };
   slug: string;
-  content: string;
-  excerpt: string;
+  content: { fr: string; en: string };
+  excerpt: { fr: string; en: string };
   author: string;
   imageUrl: string;
-  category?: string;
+  category?: string | { _id: string; name: string };
+  subCategory?: string | { _id: string; name: string };
   sector?: string;
   readingTime?: string;
   published: boolean;
@@ -73,14 +76,36 @@ export interface ICompanyCriteria {
 
 export interface IMultimedia {
   _id: string;
-  title: string;
-  description: string;
+  title: LocalizedString;
+  description: LocalizedString;
   type: "video" | "audio";
   embedUrl: string;
   coverImageUrl: string;
   sector: "finance" | "governance" | "tech" | "energy" | "leadership";
   featured: boolean;
   published: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IEvent {
+  _id: string;
+  title: LocalizedString;
+  description: LocalizedString;
+  type: "workshop" | "conference" | "training" | "networking" | "certification" | "other";
+  startDate: string;
+  endDate: string;
+  location: LocalizedString;
+  organizer: LocalizedString;
+  imageUrl?: string;
+  registrationUrl?: string;
+  agenda: {
+    time: string;
+    label: LocalizedString;
+    description?: LocalizedString;
+  }[];
+  published: boolean;
+  featured: boolean;
   createdAt: string;
   updatedAt: string;
 }

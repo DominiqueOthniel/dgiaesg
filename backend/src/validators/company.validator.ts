@@ -24,7 +24,10 @@ export const createCompanySchema = z.object({
   certificationDate: z.string().min(1, "Certification date is required"),
   expiryDate: z.string().min(1, "Expiry date is required"),
   score: z.number().min(0).max(200).nullable().optional(),
+  socialScore: z.number().min(0).max(100).optional(),
+  governanceScore: z.number().min(0).max(100).optional(),
   status: z.enum(["certified", "pending", "expired"]).optional(),
+  ownerId: z.string().nullable().optional(),
 });
 
 export const updateCompanySchema = createCompanySchema.partial();

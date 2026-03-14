@@ -26,8 +26,8 @@ export const errorHandler = (
   const statusCode = err.statusCode || 500;
   const message = err.message || "Internal Server Error";
 
-  if (statusCode === 500) {
-    console.error(`[SERVER_ERROR] ${err.stack || err.message}`);
+  if (statusCode === 500 || (process.env.NODE_ENV === "development" && statusCode >= 400)) {
+    console.error(`[ERROR ${statusCode}] ${err.stack || err.message}`);
   }
 
   res.status(statusCode).json({

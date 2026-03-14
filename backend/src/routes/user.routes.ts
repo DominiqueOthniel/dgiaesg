@@ -64,7 +64,7 @@ router.get("/saved-items", getSavedItems);
 router.get("/saved-articles", getSavedItems);
 
 // Admin Routes
-import { authorize } from "../middleware/authMiddleware";
+import { authorize } from "../middleware/roleMiddleware";
 import { getUsers, updateUserSubscription } from "../controllers/user.controller";
 
 /**

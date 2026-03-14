@@ -10,14 +10,15 @@ import { resolveImageUrl } from "../lib/image";
 import { toast } from "react-hot-toast";
 import { Button } from "../components/ui/Button";
 import { useState } from "react";
-import { cn } from "../lib/utils";
+import { cn, getLocalized } from "../lib/utils";
+import { useTranslation } from "react-i18next";
 
 function SavedArticles() {
-    const { isAuthenticated, isLoading: authLoading, updateSavedArticles, updateSavedLabels } = useAuth();
+    const { user, isAuthenticated, isLoading: authLoading, updateSavedArticles, updateSavedLabels } = useAuth();
     const [activeTab, setActiveTab] = useState<'articles' | 'labels'>('articles');
 
     const { data: savedItems, isLoading, refetch } = useQuery({
-        queryKey: ["savedItems"],
+        queryKey: ["savedItems", user?.savedArticles, user?.savedLabels],
         queryFn: async () => {
             const response = await api.get("/users/saved-items");
             return response.data.data;
@@ -167,6 +168,7 @@ function EmptyState({ message, link, label }: { message: string, link: string, l
 }
 
 function SavedArticleCard({ item, onRemove }: { item: any, onRemove: (id: string, e: React.MouseEvent) => void }) {
+    const { i18n } = useTranslation();
     return (
         <motion.div
             layout
@@ -178,7 +180,7 @@ function SavedArticleCard({ item, onRemove }: { item: any, onRemove: (id: string
             <Link to={`/news/${item.slug}`} className="block h-full relative">
                 <Card className="rounded-[2.5rem] border-slate-100 shadow-xl shadow-slate-200/40 hover:shadow-2xl hover:shadow-brand-primary/10 transition-all duration-500 overflow-hidden flex flex-col h-full bg-white group-hover:-translate-y-2">
                     <div className="relative aspect-[16/10] overflow-hidden">
-                        <img src={resolveImageUrl(item.imageUrl)} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                        <img src={resolveImageUrl(item.imageUrl)} alt={getLocalized(item.title, i18n.language)} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                         <button
                             onClick={(e) => onRemove(item._id, e)}
                             className="absolute top-6 right-6 w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white hover:bg-red-500 hover:border-red-500 transition-all z-20"
@@ -194,10 +196,10 @@ function SavedArticleCard({ item, onRemove }: { item: any, onRemove: (id: string
                     <CardContent className="p-8 flex flex-col flex-1">
                         <div className="flex items-center gap-4 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 italic">
                             <Calendar className="w-3.5 h-3.5 text-brand-primary" />
-                            {item.publishedAt ? new Date(item.publishedAt).toLocaleDateString("fr-FR", { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase() : "RECENT"}
+                            {item.publishedAt ? new Date(item.publishedAt).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase() : "RECENT"}
                         </div>
                         <h3 className="text-xl font-black text-brand-secondary mb-4 leading-tight group-hover:text-brand-primary transition-colors uppercase italic tracking-tighter line-clamp-2">
-                            {item.title}
+                            {getLocalized(item.title, i18n.language)}
                         </h3>
                         <div className="mt-auto pt-6 border-t border-slate-50">
                             <span className="inline-flex items-center gap-2 text-[10px] font-black text-brand-primary uppercase tracking-[0.2em] group-hover:gap-4 transition-all italic">
@@ -212,6 +214,7 @@ function SavedArticleCard({ item, onRemove }: { item: any, onRemove: (id: string
 }
 
 function SavedLabelCard({ item, onRemove }: { item: any, onRemove: (id: string, e: React.MouseEvent) => void }) {
+    const { i18n } = useTranslation();
     return (
         <motion.div
             layout
@@ -224,7 +227,7 @@ function SavedLabelCard({ item, onRemove }: { item: any, onRemove: (id: string, 
                 <Card className="rounded-[2.5rem] border-slate-100 shadow-xl shadow-slate-200/40 hover:shadow-2xl hover:shadow-brand-primary/10 transition-all duration-500 overflow-hidden flex flex-col h-full bg-white group-hover:-translate-y-2">
                     <div className="relative aspect-[16/10] bg-brand-secondary overflow-hidden flex items-center justify-center p-12">
                         {item.logoUrl ? (
-                            <img src={resolveImageUrl(item.logoUrl)} alt={item.name} className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110" />
+                            <img src={resolveImageUrl(item.logoUrl)} alt={getLocalized(item.name, i18n.language)} className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110" />
                         ) : (
                             <Library className="w-20 h-20 text-white/10" />
                         )}
@@ -242,10 +245,10 @@ function SavedLabelCard({ item, onRemove }: { item: any, onRemove: (id: string, 
                             </Badge>
                         </div>
                         <h3 className="text-xl font-black text-brand-secondary mb-4 leading-tight group-hover:text-brand-primary transition-colors uppercase italic tracking-tighter">
-                            {item.name}
+                            {getLocalized(item.name, i18n.language)}
                         </h3>
                         <p className="text-slate-500 text-sm font-medium leading-relaxed line-clamp-2 mb-6">
-                            {item.description}
+                            {getLocalized(item.description, i18n.language)}
                         </p>
                         <div className="mt-auto pt-6 border-t border-slate-50">
                             <span className="inline-flex items-center gap-2 text-[10px] font-black text-brand-primary uppercase tracking-[0.2em] group-hover:gap-4 transition-all italic">

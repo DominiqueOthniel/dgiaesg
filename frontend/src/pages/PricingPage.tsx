@@ -10,6 +10,7 @@ const plans = [
     {
         name: "Lecteur Libre",
         price: "0",
+        duration: "/ mois",
         description: "L'essentiel de l'ESG pour rester informé au quotidien.",
         icon: Globe,
         color: "slate",
@@ -21,12 +22,13 @@ const plans = [
             "Flux Multimedia standard"
         ],
         buttonText: "Compte Gratuit",
-        href: "/login",
+        href: "/register",
         popular: false
     },
     {
         name: "Réseau PRO",
         price: "15 000",
+        duration: " FCFA / mois",
         description: "La puissance analytique pour les décideurs et experts ESG.",
         icon: Crown,
         color: "brand",
@@ -38,13 +40,14 @@ const plans = [
             "Kiosque Revue Mensuelle PDF",
             "Support expert dédié"
         ],
-        buttonText: "Passer à Pro",
-        href: "/contact",
+        buttonText: "S'abonner",
+        href: "/register",
         popular: true
     },
     {
         name: "Entreprise",
-        price: "Custom",
+        price: "Sur devis",
+        duration: "",
         description: "Solution complète pour les organisations et les labels.",
         icon: Building2,
         color: "secondary",
@@ -114,11 +117,11 @@ export default function PricingPage() {
 
                                         <div className="mb-10">
                                             <h3 className="text-2xl font-bold text-brand-secondary mb-3">{plan.name}</h3>
-                                            <div className="flex items-baseline gap-1">
+                                            <div className="flex items-baseline gap-1 flex-wrap">
                                                 <span className="text-5xl font-black text-brand-secondary tracking-tight">
-                                                    {plan.price === 'Custom' ? 'Sur Devis' : `${plan.price} FCFA`}
+                                                    {plan.price === "Sur devis" ? "Sur devis" : plan.price === "0" ? "Gratuit" : `${plan.price} FCFA`}
                                                 </span>
-                                                {plan.price !== 'Custom' && <span className="text-slate-400 font-bold uppercase text-xs tracking-widest italic">/ MOIS</span>}
+                                                {plan.duration && <span className="text-slate-400 font-bold uppercase text-xs tracking-widest italic">{plan.duration}</span>}
                                             </div>
                                             <p className="mt-4 text-slate-500 font-medium leading-relaxed">{plan.description}</p>
                                         </div>

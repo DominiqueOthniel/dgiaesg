@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { upload } from '../middleware/upload.middleware';
-import { protect, authorize } from '../middleware/authMiddleware';
+import { protect } from '../middleware/authMiddleware';
+import { authorize } from '../middleware/roleMiddleware';
 import { AppError } from '../middleware/errorHandler';
 
 const router = Router();
@@ -24,7 +25,7 @@ const router = Router();
  *     responses:
  *       200: {description: File uploaded, returns URL}
  */
-router.post('/', protect, authorize('admin'), upload.single('image'), (req: Request, res: Response) => {
+router.post('/', protect, authorize('admin', 'pro', 'editor', 'viewer'), upload.single('image'), (req: Request, res: Response) => {
     if (!req.file) {
         throw new AppError('Please upload a file', 400);
     }

@@ -21,15 +21,17 @@ import { useLabels } from '../../hooks/useLabels';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
+import { useTranslation } from "react-i18next";
 import { toast } from 'react-hot-toast';
 import { Modal } from '../../components/Modal';
 import { CompanyForm, type CompanyFormData } from '../../components/CompanyForm';
 import api from '../../services/api';
-import { cn } from '../../lib/utils';
+import { cn, getLocalized } from '../../lib/utils';
 import { resolveImageUrl } from '../../lib/image';
 import { useQueryClient } from '@tanstack/react-query';
 
 const CompaniesAdmin = () => {
+    const { i18n } = useTranslation();
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(1);
     const [labelFilter, setLabelFilter] = useState('');
@@ -37,6 +39,7 @@ const CompaniesAdmin = () => {
     const [editingCompany, setEditingCompany] = useState<any>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showDeleted, setShowDeleted] = useState(false);
+    const [users, setUsers] = useState<any[]>([]);
     const queryClient = useQueryClient();
 
     const { data: companiesData, isLoading } = useCompanies({
@@ -51,12 +54,27 @@ const CompaniesAdmin = () => {
     const companies = companiesData?.data || [];
     const pagination = companiesData?.pagination;
 
+    const fetchUsers = async () => {
+        try {
+            const response = await api.get('/users');
+            if (response.data.success) {
+                setUsers(response.data.data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch users', error);
+        }
+    };
+
     // Scroll to top when page changes
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         const mainEl = document.querySelector('main');
         if (mainEl) mainEl.scrollTop = 0;
     }, [page]);
+
+    useEffect(() => {
+        fetchUsers();
+    }, []);
 
     const handleCreateCompany = () => {
         setEditingCompany(null);
@@ -180,8 +198,8 @@ const CompaniesAdmin = () => {
                         onChange={(e) => setLabelFilter(e.target.value)}
                     >
                         <option value="">Tous les protocoles</option>
-                        {labels?.map(l => (
-                            <option key={l._id} value={l._id}>{l.name}</option>
+                         {labels?.map(l => (
+                            <option key={l._id} value={l._id}>{getLocalized(l.name, i18n.language)}</option>
                         ))}
                     </select>
                 </div>
@@ -237,15 +255,15 @@ const CompaniesAdmin = () => {
                                     <tr key={company._id} className="hover:bg-slate-50/50 transition-colors group">
                                         <td className="px-10 py-8">
                                             <div className="flex items-center gap-6">
-                                                <div className="w-16 h-16 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-center p-3 relative group-hover:scale-110 group-hover:shadow-lg group-hover:bg-white transition-all">
+                                                 <div className="w-16 h-16 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-center p-3 relative group-hover:scale-110 group-hover:shadow-lg group-hover:bg-white transition-all">
                                                     {company.logoUrl ? (
-                                                        <img src={resolveImageUrl(company.logoUrl)} alt={company.name} className="w-full h-full object-cover" />
+                                                        <img src={resolveImageUrl(company.logoUrl)} alt={getLocalized(company.name, i18n.language)} className="w-full h-full object-cover" />
                                                     ) : (
                                                         <Building2 className="w-6 h-6 text-slate-200" />
                                                     )}
                                                 </div>
-                                                <div className="space-y-1">
-                                                    <p className="text-sm font-bold text-brand-secondary group-hover:text-brand-primary transition-colors">{company.name}</p>
+                                                 <div className="space-y-1">
+                                                    <p className="text-sm font-bold text-brand-secondary group-hover:text-brand-primary transition-colors">{getLocalized(company.name, i18n.language)}</p>
                                                     {company.website && (
                                                         <a href={company.website} target="_blank" rel="noreferrer" className="text-[9px] text-slate-400 hover:text-brand-primary font-bold uppercase tracking-widest flex items-center gap-2 group/link">
                                                             <ExternalLink className="w-3 h-3 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" /> Accéder au portail
@@ -256,8 +274,8 @@ const CompaniesAdmin = () => {
                                         </td>
                                         <td className="px-10 py-8">
                                             <div className="space-y-3 max-w-[200px]">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest truncate">{(company.labelId as any)?.name || 'Sans protocole'}</span>
+                                                 <div className="flex items-center justify-between">
+                                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest truncate">{getLocalized((company.labelId as any)?.name, i18n.language) || 'Sans protocole'}</span>
                                                     <span className="text-[10px] font-bold text-brand-primary">{company.score}%</span>
                                                 </div>
                                                 <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
@@ -274,9 +292,9 @@ const CompaniesAdmin = () => {
                                                 <div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400">
                                                     <MapPin className="w-4 h-4" />
                                                 </div>
-                                                <div className="space-y-0.5">
-                                                    <p className="text-[11px] font-bold text-slate-600 uppercase tracking-widest">{company.region}</p>
-                                                    <p className="text-[9px] font-medium text-slate-400 uppercase tracking-widest">{company.sector}</p>
+                                                 <div className="space-y-0.5">
+                                                    <p className="text-[11px] font-bold text-slate-600 uppercase tracking-widest">{getLocalized(company.region, i18n.language)}</p>
+                                                    <p className="text-[9px] font-medium text-slate-400 uppercase tracking-widest">{getLocalized(company.sector, i18n.language)}</p>
                                                 </div>
                                             </div>
                                         </td>
@@ -370,6 +388,7 @@ const CompaniesAdmin = () => {
                     <CompanyForm
                         initialData={editingCompany}
                         labels={labels || []}
+                        users={users}
                         onSubmit={handleFormSubmit as any}
                         isLoading={isSubmitting}
                     />

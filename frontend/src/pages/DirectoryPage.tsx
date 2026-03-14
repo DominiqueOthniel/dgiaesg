@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import {
     Search,
     Filter,
@@ -13,18 +14,19 @@ import {
     Zap
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { useCompanies } from "../hooks/useCompanies";
 import { useLabels } from "../hooks/useLabels";
 import { Card, CardContent } from "../components/ui/Card";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
-import { cn } from "../lib/utils";
+import { cn, getLocalized } from "../lib/utils";
 import { resolveImageUrl } from "../lib/image";
 import AdBanner from "../components/AdBanner";
 import { BackButton } from "../components/ui/BackButton";
 
 function DirectoryPage() {
+    const { i18n } = useTranslation();
     const [view, setView] = useState<"grid" | "list">("grid");
     const [filters, setFilters] = useState({
         sector: "",
@@ -41,9 +43,10 @@ function DirectoryPage() {
 
     const { data: labels } = useLabels();
     const companies = companiesData?.data || [];
-    const filteredCompanies = companies.filter(c =>
-        c.name.toLowerCase().includes(filters.searchTerm.toLowerCase())
-    );
+    const filteredCompanies = companies.filter(c => {
+        const name = getLocalized(c.name, i18n.language);
+        return name.toLowerCase().includes(filters.searchTerm.toLowerCase());
+    });
 
     return (
         <div className="bg-slate-50 min-h-screen">
@@ -115,7 +118,11 @@ function DirectoryPage() {
                                                 value={filters.labelId}
                                             >
                                                 <option value="">Tous les labels</option>
-                                                {labels?.map(l => <option key={l._id} value={l._id}>{l.name}</option>)}
+                                                {labels?.map(l => (
+                                                    <option key={l._id} value={l._id}>
+                                                        {getLocalized(l.name, i18n.language)}
+                                                    </option>
+                                                ))}
                                             </select>
                                         </div>
 
@@ -224,22 +231,22 @@ function DirectoryPage() {
                                                         <div className="flex items-start justify-between mb-8">
                                                             <div className="w-16 h-16 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center font-bold text-slate-300 text-xs overflow-hidden group-hover:bg-brand-primary/5 group-hover:border-brand-primary/10 transition-colors">
                                                                 {company.logoUrl ? (
-                                                                    <img src={resolveImageUrl(company.logoUrl)} alt={company.name} className="w-full h-full object-cover transition-all" />
-                                                                ) : company.name.substring(0, 2).toUpperCase()}
+                                                                    <img src={resolveImageUrl(company.logoUrl)} alt={getLocalized(company.name, i18n.language)} className="w-full h-full object-cover transition-all" />
+                                                                ) : getLocalized(company.name, i18n.language).substring(0, 2).toUpperCase()}
                                                             </div>
                                                             <div className="text-right space-y-3">
                                                                 <Badge variant="outline" className={cn(
                                                                     "rounded-full px-3 py-1 font-bold text-[10px] uppercase tracking-wider",
-                                                                    (company?.status || 'certified') === 'certified'
+                                                                    getLocalized(company.status, i18n.language) === 'certified'
                                                                         ? "bg-emerald-50 text-emerald-600 border-emerald-100"
                                                                         : "bg-red-50 text-red-600 border-red-100"
                                                                 )}>
-                                                                    {company?.status || "Inactif"}
+                                                                    {getLocalized(company.status, i18n.language) || "Inactif"}
                                                                 </Badge>
-                                                                {typeof company?.labelId !== 'string' && company?.labelId && (
+                                                                {typeof company?.labelId === 'object' && company?.labelId && (
                                                                     <div className="flex items-center justify-end gap-1.5 text-[10px] font-bold text-brand-primary uppercase tracking-widest">
                                                                         <Zap className="w-3 h-3 fill-brand-primary" />
-                                                                        {company.labelId.name}
+                                                                        {getLocalized((company.labelId as any).name, i18n.language)}
                                                                     </div>
                                                                 )}
                                                             </div>
@@ -247,16 +254,16 @@ function DirectoryPage() {
 
                                                         <div className="space-y-4 mb-10 flex-1">
                                                             <h3 className="text-2xl font-bold text-brand-secondary group-hover:text-brand-primary transition-colors leading-tight">
-                                                                {company?.name}
+                                                                {getLocalized(company.name, i18n.language)}
                                                             </h3>
                                                             <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-slate-400">
                                                                 <span className="flex items-center gap-1.5 bg-slate-100 px-2.5 py-1 rounded-lg">
                                                                     <Briefcase className="w-3 h-3" />
-                                                                    {company?.sector || "Secteur"}
+                                                                    {getLocalized(company.sector, i18n.language) || "Secteur"}
                                                                 </span>
                                                                 <span className="flex items-center gap-1.5 bg-slate-100 px-2.5 py-1 rounded-lg">
                                                                     <MapPin className="w-3 h-3" />
-                                                                    {company?.region || "Localisation"}
+                                                                    {getLocalized(company.region, i18n.language) || "Localisation"}
                                                                 </span>
                                                             </div>
                                                         </div>

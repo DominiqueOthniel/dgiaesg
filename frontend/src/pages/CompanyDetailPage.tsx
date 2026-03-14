@@ -1,4 +1,5 @@
 import { useParams, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
     Building2,
     MapPin,
@@ -20,10 +21,12 @@ import { useLabel } from "../hooks/useLabels";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
 import { Card, CardContent } from "../components/ui/Card";
-import { cn } from "../lib/utils";
+import { cn, getLocalized } from "../lib/utils";
 import { resolveImageUrl } from "../lib/image";
+import DigitalBadge from "../components/badges/DigitalBadge";
 
 function CompanyDetailPage() {
+    const { i18n } = useTranslation();
     const { id } = useParams<{ id: string }>();
     const { data: company, isLoading: companyLoading } = useCompany(id);
     const labelId = typeof company?.labelId === 'string' ? company.labelId : company?.labelId?._id;
@@ -74,7 +77,7 @@ function CompanyDetailPage() {
                             className="w-32 h-32 md:w-48 md:h-48 bg-white rounded-[2rem] flex-shrink-0 flex items-center justify-center p-8 shadow-2xl shadow-black/20"
                         >
                             {company.logoUrl ? (
-                                <img src={resolveImageUrl(company.logoUrl)} alt={company.name} className="w-full h-full object-cover" />
+                                <img src={resolveImageUrl(company.logoUrl)} alt={getLocalized(company.name, i18n.language)} className="w-full h-full object-cover" />
                             ) : (
                                 <Building2 className="w-20 h-20 text-slate-200" />
                             )}
@@ -84,21 +87,21 @@ function CompanyDetailPage() {
                             <div className="flex flex-wrap items-center gap-4 mb-6">
                                 <Badge variant="outline" className={cn(
                                     "rounded-full px-4 py-1.5 font-bold text-xs uppercase tracking-wider",
-                                    (company?.status || 'certified') === 'certified'
+                                    getLocalized(company?.status, i18n.language) === 'certified'
                                         ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                                         : "bg-red-500/10 text-red-400 border-red-500/20"
                                 )}>
-                                    Certifié {(company?.status || "Inactif")}
+                                    Certifié {getLocalized(company?.status, i18n.language) || "Inactif"}
                                 </Badge>
                                 <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
-                                    <MapPin className="w-4 h-4 text-brand-accent" /> {company.region}
+                                    <MapPin className="w-4 h-4 text-brand-accent" /> {getLocalized(company.region, i18n.language)}
                                 </div>
                                 <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
-                                    <Briefcase className="w-4 h-4 text-brand-accent" /> {company.sector}
+                                    <Briefcase className="w-4 h-4 text-brand-accent" /> {getLocalized(company.sector, i18n.language)}
                                 </div>
                             </div>
-                            <h1 className="text-4xl md:text-7xl font-bold tracking-tight text-white mb-6 leading-tight">
-                                {company.name}
+                             <h1 className="text-4xl md:text-7xl font-bold tracking-tight text-white mb-6 leading-tight">
+                                {getLocalized(company.name, i18n.language)}
                             </h1>
                         </div>
 
@@ -132,7 +135,7 @@ function CompanyDetailPage() {
                                     </div>
                                     <div className="prose prose-slate max-w-none break-words overflow-hidden">
                                         <p className="text-xl md:text-2xl font-medium text-brand-secondary leading-relaxed first-letter:text-5xl first-letter:font-bold first-letter:text-brand-primary first-letter:mr-3 first-letter:float-left">
-                                            {company.description}
+                                            {getLocalized(company.description, i18n.language)}
                                         </p>
                                     </div>
                                 </CardContent>
@@ -190,6 +193,13 @@ function CompanyDetailPage() {
 
                         {/* Validation & Details Sidebar */}
                         <aside className="lg:col-span-4 space-y-8">
+                            {company && (
+                                <DigitalBadge
+                                    companyId={company._id}
+                                    companyName={getLocalized(company.name, i18n.language)}
+                                    status={getLocalized(company.status, i18n.language)}
+                                />
+                            )}
                             <Card className="rounded-[2.5rem] border-slate-200/60 shadow-xl shadow-slate-200/40 overflow-hidden">
                                 <CardContent className="p-0">
                                     <div className="bg-slate-50 p-8 text-center border-b border-slate-100">
@@ -202,7 +212,7 @@ function CompanyDetailPage() {
                                         ) : label ? (
                                             <Link to={`/labels/${label._id}`} className="group inline-flex items-center gap-2">
                                                 <h3 className="text-2xl font-bold text-brand-secondary group-hover:text-brand-primary transition-colors leading-tight">
-                                                    {label.name}
+                                                    {getLocalized(label.name, i18n.language)}
                                                 </h3>
                                                 <Zap className="w-5 h-5 text-brand-accent fill-brand-accent opacity-0 group-hover:opacity-100 transition-opacity" />
                                             </Link>

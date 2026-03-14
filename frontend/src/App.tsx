@@ -5,6 +5,10 @@ import ScrollToTop from "./components/ScrollToTop";
 import { Loader2 } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 
+import AdminRoute from "./components/AdminRoute";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminLayout from "./layouts/AdminLayout";
+
 // Public pages with lazy loading
 const Home = lazy(() => import("./pages/Home"));
 const LabelsPage = lazy(() => import("./pages/LabelsPage"));
@@ -22,11 +26,13 @@ const ResetPasswordPage = lazy(() => import("./pages/ResetPasswordPage"));
 const SavedArticles = lazy(() => import("./pages/SavedArticles"));
 const KioskPage = lazy(() => import("./pages/KioskPage"));
 const MultimediaPage = lazy(() => import("./pages/MultimediaPage"));
+const Events = lazy(() => import("./pages/Events"));
+const EventDetail = lazy(() => import("./pages/EventDetail"));
 const PricingPage = lazy(() => import("./pages/PricingPage"));
-
-import AdminRoute from "./components/AdminRoute";
-import ProtectedRoute from "./components/ProtectedRoute";
-import AdminLayout from "./layouts/AdminLayout";
+const OrgProfilePage = lazy(() => import("./pages/OrgProfilePage"));
+const ApplyPage = lazy(() => import("./pages/ApplyPage"));
+const MyApplicationsPage = lazy(() => import("./pages/MyApplicationsPage"));
+const CertificationHistoryPage = lazy(() => import("./pages/CertificationHistoryPage"));
 
 // Admin pages with lazy loading
 const Dashboard = lazy(() => import("./pages/admin/Dashboard"));
@@ -39,6 +45,10 @@ const ReviewAdmin = lazy(() => import("./pages/admin/ReviewAdmin"));
 const MultimediaAdmin = lazy(() => import("./pages/admin/MultimediaAdmin"));
 const AdAdmin = lazy(() => import("@/pages/admin/AdAdmin"));
 const SubscriptionAdmin = lazy(() => import("@/pages/admin/SubscriptionAdmin"));
+const ApplicationsAdmin = lazy(() => import("@/pages/admin/ApplicationsAdmin"));
+const ApplicationReviewPage = lazy(() => import("@/pages/admin/ApplicationReviewPage"));
+const EventsAdmin = lazy(() => import("./pages/admin/EventsAdmin"));
+const NewsletterAdmin = lazy(() => import("./pages/admin/NewsletterAdmin"));
 
 const LoadingPage = () => (
   <div className="min-h-screen bg-white flex items-center justify-center">
@@ -66,11 +76,17 @@ function App() {
           <Route path="news/sector/:sector" element={<SectorPage />} />
           <Route path="kiosk" element={<KioskPage />} />
           <Route path="multimedia" element={<MultimediaPage />} />
+          <Route path="events" element={<Events />} />
+          <Route path="events/:id" element={<EventDetail />} />
           <Route path="pricing" element={<PricingPage />} />
 
           <Route element={<ProtectedRoute />}>
             <Route path="profile" element={<ProfilePage />} />
             <Route path="library" element={<SavedArticles />} />
+            <Route path="org-hub" element={<OrgProfilePage />} />
+            <Route path="org-hub/applications" element={<MyApplicationsPage />} />
+            <Route path="org-hub/history" element={<CertificationHistoryPage />} />
+            <Route path="apply/:id" element={<ApplyPage />} />
           </Route>
         </Route>
 
@@ -86,6 +102,10 @@ function App() {
             <Route path="multimedia" element={<MultimediaAdmin />} />
             <Route path="ads" element={<AdAdmin />} />
             <Route path="subscriptions" element={<SubscriptionAdmin />} />
+            <Route path="applications" element={<ApplicationsAdmin />} />
+            <Route path="applications/:id" element={<ApplicationReviewPage />} />
+            <Route path="events" element={<EventsAdmin />} />
+            <Route path="newsletters" element={<NewsletterAdmin />} />
           </Route>
         </Route>
 

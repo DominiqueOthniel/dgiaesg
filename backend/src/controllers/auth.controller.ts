@@ -93,7 +93,9 @@ export const getMe = asyncHandler(async (req: Request, res: Response) => {
 
 // PUT /api/auth/me — update profile
 export const updateMe = asyncHandler(async (req: Request, res: Response) => {
-  const user = await User.findById((req as any).user.id);
+  console.log('[UPDATE_ME_BODY]', req.body);
+  // Select password to avoid validation issues if we don't change it
+  const user = await User.findById((req as any).user.id).select("+password");
 
   if (!user) {
     throw new AppError("User not found", 404);
@@ -102,22 +104,32 @@ export const updateMe = asyncHandler(async (req: Request, res: Response) => {
   user.name = req.body.name || user.name;
   user.username = req.body.username || user.username;
   user.email = req.body.email || user.email;
+
+  if (req.body.avatar !== undefined) {
+    user.avatar = req.body.avatar;
+  }
+
   if (req.body.password) {
     user.password = req.body.password;
   }
 
-  const updatedUser = await user.save();
-
-  res.json({
-    success: true,
-    data: {
-      id: updatedUser._id,
-      name: updatedUser.name,
-      username: updatedUser.username,
-      email: updatedUser.email,
-      role: updatedUser.role,
-    },
-  });
+  try {
+    const updatedUser = await user.save();
+    res.json({
+      success: true,
+      data: updatedUser,
+    });
+  } catch (error: any) {
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyValue)[0];
+      throw new AppError(`Ce ${field === 'email' ? 'email' : 'nom d\'utilisateur'} est déjà utilisé`, 400);
+    }
+    if (error.name === 'ValidationError') {
+      const messages = Object.values(error.errors).map((val: any) => val.message);
+      throw new AppError(messages.join(', '), 400);
+    }
+    throw error;
+  }
 });
 
 // POST /api/auth/forgot-password

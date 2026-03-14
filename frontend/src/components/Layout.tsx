@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type WheelEvent } from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
 import {
   Menu,
@@ -15,22 +15,28 @@ import {
   Play,
   User,
   LogOut,
-  Crown
+  Crown,
+  Calendar,
+  Palette
 } from "lucide-react";
 import { searchEntities } from "../services/SearchService";
 import type { SearchResults } from "../services/SearchService";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "./ui/Button";
-import { cn } from "../lib/utils";
+import { cn, getLocalized } from "../lib/utils";
+import { useTranslation } from "react-i18next";
 import NewsTicker from "./NewsTicker";
 import { NewsletterPopup } from "./NewsletterPopup";
 import { useAuth } from "../context/AuthContext";
 import AdBanner from "./AdBanner";
+import ThemePicker from "./Editorial/ThemePicker";
 
 const navigation = [
   { name: "Accueil", href: "/", icon: ShieldCheck },
   {
-    name: "Secteurs", href: "#", children: [
+    name: "Secteurs",
+    href: "#",
+    children: [
       { name: "ESG & Finance", href: "/news/sector/finance" },
       { name: "RSE & Gouvernance", href: "/news/sector/governance" },
       { name: "Tech & Durable", href: "/news/sector/tech" },
@@ -42,10 +48,13 @@ const navigation = [
   { name: "Annuaire", href: "/directory", icon: Users },
   { name: "Journal", href: "/news", icon: Newspaper },
   { name: "Médiatique", href: "/multimedia", icon: Play },
-  { name: "Kiosque", href: "/kiosk", icon: Bookmark }
+  { name: "Kiosque", href: "/kiosk", icon: Bookmark },
+  { name: "Événements", href: "/events", icon: Calendar },
+  { name: "Premium", href: "/pricing", icon: Crown }
 ];
 
 const Layout = () => {
+  const { t, i18n } = useTranslation();
   const { user, isAuthenticated, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -55,7 +64,12 @@ const Layout = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isThemePickerOpen, setIsThemePickerOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const sectorsRef = useRef<HTMLDivElement>(null);
+  const [sectorsPos, setSectorsPos] = useState({ left: 0, top: 0 });
+  const [isSectorsOpen, setIsSectorsOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -81,6 +95,9 @@ const Layout = () => {
     setIsMenuOpen(false);
     setShowSearchResults(false);
     setSearchQuery("");
+    if (scrollRef.current) {
+      scrollRef.current.scrollLeft = 0;
+    }
   }, [location]);
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -102,6 +119,32 @@ const Layout = () => {
     }
   };
 
+  const handleNavWheel = (event: WheelEvent<HTMLElement>) => {
+    if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
+      if (scrollRef.current) {
+        scrollRef.current.scrollLeft += event.deltaY;
+        event.preventDefault();
+      }
+    }
+  };
+
+  const scrollNav = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      const scrollAmount = Math.max(240, Math.floor(scrollRef.current.clientWidth * 0.9));
+      scrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const updateSectorsPos = () => {
+    if (sectorsRef.current) {
+      const rect = sectorsRef.current.getBoundingClientRect();
+      setSectorsPos({ left: rect.left, top: rect.bottom });
+    }
+  };
+
   const UserMenu = () => {
     if (!isAuthenticated) {
       return (
@@ -118,28 +161,21 @@ const Layout = () => {
       <div className="relative" ref={userMenuRef}>
         <button
           onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-          className="flex items-center gap-3 group"
+          className="flex items-center gap-4 bg-slate-50/50 p-1.5 rounded-2xl border border-slate-100 hover:border-brand-primary/30 transition-all group"
         >
-          <div className="text-right hidden lg:block">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Bonjour,</p>
-            <div className="flex items-center gap-1.5 justify-end">
-              <p className="text-xs font-bold text-slate-900 group-hover:text-brand-primary transition-colors">{user?.name}</p>
-              {user?.isPro && (
-                <motion.div
-                  animate={{ scale: [1, 1.1, 1], filter: ["drop-shadow(0 0 0px #F59E0B)", "drop-shadow(0 0 4px #F59E0B)", "drop-shadow(0 0 0px #F59E0B)"] }}
-                  transition={{ repeat: Infinity, duration: 2 }}
-                  className="flex items-center gap-1 px-1.5 py-0.5 bg-gradient-to-r from-amber-400 to-yellow-600 rounded-md shadow-lg"
-                >
-                  <Crown className="w-2.5 h-2.5 text-white fill-white" />
-                  <span className="text-[8px] font-black text-white tracking-tighter">PRO</span>
-                </motion.div>
-              )}
-            </div>
+          <div className="text-right hidden lg:block pl-3 border-l-2 border-brand-primary/10">
+            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1 text-left">Bonjour,</p>
+            <p className="text-xs font-black text-brand-secondary group-hover:text-brand-primary transition-colors uppercase tracking-tight italic">{user?.name}</p>
           </div>
           <div className={cn(
-            "w-10 h-10 flex items-center justify-center rounded-2xl transition-all border",
+            "w-10 h-10 flex items-center justify-center rounded-xl transition-all border relative",
             user?.isPro ? "bg-amber-50 border-amber-200" : "bg-brand-primary/10 border-brand-primary/20"
           )}>
+            {user?.isPro && (
+              <div className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-gradient-to-r from-amber-400 to-yellow-600 rounded-lg shadow-lg flex items-center justify-center border-2 border-white z-10 animate-pulse">
+                <Crown className="w-2.5 h-2.5 text-white fill-white" />
+              </div>
+            )}
             <User className={cn("w-4 h-4", user?.isPro ? "text-amber-600" : "text-brand-primary group-hover:text-white")} />
           </div>
         </button>
@@ -206,14 +242,14 @@ const Layout = () => {
       {/* Professional Header */}
       <header
         className={cn(
-          "fixed z-50 w-full transition-all duration-300 border-b",
+          "sticky top-8 z-50 w-full transition-all duration-300 border-b",
           isScrolled
-            ? "bg-white/95 backdrop-blur-md py-3 border-slate-200 shadow-lg shadow-slate-200/20 top-0"
-            : "bg-white py-5 border-slate-100 top-10"
+            ? "bg-white/95 backdrop-blur-md py-3 border-slate-200 shadow-lg shadow-slate-200/20"
+            : "bg-white py-5 border-slate-100"
         )}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-8">
+          <div className="flex items-center justify-between gap-4">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-3 shrink-0">
               <div className="w-10 h-10 bg-brand-primary rounded-lg flex items-center justify-center shadow-sm">
@@ -229,67 +265,110 @@ const Layout = () => {
               </div>
             </Link>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-1">
-              {navigation.map((item) => {
-                const isActive = location.pathname === item.href;
-                if (item.children) {
-                  return (
-                    <div key={item.name} className="relative group/nav">
-                      <button
-                        className="px-4 py-2 rounded-md text-sm font-bold text-text-muted hover:text-brand-primary flex items-center gap-1 transition-all"
+            {/* Desktop Navigation Container */}
+            <nav className="hidden md:flex flex-1 min-w-0 relative group/nav-container items-center" aria-label="Primary">
+              {/* Scroll Controls */}
+              <button
+                onClick={() => scrollNav('left')}
+                className="absolute left-0 z-20 p-1.5 bg-white/80 backdrop-blur-sm border border-slate-100 rounded-full shadow-md opacity-0 group-hover/nav-container:opacity-100 transition-opacity hover:bg-brand-primary hover:text-white"
+                aria-label="Scroll left"
+              >
+                <ChevronRight className="w-4 h-4 rotate-180" />
+              </button>
+              
+              <button
+                onClick={() => scrollNav('right')}
+                className="absolute right-0 z-20 p-1.5 bg-white/80 backdrop-blur-sm border border-slate-100 rounded-full shadow-md opacity-0 group-hover/nav-container:opacity-100 transition-opacity hover:bg-brand-primary hover:text-white"
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+
+              {/* Fade masks for scroll indications */}
+              <div className="absolute left-8 top-0 bottom-0 w-8 bg-gradient-to-r from-white/95 to-transparent z-10 pointer-events-none opacity-0 group-hover/nav-container:opacity-100 transition-opacity" />
+              <div className="absolute right-8 top-0 bottom-0 w-8 bg-gradient-to-l from-white/95 to-transparent z-10 pointer-events-none opacity-0 group-hover/nav-container:opacity-100 transition-opacity" />
+
+              <div
+                ref={scrollRef}
+                className="flex-1 overflow-x-auto no-scrollbar scroll-smooth overscroll-x-contain touch-pan-x flex items-center snap-x snap-mandatory scroll-px-4 max-w-[520px] w-full"
+                onWheel={handleNavWheel}
+                style={{ marginInline: "auto" }}
+              >
+                <div className="flex items-center gap-1 min-w-max px-4">
+                {navigation.map((item) => {
+                  const isActive = item.href === "/"
+                    ? location.pathname === "/"
+                    : item.href !== "#"
+                      ? location.pathname.startsWith(item.href)
+                      : false;
+                  if (item.children) {
+                    return (
+                      <div 
+                        key={item.name} 
+                        className="relative group/nav shrink-0 min-w-[130px] snap-start snap-always"
+                        ref={item.name === "Secteurs" ? sectorsRef : undefined}
+                        onMouseEnter={() => {
+                          if (item.name === "Secteurs") {
+                            updateSectorsPos();
+                            setIsSectorsOpen(true);
+                          }
+                        }}
+                        onMouseLeave={() => {
+                          if (item.name === "Secteurs") setIsSectorsOpen(false);
+                        }}
                       >
-                        {item.name} <ChevronRight className="w-3.5 h-3.5 rotate-90" />
-                      </button>
-                      <div className="absolute top-full left-0 w-56 bg-white border border-slate-100 rounded-xl shadow-2xl opacity-0 translate-y-2 pointer-events-none group-hover/nav:opacity-100 group-hover/nav:translate-y-0 group-hover/nav:pointer-events-auto transition-all duration-300 p-2 z-[70]">
-                        {item.children.map(child => (
-                          <Link
-                            key={child.name}
-                            to={child.href}
-                            className="block px-4 py-2 text-xs font-bold text-slate-600 hover:text-brand-primary hover:bg-slate-50 rounded-lg transition-all"
-                          >
-                            {child.name}
-                          </Link>
-                        ))}
+                        <button
+                          className="w-full px-4 py-2 rounded-md text-sm font-bold text-text-muted hover:text-brand-primary flex items-center justify-center gap-1 transition-all"
+                        >
+                          {item.name} <ChevronRight className="w-3.5 h-3.5 rotate-90" />
+                        </button>
+                        {/* The dropdown is now fixed to avoid clipping */}
+                        {item.name !== "Secteurs" && (
+                          <div className="absolute top-full left-0 w-56 bg-white border border-slate-100 rounded-xl shadow-2xl opacity-0 translate-y-2 pointer-events-none group-hover/nav:opacity-100 group-hover/nav:translate-y-0 group-hover/nav:pointer-events-auto transition-all duration-300 p-2 z-[70]">
+                            {item.children.map(child => (
+                              <Link
+                                key={child.name}
+                                to={child.href}
+                                className="block px-4 py-2 text-xs font-bold text-slate-600 hover:text-brand-primary hover:bg-slate-50 rounded-lg transition-all"
+                              >
+                                {child.name}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
                       </div>
-                    </div>
+                    );
+                  }
+                  return (
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      className={cn(
+                        "px-3 py-2 rounded-md text-sm font-bold transition-all shrink-0 min-w-[130px] text-center snap-start snap-always",
+                        isActive
+                          ? "text-brand-primary bg-brand-primary/5"
+                          : "text-text-muted hover:text-brand-primary hover:bg-slate-50"
+                      )}
+                    >
+                      {item.name}
+                    </Link>
                   );
-                }
-                return (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    className={cn(
-                      "px-4 py-2 rounded-md text-sm font-bold transition-all",
-                      isActive
-                        ? "text-brand-primary bg-brand-primary/5"
-                        : "text-text-muted hover:text-brand-primary hover:bg-slate-50"
-                    )}
-                  >
-                    {item.name}
-                  </Link>
-                );
-              })}
+                })}
+                </div>
+              </div>
             </nav>
 
-            {/* Search & Actions */}
-            <div className={cn("flex-1 max-w-sm hidden lg:block", location.pathname === "/" && "lg:hidden")}>
-              <form onSubmit={handleSearch} className="relative group">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-brand-primary transition-all pointer-events-none z-10" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Rechercher un label, une société..."
-                  className="w-full bg-white/40 backdrop-blur-md border border-white/20 focus:bg-white focus:ring-4 focus:ring-brand-primary/5 focus:border-brand-primary/20 rounded-2xl pl-11 pr-4 py-2.5 text-sm transition-all outline-none shadow-sm group-hover:bg-white/60 font-medium"
-                />
-                {isSearching && (
-                  <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-brand-primary" />
-                )}
-              </form>
-            </div>
+            {/* Desktop search removed to free space */}
 
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4 shrink-0">
+              <button
+                onClick={() => setIsThemePickerOpen(true)}
+                className="hidden md:inline-flex items-center gap-2 px-3 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-all"
+                aria-label="Choose color palette"
+              >
+                <Palette className="w-4 h-4 text-brand-primary" />
+                <span className="text-[10px] font-black uppercase tracking-widest">Palette</span>
+              </button>
               {isAuthenticated && (
                 <Link to="/library" className="hidden lg:flex items-center gap-2 text-xs font-black text-brand-secondary hover:text-brand-primary transition-all uppercase tracking-widest italic pt-1 group">
                   <Bookmark className="w-4 h-4 text-brand-primary group-hover:fill-brand-primary transition-all" /> Ma Bibliothèque
@@ -300,130 +379,15 @@ const Layout = () => {
 
               {/* Mobile Menu Toggle */}
               <button
-                className="md:hidden p-2 text-text-muted hover:text-brand-primary hover:bg-slate-100 rounded-md transition-colors"
+                className="p-2 text-text-muted hover:text-brand-primary hover:bg-slate-100 rounded-md transition-colors"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
+                aria-label="Open menu"
               >
                 {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             </div>
           </div>
         </div>
-
-        {/* Mobile Navigation */}
-        <AnimatePresence>
-          {isMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="md:hidden bg-white border-t border-slate-100 overflow-hidden shadow-xl"
-            >
-              <div className="px-4 py-6 space-y-4">
-                <form onSubmit={handleSearch} className="relative mb-6">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-light" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Rechercher..."
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-10 pr-4 py-3 text-base outline-none focus:ring-2 focus:ring-brand-accent/20 transition-all"
-                  />
-                </form>
-
-                {/* Mobile Sector Filters */}
-                <div className="flex flex-wrap gap-2 mb-6 px-1">
-                  {['all', 'finance', 'governance', 'tech', 'energy', 'leadership'].map((s) => (
-                    <button
-                      key={s}
-                      onClick={() => setSearchSector(s)}
-                      className={cn(
-                        "px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all border",
-                        searchSector === s
-                          ? "bg-brand-primary text-white border-brand-primary"
-                          : "bg-slate-50 text-slate-400 border-slate-200"
-                      )}
-                    >
-                      {s === 'all' ? 'Tous' : s}
-                    </button>
-                  ))}
-                </div>
-                {navigation.map((item) => (
-                  <div key={item.name} className="space-y-2">
-                    <Link
-                      to={item.href}
-                      className="flex items-center gap-4 p-3 rounded-lg text-lg font-black text-brand-secondary hover:bg-slate-50 transition-colors"
-                      onClick={() => setIsMenuOpen(false)} // Close menu on navigation
-                    >
-                      {item.icon && <item.icon className="w-5 h-5 text-brand-accent" />}
-                      {item.name}
-                    </Link>
-                    {item.children && (
-                      <div className="pl-12 grid grid-cols-1 gap-2">
-                        {item.children.map(child => (
-                          <Link
-                            key={child.name}
-                            to={child.href}
-                            className="text-sm font-bold text-slate-500 py-1 hover:text-brand-primary"
-                            onClick={() => setIsMenuOpen(false)} // Close menu on navigation
-                          >
-                            {child.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-                <div className="pt-6 border-t border-slate-100 flex flex-col gap-3">
-                  {/* Mobile Auth Sections - similar logic to UserMenu */}
-                  {!isAuthenticated ? (
-                    <>
-                      <Link
-                        to="/login"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        <Button variant="primary" className="w-full py-4 text-base">Se Connecter</Button>
-                      </Link>
-                      <Link
-                        to="/register"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        <Button variant="outline" className="w-full py-4 text-base">Créer un compte</Button>
-                      </Link>
-                    </>
-                  ) : (
-                    <div className="space-y-4">
-                      <div className="p-4 bg-slate-50 rounded-lg mb-2">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Session Active</p>
-                        <p className="text-lg font-bold text-brand-secondary">{user?.name}</p>
-                        <p className="text-xs font-medium text-slate-500">{user?.email}</p>
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <Link
-                          to="/profile"
-                          onClick={() => setIsMenuOpen(false)}
-                          className="flex flex-col items-center justify-center gap-2 p-4 bg-white border border-slate-100 rounded-lg hover:border-brand-primary transition-colors group"
-                        >
-                          <User className="w-5 h-5 text-slate-400 group-hover:text-brand-primary transition-colors" />
-                          <span className="text-[10px] font-black uppercase tracking-widest">Profil</span>
-                        </Link>
-                        <button
-                          onClick={() => {
-                            logout();
-                            setIsMenuOpen(false);
-                          }}
-                          className="flex flex-col items-center justify-center gap-2 p-4 bg-white border border-slate-100 rounded-lg hover:border-red-500 transition-colors group"
-                        >
-                          <LogOut className="w-5 h-5 text-slate-400 group-hover:text-red-500 transition-colors" />
-                          <span className="text-[10px] font-black uppercase tracking-widest">Quitter</span>
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* Professional Search Results */}
         <AnimatePresence>
@@ -487,8 +451,8 @@ const Layout = () => {
                       <div className="space-y-2">
                         {searchResults.labels.length > 0 ? searchResults.labels.map((l: any) => (
                           <Link key={l._id} to={`/labels/${l._id}`} className="block p-3 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all group">
-                            <p className="font-semibold text-text-main group-hover:text-brand-primary transition-colors">{l.name}</p>
-                            <p className="text-xs text-text-muted mt-0.5">{l.sector}</p>
+                            <p className="font-semibold text-text-main group-hover:text-brand-primary transition-colors">{getLocalized(l.name, i18n.language)}</p>
+                            <p className="text-xs text-text-muted mt-0.5">{getLocalized(l.sector, i18n.language)}</p>
                           </Link>
                         )) : <p className="text-xs text-text-light italic">Aucun résultat</p>}
                       </div>
@@ -501,9 +465,9 @@ const Layout = () => {
                       </h4>
                       <div className="space-y-2">
                         {searchResults.companies.length > 0 ? searchResults.companies.map((c: any) => (
-                          <Link key={c._id} to={`/directory?search=${c.name}`} className="block p-3 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all group">
-                            <p className="font-semibold text-text-main group-hover:text-brand-primary transition-colors">{c.name}</p>
-                            <p className="text-xs text-text-muted mt-0.5">{c.region} • {c.sector}</p>
+                          <Link key={c._id} to={`/directory?search=${getLocalized(c.name, i18n.language)}`} className="block p-3 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all group">
+                            <p className="font-semibold text-text-main group-hover:text-brand-primary transition-colors">{getLocalized(c.name, i18n.language)}</p>
+                            <p className="text-xs text-text-muted mt-0.5">{getLocalized(c.region, i18n.language)} • {getLocalized(c.sector, i18n.language)}</p>
                           </Link>
                         )) : <p className="text-xs text-text-light italic">Aucun résultat</p>}
                       </div>
@@ -517,7 +481,7 @@ const Layout = () => {
                       <div className="space-y-2">
                         {searchResults.news.length > 0 ? searchResults.news.map((n: any) => (
                           <Link key={n._id} to={`/news/${n.slug}`} className="block p-3 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all group">
-                            <p className="font-semibold text-text-main group-hover:text-brand-primary transition-colors line-clamp-1">{n.title}</p>
+                            <p className="font-semibold text-text-main group-hover:text-brand-primary transition-colors line-clamp-1">{getLocalized(n.title, i18n.language)}</p>
                             <p className="text-xs text-text-muted mt-0.5">Par {n.author}</p>
                           </Link>
                         )) : <p className="text-xs text-text-light italic">Aucun résultat</p>}
@@ -532,8 +496,8 @@ const Layout = () => {
                       <div className="space-y-2">
                         {searchResults.multimedia && searchResults.multimedia.length > 0 ? searchResults.multimedia.map((m: any) => (
                           <Link key={m._id} to={`/news`} className="block p-3 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all group">
-                            <p className="font-semibold text-text-main group-hover:text-brand-primary transition-colors line-clamp-1">{m.title}</p>
-                            <p className="text-xs text-text-muted mt-0.5 capitalize">{m.type} • {m.sector}</p>
+                            <p className="font-semibold text-text-main group-hover:text-brand-primary transition-colors line-clamp-1">{getLocalized(m.title, i18n.language)}</p>
+                            <p className="text-xs text-text-muted mt-0.5 capitalize">{m.type} • {getLocalized(m.sector, i18n.language)}</p>
                           </Link>
                         )) : <p className="text-xs text-text-light italic">Aucun résultat</p>}
                       </div>
@@ -551,17 +515,182 @@ const Layout = () => {
           )}
         </AnimatePresence>
       </header>
+      <ThemePicker forcedOpen={isThemePickerOpen} onClose={() => setIsThemePickerOpen(false)} />
+
+      {/* Secteurs Dropdown (Fixed to avoid clipping) */}
+      <AnimatePresence>
+        {isSectorsOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="fixed w-64 bg-white border border-slate-100 rounded-xl shadow-2xl p-2 z-[100]"
+            style={{ 
+              left: sectorsPos.left, 
+              top: sectorsPos.top + 4 
+            }}
+            onMouseEnter={() => setIsSectorsOpen(true)}
+            onMouseLeave={() => setIsSectorsOpen(false)}
+          >
+            {navigation.find(n => n.name === "Secteurs")?.children?.map(child => (
+              <Link
+                key={child.name}
+                to={child.href}
+                className="block px-4 py-2 text-xs font-bold text-slate-600 hover:text-brand-primary hover:bg-slate-50 rounded-lg transition-all"
+                onClick={() => setIsSectorsOpen(false)}
+              >
+                {child.name}
+              </Link>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Mobile Navigation (Outside header) */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.5 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black z-[70]"
+              onClick={() => setIsMenuOpen(false)}
+            />
+            <motion.div
+              initial={{ x: -320 }}
+              animate={{ x: 0 }}
+              exit={{ x: -320 }}
+              transition={{ type: "tween", duration: 0.25 }}
+              className="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-white border-r border-slate-100 shadow-2xl z-[80] overflow-y-auto"
+            >
+              <div className="px-6 py-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black uppercase tracking-widest text-slate-400">Navigation</span>
+                  <button
+                    className="p-2 text-slate-500 hover:text-brand-primary hover:bg-slate-100 rounded-md transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                    aria-label="Close menu"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <form onSubmit={handleSearch} className="relative mb-6">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-light" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Rechercher..."
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-10 pr-4 py-3 text-base outline-none focus:ring-2 focus:ring-brand-accent/20 transition-all"
+                  />
+                </form>
+
+                {/* Mobile Sector Filters */}
+                <div className="flex flex-wrap gap-2 mb-6 px-1">
+                  {['all', 'finance', 'governance', 'tech', 'energy', 'leadership'].map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => setSearchSector(s)}
+                      className={cn(
+                        "px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all border",
+                        searchSector === s
+                          ? "bg-brand-primary text-white border-brand-primary"
+                          : "bg-slate-50 text-slate-400 border-slate-200"
+                      )}
+                    >
+                      {s === 'all' ? 'Tous' : s}
+                    </button>
+                  ))}
+                </div>
+                {navigation.map((item) => (
+                  <div key={item.name} className="space-y-2">
+                    <Link
+                      to={item.href}
+                      className="flex items-center gap-4 p-3 rounded-lg text-lg font-black text-brand-secondary hover:bg-slate-50 transition-colors"
+                      onClick={() => setIsMenuOpen(false)} // Close menu on navigation
+                    >
+                      {item.icon && <item.icon className="w-5 h-5 text-brand-accent" />}
+                      {item.name}
+                    </Link>
+                    {item.children && (
+                      <div className="pl-12 grid grid-cols-1 gap-2">
+                        {item.children.map(child => (
+                          <Link
+                            key={child.name}
+                            to={child.href}
+                            className="text-sm font-bold text-slate-500 py-1 hover:text-brand-primary"
+                            onClick={() => setIsMenuOpen(false)} // Close menu on navigation
+                          >
+                            {child.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+                <div className="pt-6 border-t border-slate-100 flex flex-col gap-3">
+                  {!isAuthenticated ? (
+                    <>
+                      <Link
+                        to="/login"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <Button variant="primary" className="w-full py-4 text-base">Se Connecter</Button>
+                      </Link>
+                      <Link
+                        to="/register"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <Button variant="outline" className="w-full py-4 text-base">Créer un compte</Button>
+                      </Link>
+                    </>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="p-4 bg-slate-50 rounded-lg mb-2">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Session Active</p>
+                        <p className="text-lg font-bold text-brand-secondary">{user?.name}</p>
+                        <p className="text-xs font-medium text-slate-500">{user?.email}</p>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <Link
+                          to="/profile"
+                          onClick={() => setIsMenuOpen(false)}
+                          className="flex flex-col items-center justify-center gap-2 p-4 bg-white border border-slate-100 rounded-lg hover:border-brand-primary transition-colors group"
+                        >
+                          <User className="w-5 h-5 text-slate-400 group-hover:text-brand-primary transition-colors" />
+                          <span className="text-[10px] font-black uppercase tracking-widest">Profil</span>
+                        </Link>
+                        <button
+                          onClick={() => {
+                            logout();
+                            setIsMenuOpen(false);
+                          }}
+                          className="flex flex-col items-center justify-center gap-2 p-4 bg-white border border-slate-100 rounded-lg hover:border-red-500 transition-colors group"
+                        >
+                          <LogOut className="w-5 h-5 text-slate-400 group-hover:text-red-500 transition-colors" />
+                          <span className="text-[10px] font-black uppercase tracking-widest">Quitter</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Main Content Area */}
-      <main className="flex-1 pt-[112px] sm:pt-[124px]">
+      <main className="flex-1 pt-[144px] sm:pt-[156px]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AdBanner position="top" />
         </div>
         <Outlet />
       </main>
-
-      {/* Modern Footer */}
-      <footer className="bg-brand-secondary text-white pt-20 pb-10 mt-20">
+      {/* Footer promo blocks removed to avoid repeating events/newsletters on every page */}
+{/* Modern Footer */}
+      <footer className="bg-brand-secondary text-white pt-20 pb-10 mt-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 pb-16 border-b border-white/10">
             {/* Identity */}
@@ -632,3 +761,5 @@ const Layout = () => {
 }
 
 export default Layout;
+
+

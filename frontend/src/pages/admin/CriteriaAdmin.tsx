@@ -20,9 +20,12 @@ import { toast } from 'react-hot-toast';
 import { Modal } from '../../components/Modal';
 import { CriteriaForm } from '../../components/CriteriaForm';
 import api from '../../services/api';
+import { useTranslation } from "react-i18next";
 import { useQueryClient } from '@tanstack/react-query';
+import { getLocalized } from '../../lib/utils';
 
 const CriteriaAdmin = () => {
+    const { i18n } = useTranslation();
     const { data: labels } = useLabels();
     const [selectedLabelId, setSelectedLabelId] = useState('');
     const [searchQuery, setSearchQuery] = useState("");
@@ -123,8 +126,8 @@ const CriteriaAdmin = () => {
                                 }}
                             >
                                 <option value="">Choisir dans le référentiel...</option>
-                                {labels?.map(l => (
-                                    <option key={l._id} value={l._id}>{l.name}</option>
+                                 {labels?.map(l => (
+                                    <option key={l._id} value={l._id}>{getLocalized(l.name, i18n.language)}</option>
                                 ))}
                             </select>
                             <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none group-hover:text-brand-primary transition-colors" />
@@ -186,8 +189,8 @@ const CriteriaAdmin = () => {
                         <p className="text-sm font-bold uppercase tracking-widest">En attente de sélection de protocole</p>
                     </div>
                 ) : criteria?.filter((c: any) =>
-                    c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    c.category.toLowerCase().includes(searchQuery.toLowerCase())
+                    getLocalized(c.title, i18n.language).toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    getLocalized(c.category, i18n.language).toLowerCase().includes(searchQuery.toLowerCase())
                 ).length === 0 ? (
                     <div className="py-40 text-center rounded-[3rem] border border-dashed border-slate-200 opacity-30">
                         <Search className="w-20 h-20 mx-auto mb-8" />
@@ -196,8 +199,8 @@ const CriteriaAdmin = () => {
                 ) : (
                     <AnimatePresence mode="popLayout">
                         {criteria?.filter((c: any) =>
-                            c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            c.category.toLowerCase().includes(searchQuery.toLowerCase())
+                            getLocalized(c.title, i18n.language).toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            getLocalized(c.category, i18n.language).toLowerCase().includes(searchQuery.toLowerCase())
                         ).map((item, idx) => (
                             <motion.div
                                 key={item._id}
@@ -218,13 +221,13 @@ const CriteriaAdmin = () => {
 
                                         <div className="flex-1 min-w-0 space-y-4">
                                             <div className="flex items-center gap-4">
-                                                <Badge className="rounded-full px-4 py-1 bg-brand-primary/5 text-brand-primary border-none font-bold text-[9px] uppercase tracking-widest shadow-sm">
-                                                    {item.category}
+                                                 <Badge className="rounded-full px-4 py-1 bg-brand-primary/5 text-brand-primary border-none font-bold text-[9px] uppercase tracking-widest shadow-sm">
+                                                    {getLocalized(item.category, i18n.language)}
                                                 </Badge>
                                                 <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest font-mono">ID_{item._id.substring(18)}</span>
                                             </div>
-                                            <h3 className="text-2xl font-bold text-brand-secondary tracking-tight group-hover:text-brand-primary transition-colors uppercase leading-none">{item.title}</h3>
-                                            <p className="text-sm text-slate-400 font-medium leading-relaxed max-w-3xl">{item.description}</p>
+                                             <h3 className="text-2xl font-bold text-brand-secondary tracking-tight group-hover:text-brand-primary transition-colors uppercase leading-none">{getLocalized(item.title, i18n.language)}</h3>
+                                            <p className="text-sm text-slate-400 font-medium leading-relaxed max-w-3xl">{getLocalized(item.description, i18n.language)}</p>
                                         </div>
 
                                         <div className="flex items-center gap-3 shrink-0 relative z-10">

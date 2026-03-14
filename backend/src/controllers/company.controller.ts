@@ -99,6 +99,7 @@ export const getCompanyById = asyncHandler(async (req: Request, res: Response) =
 // POST /api/companies — create a new company
 export const createCompany = asyncHandler(async (req: Request, res: Response) => {
   const { labelId } = req.body;
+  const user = (req as any).user;
 
   if (!mongoose.Types.ObjectId.isValid(labelId)) {
     throw new AppError("Invalid label ID", 400);
@@ -109,7 +110,30 @@ export const createCompany = asyncHandler(async (req: Request, res: Response) =>
     throw new AppError("Referenced label not found", 404);
   }
 
-  const company = await Company.create(req.body);
+  // Ownership Guard: One organization per user (unless Admin)
+  const isAdmin = user.role === 'admin';
+  if (!isAdmin) {
+    const existing = await Company.findOne({ ownerId: user._id, deletedAt: null });
+    if (existing) {
+      throw new AppError("You already have an organization registered", 400);
+    }
+  }
+
+  const companyData = { ...req.body };
+
+  // Security: Non-admins cannot set their own status or ID
+  if (!isAdmin) {
+    companyData.ownerId = user._id;
+    companyData.status = "pending";
+    // Force default dates if not admin
+    companyData.certificationDate = new Date();
+    companyData.expiryDate = new Date();
+    companyData.score = 0;
+    companyData.socialScore = 0;
+    companyData.governanceScore = 0;
+  }
+
+  const company = await Company.create(companyData);
   const populated = await company.populate("labelId", "name sector status logoUrl");
 
   res.status(201).json({
@@ -118,40 +142,72 @@ export const createCompany = asyncHandler(async (req: Request, res: Response) =>
   });
 });
 
-// PUT /api/companies/:id — update a company
-export const updateCompany = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params as { id: string };
+// GET /api/companies/my-org — get current user's organization
+export const getMyOrganization = asyncHandler(async (req: Request, res: Response) => {
+  const userId = (req as any).user?._id;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    throw new AppError("Invalid company ID", 400);
+  if (!userId) {
+    throw new AppError("Authentication required", 401);
   }
 
-  if (req.body.labelId) {
-    if (!mongoose.Types.ObjectId.isValid(req.body.labelId)) {
-      throw new AppError("Invalid label ID", 400);
-    }
-    const labelExists = await Label.findOne({
-      _id: req.body.labelId,
-      deletedAt: null,
-    });
-    if (!labelExists) {
-      throw new AppError("Referenced label not found", 404);
-    }
-  }
-
-  const company = await Company.findOneAndUpdate(
-    { _id: id, deletedAt: null },
-    req.body,
-    { new: true, runValidators: true }
-  ).populate("labelId", "name sector status logoUrl");
+  const company = await Company.findOne({ ownerId: userId, deletedAt: null }).populate(
+    "labelId",
+    "name sector status logoUrl description"
+  );
 
   if (!company) {
-    throw new AppError("Company not found", 404);
+    throw new AppError("Organization profile not found for this user", 404);
   }
 
   res.json({
     success: true,
     data: company,
+  });
+});
+
+// PUT /api/companies/:id — update a company
+export const updateCompany = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params as { id: string };
+  const user = (req as any).user;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new AppError("Invalid company ID", 400);
+  }
+
+  const existingCompany = await Company.findOne({ _id: id, deletedAt: null });
+  if (!existingCompany) {
+    throw new AppError("Company not found", 404);
+  }
+
+  // Check authorization: Admin OR Owner
+  const isAdmin = user.role === 'admin';
+  const isOwner = existingCompany.ownerId?.toString() === user._id.toString();
+
+  if (!isAdmin && !isOwner) {
+    throw new AppError("You are not authorized to update this organization", 403);
+  }
+
+  // Security: Owners cannot change their own status, scores, or ownerId
+  const updateData = { ...req.body };
+  if (!isAdmin) {
+    delete updateData.status;
+    delete updateData.score;
+    delete updateData.socialScore;
+    delete updateData.governanceScore;
+    delete updateData.ownerId;
+    delete updateData.certificationDate;
+    delete updateData.expiryDate;
+  }
+
+  const updatedCompany = await Company.findOneAndUpdate(
+    { _id: id, deletedAt: null },
+    updateData,
+    { new: true, runValidators: true }
+  ).populate("labelId", "name sector status logoUrl");
+
+  res.json({
+    success: true,
+    data: updatedCompany,
   });
 });
 

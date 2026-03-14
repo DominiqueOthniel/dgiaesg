@@ -1,12 +1,15 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import path from "path";
-import User from "../models/User";
 import News from "../models/News";
 import Label from "../models/Label";
 import Company from "../models/Company";
 import MonthlyReview from "../models/MonthlyReview";
 import Multimedia from "../models/Multimedia";
+import Criteria from "../models/Criteria";
+import Newsletter from "../models/Newsletter";
+import Event from "../models/Event";
+import BreakingNews from "../models/BreakingNews";
 
 dotenv.config({ path: path.join(__dirname, "../../.env") });
 
@@ -22,8 +25,18 @@ const IMAGES = {
     governance: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=800",
     leadership: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&q=80&w=800",
     premium: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800",
-    kiosk: "https://images.unsplash.com/photo-1544640805-3536ca2bb700?auto=format&fit=crop&q=80&w=800"
+    kiosk: "https://images.unsplash.com/photo-1544640805-3536ca2bb700?auto=format&fit=crop&q=80&w=800",
+    newsletter: "https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&q=80&w=800",
+    events: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=800"
 };
+
+const NEWSLETTER_CATEGORIES: Array<"esg" | "finance" | "governance" | "technology" | "general"> = [
+    "esg", "finance", "governance", "technology", "general"
+];
+
+const EVENT_TYPES: Array<"workshop" | "conference" | "training" | "networking" | "certification" | "other"> = [
+    "conference", "workshop", "training", "networking", "certification", "other"
+];
 
 const SEVEN_PARAGRAPHS = `
 L'excellence stratégique exige une vision claire et une exécution rigoureuse au sein des marchés dynamiques d'Afrique. Pour réussir, les organisations doivent naviguer entre les opportunités locales et les standards de conformité internationaux en constante évolution. Cela nécessite une adaptation agile des structures de gouvernance interne pour garantir une résilience à long terme face aux chocs économiques mondiaux.
@@ -51,7 +64,7 @@ const seedEverything = async () => {
         console.log("Seeding Labels...");
         await Label.deleteMany({});
         const labelDocs = [];
-        for (let i = 1; i <= 13; i++) {
+        for (let i = 1; i <= 30; i++) {
             const sector = SECTORS[i % SECTORS.length];
             const label = await Label.create({
                 name: `Protocole de Validation ${i} - ${sector.toUpperCase()}`,
@@ -66,7 +79,7 @@ const seedEverything = async () => {
         // --- 2. SEED COMPANIES ---
         console.log("Seeding Companies...");
         await Company.deleteMany({});
-        for (let i = 1; i <= 13; i++) {
+        for (let i = 1; i <= 30; i++) {
             const sector = SECTORS[i % SECTORS.length];
             const region = REGIONS[i % REGIONS.length];
             const label = labelDocs[i % labelDocs.length];
@@ -90,7 +103,7 @@ const seedEverything = async () => {
         // --- 3. SEED NEWS ---
         console.log("Seeding News...");
         await News.deleteMany({});
-        for (let i = 1; i <= 13; i++) {
+        for (let i = 1; i <= 30; i++) {
             const isPremium = i > 10;
             const sector = SECTORS[i % SECTORS.length];
             await News.create({
@@ -110,7 +123,7 @@ const seedEverything = async () => {
         // --- 4. SEED KIOSK (Monthly Reviews) ---
         console.log("Seeding Monthly Reviews...");
         await MonthlyReview.deleteMany({});
-        for (let i = 1; i <= 13; i++) {
+        for (let i = 1; i <= 30; i++) {
             const isFeatured = i > 10;
             await MonthlyReview.create({
                 title: isFeatured ? `Édition Spéciale : Rapport Annuel ESG ${i}` : `Revue Mensuelle - Édition ${i}`,
@@ -125,7 +138,7 @@ const seedEverything = async () => {
         // --- 5. SEED MULTIMEDIA ---
         console.log("Seeding Multimedia...");
         await Multimedia.deleteMany({});
-        for (let i = 1; i <= 13; i++) {
+        for (let i = 1; i <= 30; i++) {
             const isFeatured = i > 10;
             const sector = SECTORS[i % SECTORS.length];
             await Multimedia.create({
@@ -140,7 +153,102 @@ const seedEverything = async () => {
             });
         }
 
-        console.log("Full Seeding Completed Successfully! (13 items per section including Companies)");
+        // --- 6. SEED CRITERIA ---
+        console.log("Seeding Criteria Matrix...");
+        await Criteria.deleteMany({});
+        const categories: ("governance" | "environment" | "social" | "economic" | "quality")[] = ["governance", "environment", "social", "economic", "quality"];
+
+        for (const label of labelDocs) {
+            for (const category of categories) {
+                for (let i = 1; i <= 3; i++) {
+                    await Criteria.create({
+                        labelId: label._id,
+                        category: category,
+                        title: `Critère ${category.toUpperCase()} ${i} pour ${label.name}`,
+                        description: `Exigences normatives détaillées pour le pilier ${category}. Ce critère évalue la conformité stratégique et l'impact opérationnel selon les standards internationaux.`,
+                        weight: 10 + Math.floor(Math.random() * 15)
+                    });
+                }
+            }
+        }
+
+        // --- 7. SEED NEWSLETTERS ---
+        console.log("Seeding Newsletters...");
+        await Newsletter.deleteMany({});
+        for (let i = 1; i <= 30; i++) {
+            const category = NEWSLETTER_CATEGORIES[i % NEWSLETTER_CATEGORIES.length];
+            await Newsletter.create({
+                title: {
+                    fr: `Lettre Stratégique #${i} — Focus ${category.toUpperCase()}`,
+                    en: `Strategic Letter #${i} — ${category.toUpperCase()} Focus`
+                },
+                summary: {
+                    fr: "Synthèse éditoriale des tendances ESG, marchés et gouvernance à impact.",
+                    en: "Editorial summary of ESG, markets, and governance impact trends."
+                },
+                content: {
+                    fr: SEVEN_PARAGRAPHS,
+                    en: SEVEN_PARAGRAPHS
+                },
+                imageUrl: IMAGES.newsletter,
+                category,
+                status: "published",
+                publishedAt: new Date(Date.now() - i * 3 * 24 * 60 * 60 * 1000),
+                sendEmail: false
+            });
+        }
+
+        // --- 8. SEED EVENTS ---
+        console.log("Seeding Events...");
+        await Event.deleteMany({});
+        for (let i = 1; i <= 30; i++) {
+            const type = EVENT_TYPES[i % EVENT_TYPES.length];
+            const start = new Date(Date.now() + i * 7 * 24 * 60 * 60 * 1000);
+            const end = new Date(start.getTime() + 2 * 60 * 60 * 1000);
+            await Event.create({
+                title: {
+                    fr: `Forum Coopératif ${i} — ${type.toUpperCase()}`,
+                    en: `Cooperative Forum ${i} — ${type.toUpperCase()}`
+                },
+                description: {
+                    fr: SEVEN_PARAGRAPHS.substring(0, 600),
+                    en: SEVEN_PARAGRAPHS.substring(0, 600)
+                },
+                type,
+                startDate: start,
+                endDate: end,
+                location: {
+                    fr: `Centre de Conférence ${i}, Dakar`,
+                    en: `Conference Center ${i}, Dakar`
+                },
+                organizer: {
+                    fr: "COOP_LOGIC",
+                    en: "COOP_LOGIC"
+                },
+                imageUrl: IMAGES.events,
+                registrationUrl: "https://example.com/register",
+                agenda: [
+                    { time: "09:00", label: { fr: "Accueil & Enregistrement", en: "Registration" }, description: { fr: "Check-in et badges", en: "Check-in & badges" } },
+                    { time: "10:30", label: { fr: "Panel d’Experts", en: "Expert Panel" }, description: { fr: "Stratégies sectorielles", en: "Sector strategies" } }
+                ],
+                published: true,
+                featured: i <= 3
+            });
+        }
+
+        // --- 9. SEED BREAKING NEWS ---
+        console.log("Seeding Breaking News...");
+        await BreakingNews.deleteMany({});
+        for (let i = 1; i <= 30; i++) {
+            await BreakingNews.create({
+                title: `Flash #${i} — Mise à jour stratégique sur la gouvernance et l'impact`,
+                link: `/news/news-item-${(i % 13) + 1}`,
+                active: true,
+                priority: 10 - i
+            });
+        }
+
+        console.log("Full Seeding Completed Successfully! (13 items per section + Criteria Matrix)");
         process.exit(0);
     } catch (error) {
         console.error("Seeding failed:", error);

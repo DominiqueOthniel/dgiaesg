@@ -3,6 +3,7 @@ import { News } from "../models";
 import { AppError } from "../middleware/errorHandler";
 import asyncHandler from "../middleware/asyncHandler";
 import mongoose from "mongoose";
+import { localizeFields } from "../utils/localization";
 
 function slugify(text: string): string {
   return text
@@ -47,6 +48,8 @@ export const getNews = asyncHandler(async (req: Request, res: Response) => {
 
   const [articles, total] = await Promise.all([
     News.find(filter)
+      .populate("category")
+      .populate("subCategory")
       .sort({ publishedAt: -1, createdAt: -1 })
       .skip(skip)
       .limit(limitNum),
@@ -73,7 +76,9 @@ export const getNewsById = asyncHandler(async (req: Request, res: Response) => {
     throw new AppError("Invalid news ID", 400);
   }
 
-  const article = await News.findOne({ _id: id, deletedAt: null });
+  const article = await News.findOne({ _id: id, deletedAt: null })
+    .populate("category")
+    .populate("subCategory");
 
   if (!article) {
     throw new AppError("Article not found", 404);
@@ -89,7 +94,9 @@ export const getNewsById = asyncHandler(async (req: Request, res: Response) => {
 export const getNewsBySlug = asyncHandler(async (req: Request, res: Response) => {
   const { slug } = req.params;
 
-  const article = await News.findOne({ slug, deletedAt: null });
+  const article = await News.findOne({ slug, deletedAt: null })
+    .populate("category")
+    .populate("subCategory");
 
   if (!article) {
     throw new AppError("Article not found", 404);
@@ -116,7 +123,8 @@ export const createNews = asyncHandler(async (req: Request, res: Response) => {
     req.body.publishedAt = new Date();
   }
 
-  const article = await News.create(req.body);
+  const localizedBody = localizeFields(req.body, ['title', 'content', 'excerpt']);
+  const article = await News.create(localizedBody);
 
   res.status(201).json({
     success: true,
@@ -151,7 +159,8 @@ export const updateNews = asyncHandler(async (req: Request, res: Response) => {
     req.body.publishedAt = new Date();
   }
 
-  const article = await News.findByIdAndUpdate(id, req.body, {
+  const localizedBody = localizeFields(req.body, ['title', 'content', 'excerpt']);
+  const article = await News.findByIdAndUpdate(id, localizedBody, {
     new: true,
     runValidators: true,
   });

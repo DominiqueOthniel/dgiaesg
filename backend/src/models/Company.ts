@@ -13,7 +13,8 @@ export interface ICompanyDocument extends Document {
   score: number | null;
   socialScore: number;
   governanceScore: number;
-  status: "certified" | "pending" | "expired";
+  status: "certified" | "pending" | "expired" | "pending_renewal" | "suspended" | "rejected";
+  ownerId?: Types.ObjectId;
   deletedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
@@ -84,8 +85,13 @@ const companySchema = new Schema<ICompanyDocument>(
     },
     status: {
       type: String,
-      enum: ["certified", "pending", "expired"],
+      enum: ["certified", "pending", "expired", "pending_renewal", "suspended", "rejected"],
       default: "pending",
+    },
+    ownerId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
     },
     deletedAt: {
       type: Date,

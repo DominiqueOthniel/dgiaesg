@@ -3,6 +3,7 @@ import { Label, Criteria, Company } from "../models";
 import { AppError } from "../middleware/errorHandler";
 import asyncHandler from "../middleware/asyncHandler";
 import mongoose from "mongoose";
+import { localizeFields } from "../utils/localization";
 
 // GET /api/labels — list all labels (with optional filters)
 export const getLabels = asyncHandler(async (req: Request, res: Response) => {
@@ -70,7 +71,8 @@ export const createLabel = asyncHandler(async (req: Request, res: Response) => {
     throw new AppError("A label with this name already exists", 409);
   }
 
-  const label = await Label.create(req.body);
+  const localizedBody = localizeFields(req.body, ['name', 'description']);
+  const label = await Label.create(localizedBody);
 
   res.status(201).json({
     success: true,
@@ -86,9 +88,11 @@ export const updateLabel = asyncHandler(async (req: Request, res: Response) => {
     throw new AppError("Invalid label ID", 400);
   }
 
-  if (req.body.name) {
+  const localizedBody = localizeFields(req.body, ['name', 'description']);
+  
+  if (localizedBody.name) {
     const existing = await Label.findOne({
-      name: req.body.name,
+      name: localizedBody.name,
       _id: { $ne: id as string },
     });
     if (existing) {
@@ -98,7 +102,7 @@ export const updateLabel = asyncHandler(async (req: Request, res: Response) => {
 
   const label = await Label.findOneAndUpdate(
     { _id: id, deletedAt: null },
-    req.body,
+    localizedBody,
     { new: true, runValidators: true }
   );
 

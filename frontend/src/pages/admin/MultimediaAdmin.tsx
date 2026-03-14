@@ -15,12 +15,14 @@ import api from "../../services/api";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent } from "../../components/ui/Card";
 import { toast } from "react-hot-toast";
-import { cn } from "../../lib/utils";
+import { cn, getLocalized } from "../../lib/utils";
+import { useTranslation } from "react-i18next";
 import type { IMultimedia } from "../../types";
 import { resolveImageUrl } from "../../lib/image";
 import { FileUpload } from "../../components/ui/FileUpload";
 
 const MultimediaAdmin = () => {
+    const { i18n } = useTranslation();
     const [items, setItems] = useState<IMultimedia[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [filterType, setFilterType] = useState<string>("all");
@@ -107,8 +109,8 @@ const MultimediaAdmin = () => {
     const sectors = ["finance", "governance", "tech", "energy", "leadership"];
 
     const filteredItems = items.filter(item => {
-        const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.description.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesSearch = getLocalized(item.title, i18n.language).toLowerCase().includes(searchQuery.toLowerCase()) ||
+            getLocalized(item.description, i18n.language).toLowerCase().includes(searchQuery.toLowerCase());
         const matchesType = filterType === "all" || item.type === filterType;
         const matchesSector = filterSector === "all" || item.sector === filterSector;
         return matchesSearch && matchesType && matchesSector;
@@ -159,7 +161,7 @@ const MultimediaAdmin = () => {
                                     <div className="space-y-1.5">
                                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Titre du média</label>
                                         <input
-                                            value={formData.title}
+                                            value={getLocalized(formData.title, i18n.language)}
                                             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                                             className="w-full bg-slate-50 border-none rounded-xl px-4 h-12 text-sm font-bold focus:ring-2 focus:ring-brand-primary/10"
                                             placeholder="Ex: Interview exclusive CSR 2024"
@@ -216,7 +218,7 @@ const MultimediaAdmin = () => {
                                     <div className="space-y-1.5">
                                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Description</label>
                                         <textarea
-                                            value={formData.description}
+                                            value={getLocalized(formData.description, i18n.language)}
                                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                             className="w-full bg-slate-50 border-none rounded-xl p-4 text-sm font-medium focus:ring-2 focus:ring-brand-primary/10 min-h-[100px]"
                                             placeholder="Résumé du contenu..."
@@ -347,8 +349,8 @@ const MultimediaAdmin = () => {
                                                     {item.type} • {item.sector}
                                                 </span>
                                             </div>
-                                            <h4 className="font-bold text-slate-900 line-clamp-1">{item.title}</h4>
-                                            <p className="text-[10px] text-slate-400 line-clamp-1 mt-1 font-medium">{item.description}</p>
+                                            <h4 className="font-bold text-slate-900 line-clamp-1">{getLocalized(item.title, i18n.language)}</h4>
+                                            <p className="text-[10px] text-slate-400 line-clamp-1 mt-1 font-medium">{getLocalized(item.description, i18n.language)}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">

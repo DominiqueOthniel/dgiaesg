@@ -20,6 +20,7 @@ const companySchema = z.object({
     status: z.enum(['certified', 'pending', 'expired']),
     socialScore: z.coerce.number().min(0).max(100),
     governanceScore: z.coerce.number().min(0).max(100),
+    ownerId: z.string().optional().nullable().transform(val => (val === '' ? null : val)),
 });
 
 export type CompanyFormData = z.infer<typeof companySchema>;
@@ -27,6 +28,7 @@ export type CompanyFormData = z.infer<typeof companySchema>;
 interface CompanyFormProps {
     initialData?: any;
     labels: any[];
+    users?: any[];
     onSubmit: (data: any) => void;
     isLoading?: boolean;
 }
@@ -35,7 +37,7 @@ const buildDefaults = (data?: any): CompanyFormData => {
     if (!data) return {
         name: '', description: '', sector: '', region: '', website: '', logoUrl: '',
         labelId: '', certificationDate: '', expiryDate: '', status: 'pending',
-        socialScore: 0, governanceScore: 0,
+        socialScore: 0, governanceScore: 0, ownerId: '',
     };
     return {
         name: data.name || '',
@@ -44,16 +46,17 @@ const buildDefaults = (data?: any): CompanyFormData => {
         region: data.region || '',
         website: data.website || '',
         logoUrl: data.logoUrl || '',
-        labelId: typeof data.labelId === 'object' ? data.labelId._id : (data.labelId || ''),
+        labelId: (data.labelId && typeof data.labelId === 'object') ? data.labelId._id : (data.labelId || ''),
         certificationDate: data.certificationDate ? new Date(data.certificationDate).toISOString().split('T')[0] : '',
         expiryDate: data.expiryDate ? new Date(data.expiryDate).toISOString().split('T')[0] : '',
         status: data.status || 'pending',
         socialScore: data.socialScore ?? 0,
         governanceScore: data.governanceScore ?? 0,
+        ownerId: (data.ownerId && typeof data.ownerId === 'object') ? data.ownerId._id : (data.ownerId || ''),
     };
 };
 
-export const CompanyForm = ({ initialData, labels, onSubmit, isLoading }: CompanyFormProps) => {
+export const CompanyForm = ({ initialData, labels, users = [], onSubmit, isLoading }: CompanyFormProps) => {
     const {
         register,
         handleSubmit,
@@ -194,6 +197,23 @@ export const CompanyForm = ({ initialData, labels, onSubmit, isLoading }: Compan
                     </select>
                 </div>
 
+                <div className="space-y-2">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic ml-1">Administrateur (Propriétaire PRO)</label>
+                    <select
+                        {...register('ownerId')}
+                        className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-4 focus:ring-emerald-500/10 transition-all font-bold text-[10px] uppercase tracking-widest italic"
+                    >
+                        <option value="">Aucun administrateur</option>
+                        {users.map(u => (
+                            <option key={u._id} value={u._id}>
+                                {u.name} ({u.email})
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic ml-1">Score Social (%)</label>

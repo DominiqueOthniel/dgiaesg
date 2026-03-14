@@ -6,11 +6,12 @@ export interface IUserDocument extends Document {
   username: string;
   email: string;
   password: string;
-  role: "admin" | "editor" | "viewer";
+  role: "admin" | "editor" | "viewer" | "auditor";
   createdAt: Date;
   updatedAt: Date;
   savedArticles: mongoose.Types.ObjectId[];
   savedLabels: mongoose.Types.ObjectId[];
+  avatar?: string;
   interests: string[];
   isPro: boolean;
   subscriptionId?: string;
@@ -50,7 +51,7 @@ const userSchema = new Schema<IUserDocument>(
     },
     role: {
       type: String,
-      enum: ["admin", "editor", "viewer"],
+      enum: ["admin", "editor", "viewer", "auditor"],
       default: "viewer",
     },
     savedArticles: [
@@ -65,6 +66,10 @@ const userSchema = new Schema<IUserDocument>(
         ref: "Label",
       },
     ],
+    avatar: {
+      type: String,
+      default: "",
+    },
     interests: [
       {
         type: String,

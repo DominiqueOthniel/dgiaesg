@@ -58,3 +58,5 @@ export const Modal = ({ isOpen, onClose, title, children, width = 'md' }: ModalP
         </div>
     );
 };
+
+export default Modal;

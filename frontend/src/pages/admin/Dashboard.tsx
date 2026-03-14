@@ -9,7 +9,8 @@ import {
     Activity,
     ChevronRight,
     Settings,
-    LayoutDashboard
+    LayoutDashboard,
+    Clock
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLabels } from '../../hooks/useLabels';
@@ -20,6 +21,8 @@ import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { Link } from 'react-router-dom';
 import { cn } from '../../lib/utils';
+import api from '../../services/api';
+import { toast } from 'react-hot-toast';
 
 const Dashboard = () => {
     const { data: labels } = useLabels();
@@ -161,6 +164,46 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </Card>
+
+                    {/* Expiring Soon Widget */}
+                    <div className="mt-10">
+                        <div className="flex items-center justify-between px-2 mb-6">
+                            <h2 className="text-xs font-bold text-brand-secondary uppercase tracking-[0.3em] flex items-center gap-3">
+                                <Clock className="w-5 h-5 text-orange-500" /> Vigilance Expirations
+                            </h2>
+                        </div>
+                        <Card className="rounded-[2.5rem] border-slate-200/60 shadow-xl shadow-slate-200/40 bg-white overflow-hidden p-8">
+                            <div className="space-y-6">
+                                <div className="p-6 bg-orange-50 rounded-3xl border border-orange-100 flex items-center justify-between group">
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-black text-orange-600 uppercase tracking-widest">Alerte Proche (7j)</p>
+                                        <p className="text-2xl font-bold text-brand-secondary">0</p>
+                                    </div>
+                                    <Button
+                                        onClick={() => {
+                                            api.post('/renewals/check-expiries')
+                                                .then(() => toast.success("Vérification effectuée"))
+                                                .catch(() => toast.error("Erreur de vérification"));
+                                        }}
+                                        variant="outline"
+                                        className="rounded-xl border-orange-200 text-orange-600 text-[10px] font-black uppercase tracking-widest px-4 hover:bg-orange-100 transition-all"
+                                    >
+                                        Vérifier maintenant
+                                    </Button>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
+                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Moyen Terme (30j)</p>
+                                        <p className="text-xl font-bold text-brand-secondary">0</p>
+                                    </div>
+                                    <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
+                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Long Terme (60j)</p>
+                                        <p className="text-xl font-bold text-brand-secondary">0</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
                 </div>
 
                 <div className="lg:col-span-4 space-y-8">

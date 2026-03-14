@@ -12,10 +12,15 @@ import {
     ShieldCheck,
     Search,
     Loader2,
-    Bell,
     Play,
     Megaphone,
-    Zap
+    Zap,
+    ClipboardList,
+    Calendar,
+    Globe,
+    Palette,
+    Check,
+    ChevronDown
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/Button';
@@ -24,6 +29,9 @@ import { useState, useEffect, useRef } from 'react';
 import { searchEntities } from '../services/SearchService';
 import type { SearchResults } from '../services/SearchService';
 import { motion, AnimatePresence } from 'framer-motion';
+import NotificationBell from '../components/notifications/NotificationBell';
+import { useTranslation } from 'react-i18next';
+import ThemePicker from '../components/Editorial/ThemePicker';
 
 const AdminLayout = () => {
     const { user, logout } = useAuth();
@@ -36,7 +44,11 @@ const AdminLayout = () => {
     const [searchResults, setSearchResults] = useState<SearchResults | null>(null);
     const [isSearching, setIsSearching] = useState(false);
     const [showSearchResults, setShowSearchResults] = useState(false);
+    const [isLangOpen, setIsLangOpen] = useState(false);
+    const [isThemePickerOpen, setIsThemePickerOpen] = useState(false);
     const mainContentRef = useRef<HTMLElement>(null);
+    const langRef = useRef<HTMLDivElement>(null);
+    const { i18n } = useTranslation();
 
     useEffect(() => {
         setIsMobileMenuOpen(false);
@@ -66,6 +78,19 @@ const AdminLayout = () => {
         }
     };
 
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (langRef.current && !langRef.current.contains(event.target as Node)) setIsLangOpen(false);
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const changeLanguage = (lang: string) => {
+        i18n.changeLanguage(lang);
+        setIsLangOpen(false);
+    };
+
     const handleLogout = () => {
         logout();
         navigate('/');
@@ -76,6 +101,7 @@ const AdminLayout = () => {
             title: 'Pilotage',
             items: [
                 { name: 'Tableau de bord', path: '/admin', icon: LayoutDashboard },
+                { name: 'Agenda institutionnel', path: '/admin/events', icon: Calendar },
             ]
         },
         {
@@ -84,6 +110,7 @@ const AdminLayout = () => {
                 { name: 'Référentiels Labels', path: '/admin/labels', icon: Award },
                 { name: 'Annuaire Sociétés', path: '/admin/companies', icon: Building2 },
                 { name: 'Critères d\'Audit', path: '/admin/criteria', icon: FileText },
+                { name: 'Candidatures', path: '/admin/applications', icon: ClipboardList },
             ]
         },
         {
@@ -91,6 +118,7 @@ const AdminLayout = () => {
             items: [
                 { name: 'Gestion Actualités', path: '/admin/news', icon: Newspaper },
                 { name: 'Multimédia TV/Podcast', path: '/admin/multimedia', icon: Play },
+                { name: 'Newsletters', path: '/admin/newsletters', icon: Newspaper },
                 { name: 'Flash Live', path: '/admin/breaking', icon: ShieldCheck },
                 { name: 'Kiosque Digital', path: '/admin/reviews', icon: FileText },
             ]
@@ -135,7 +163,10 @@ const AdminLayout = () => {
                             )}
                             <div className="space-y-1">
                                 {group.items.map((item) => {
-                                    const isActive = location.pathname === item.path || (item.path !== '/admin' && location.pathname.startsWith(item.path));
+                                    const isActive = location.pathname === item.path
+                                        || (item.path !== '/admin'
+                                            && location.pathname.startsWith(item.path)
+                                            && !(item.path === '/admin/news' && location.pathname.startsWith('/admin/newsletters')));
                                     return (
                                         <Link
                                             key={item.path}
@@ -213,18 +244,49 @@ const AdminLayout = () => {
                     </div>
 
                     <div className="flex items-center gap-4">
+                        {/* Language Selector */}
+                        <div className="relative group mr-2" ref={langRef}>
+                            <button 
+                                onClick={() => setIsLangOpen(!isLangOpen)}
+                                className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-full transition-all group/btn"
+                            >
+                                <Globe className="w-4 h-4 text-brand-primary" />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-700">{i18n.language.toUpperCase().split('-')[0]}</span>
+                                <ChevronDown className={cn("w-3 h-3 transition-transform opacity-50", isLangOpen && "rotate-180")} />
+                            </button>
+                            <AnimatePresence>
+                                {isLangOpen && (
+                                    <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 5 }} className="absolute right-0 mt-2 w-32 bg-white text-brand-secondary border border-slate-200 shadow-2xl z-[150] p-1 rounded-xl overflow-hidden">
+                                        <button onClick={() => changeLanguage('fr')} className="w-full text-left px-3 py-3 text-[9px] font-bold uppercase tracking-widest hover:bg-brand-primary hover:text-white transition-colors flex items-center justify-between border-b border-slate-100 last:border-0">
+                                            Français {i18n.language.startsWith('fr') && <Check className="w-3 h-3 text-brand-primary" />}
+                                        </button>
+                                        <button onClick={() => changeLanguage('en')} className="w-full text-left px-3 py-3 text-[9px] font-bold uppercase tracking-widest hover:bg-brand-primary hover:text-white transition-colors flex items-center justify-between">
+                                            English {i18n.language.startsWith('en') && <Check className="w-3 h-3 text-brand-primary" />}
+                                        </button>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
+                        {/* Theme Trigger */}
+                        <button 
+                            onClick={() => setIsThemePickerOpen(true)}
+                            className="p-2.5 bg-slate-100 hover:bg-slate-200 rounded-full transition-all group/palette mr-2"
+                        >
+                            <Palette className="w-4 h-4 text-brand-primary group-hover/palette:scale-110 transition-transform" />
+                        </button>
+
                         <Link to="/" className="hidden lg:block text-xs font-semibold text-brand-accent bg-brand-accent/5 px-3 py-1.5 rounded-full hover:bg-brand-accent/10 transition-colors">
                             Voir le portail public
                         </Link>
-                        <button className="p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors relative">
-                            <Bell className="w-5 h-5" />
-                            <div className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-white" />
-                        </button>
+                        <NotificationBell />
                         <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-400">
                             <User className="w-4 h-4" />
                         </div>
                     </div>
                 </header>
+
+                <ThemePicker forcedOpen={isThemePickerOpen} onClose={() => setIsThemePickerOpen(false)} />
 
                 {/* Content Overlay for Search Results */}
                 <AnimatePresence>

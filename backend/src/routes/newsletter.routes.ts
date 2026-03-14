@@ -1,61 +1,27 @@
 import { Router } from "express";
+import {
+    getNewsletters,
+    getLatestNewsletter,
+    getAllNewsletters,
+    getNewsletterById,
+    createNewsletter,
+    updateNewsletter,
+    deleteNewsletter,
+} from "../controllers/newsletter.controller";
+import { protect } from "../middleware/authMiddleware";
+import { authorize } from "../middleware/roleMiddleware";
 
 const router = Router();
 
-// @desc    Subscribe to newsletter
-// @route   POST /api/newsletter/subscribe
-// @access  Public
-import NewsletterSubscription from "../models/NewsletterSubscription";
-import asyncHandler from "../middleware/asyncHandler";
+// Public routes
+router.get("/", getNewsletters);
+router.get("/latest", getLatestNewsletter);
 
-/**
- * @swagger
- * /newsletter/subscribe:
- *   post:
- *     summary: Subscribe to the newsletter
- *     tags: [Newsletter]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [email]
- *             properties:
- *               email: {type: string, format: email}
- *               interests: {type: array, items: {type: string}}
- *     responses:
- *       200: {description: Subscribed successfully}
- *       400: {description: Email is required}
- */
-router.post("/subscribe", asyncHandler(async (req, res, _next) => {
-    const { email, interests } = req.body;
-
-    if (!email) {
-        res.status(400).json({
-            success: false,
-            message: "Email is required",
-        });
-        return;
-    }
-
-    // Upsert the subscription (if already exists, update interests)
-    const subscription = await NewsletterSubscription.findOneAndUpdate(
-        { email: email.toLowerCase() },
-        {
-            $set: { status: "active" },
-            $addToSet: { interests: { $each: interests || [] } }
-        },
-        { upsert: true, new: true }
-    );
-
-    console.log(`Newsletter subscription updated: ${email} with interests: ${interests}`);
-
-    res.json({
-        success: true,
-        data: subscription,
-        message: "Thank you for subscribing to our newsletter!",
-    });
-}));
+// Admin routes
+router.get("/all", protect, authorize("admin"), getAllNewsletters);
+router.get("/:id", getNewsletterById);
+router.post("/", protect, authorize("admin"), createNewsletter);
+router.put("/:id", protect, authorize("admin"), updateNewsletter);
+router.delete("/:id", protect, authorize("admin"), deleteNewsletter);
 
 export default router;

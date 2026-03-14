@@ -17,21 +17,21 @@ const storage = multer.diskStorage({
 
 // File filter
 const fileFilter = (_req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-    const allowedTypes = /jpeg|jpg|png|webp/;
+    const allowedTypes = /jpeg|jpg|png|webp|pdf/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
 
     if (extname && mimetype) {
         return cb(null, true);
     } else {
-        cb(new AppError('Only .png, .jpg, .jpeg and .webp format allowed!', 400) as any, false);
+        cb(new AppError('Only .png, .jpg, .jpeg, .webp and .pdf format allowed!', 400) as any, false);
     }
 };
 
 export const upload = multer({
     storage: storage,
     limits: {
-        fileSize: 2 * 1024 * 1024 // 2MB limit
+        fileSize: 10 * 1024 * 1024 // 10MB limit
     },
     fileFilter: fileFilter
 });

@@ -51,6 +51,7 @@ export const updateUserSchema = z.object({
     .optional(),
   email: z.string().email().trim().toLowerCase().optional(),
   password: z.string().min(6).optional(),
+  avatar: z.string().url().or(z.string().length(0)).optional(),
   role: z.enum(["admin", "editor", "viewer"]).optional(),
 });
 

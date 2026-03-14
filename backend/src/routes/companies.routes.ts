@@ -7,6 +7,7 @@ import {
   deleteCompany,
   restoreCompany,
   exportCompanies,
+  getMyOrganization,
 } from "../controllers/company.controller";
 import validate from "../middleware/validate";
 import {
@@ -35,7 +36,7 @@ const router = Router();
  *       201: {description: Created}
  */
 router.get("/", optionalProtect, getCompanies);
-router.post("/", protect, authorize("admin", "editor"), validate(createCompanySchema), createCompany);
+router.post("/", protect, validate(createCompanySchema), createCompany);
 
 /**
  * @swagger
@@ -73,8 +74,9 @@ router.get("/export/csv", protect, authorize("admin"), exportCompanies);
  *     responses:
  *       200: {description: Deleted}
  */
+router.get("/my-org", protect, getMyOrganization);
 router.get("/:id", optionalProtect, getCompanyById);
-router.put("/:id", protect, authorize("admin", "editor"), validate(updateCompanySchema), updateCompany);
+router.put("/:id", protect, validate(updateCompanySchema), updateCompany);
 router.delete("/:id", protect, authorize("admin"), deleteCompany);
 
 /**

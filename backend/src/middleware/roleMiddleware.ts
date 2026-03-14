@@ -3,9 +3,17 @@ import { AppError } from "./errorHandler";
 
 export const authorize = (...roles: string[]) => {
     return (req: Request, _res: Response, next: NextFunction) => {
-        if (!roles.includes((req as any).user.role)) {
+        const user = (req as any).user;
+        if (!user) {
+            throw new AppError("Not authorized to access this route", 401);
+        }
+
+        const hasRole = roles.includes(user.role);
+        const isProAuthorized = roles.includes('pro') && user.isPro;
+
+        if (!hasRole && !isProAuthorized) {
             throw new AppError(
-                `User role ${(req as any).user.role} is not authorized to access this route`,
+                `User role ${user.role} is not authorized to access this route`,
                 403
             );
         }

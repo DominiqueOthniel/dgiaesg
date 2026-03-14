@@ -1,0 +1,200 @@
+# Action & Interaction Documentation - Cooperative Labeling Platform
+
+This document describes the complete behavior of the Cooperative Labeling Platform through user actions and system reactions. It serves as a map of the entire system's functionality and cross-role interactions.
+
+---
+
+## 1. USER TYPES
+
+| Role | Access Level | Key Capabilities | Restricted Areas |
+| :--- | :--- | :--- | :--- |
+| **Guest** (Non-connected) | Public Pages | Browse labels, companies, news, and multimedia. Use global search and filters. | Profile, Library, Hub, Apply, Admin. |
+| **Normal User** | Personal Features | Save articles to library, post comments, manage personal profile. | Org Hub (unless company owner), Admin. |
+| **Professional User** | Organization Hub | Submit label applications, manage documents, view cert history, embed badges. | Admin Dashboard. |
+| **Administrator** | Full Control | Moderate applications, manage labels/companies, system configuration, ads/news. | None. |
+
+---
+
+## 2. COMPLETE PAGE LIST
+
+### Public Access
+- **Home (`/`)**: Central landing showing featured labels, news ticker, and platform value proposition.
+- **Protocoles/Labels (`/labels`)**: Directory of available certification protocols. Filterable by sector.
+- **Détail Protocole (`/labels/:id`)**: Detailed criteria and requirements for a specific label.
+- **Répertoire/Directory (`/directory`)**: Searchable list of certified organizations with sector/region filters.
+- **Profil Entreprise (`/directory/:id`)**: Public profile of a company showing its certification status and scores.
+- **Actualités/News (`/news`)**: List of articles and sector analyses.
+- **Kiosque (`/kiosk`)**: Access to monthly reviews and PDF reports.
+- **Multimédia (`/multimedia`)**: Video masterclasses and expert interviews.
+- **Tarifs/Pricing (`/pricing`)**: Subscription plans for organizations.
+
+### Private (Authenticated)
+- **Profil (`/profile`)**: Personal settings and account management.
+- **Ma Bibliothèque (`/library`)**: Collection of saved news articles.
+- **Org Hub (`/org-hub`)**: Dashboard for organization owners to track their status.
+- **Mes Candidatures (`/org-hub/applications`)**: List of all draft, pending, and past label applications.
+- **Historique (`/org-hub/history`)**: Timeline of all certifications, PDF downloads, and renewal triggers.
+- **Postuler (`/apply/:id`)**: Multi-step application interface for a specific label.
+
+### Admin Dashboard (`/admin`)
+- **Vue d'ensemble**: Global stats and expiry vigilance widget.
+- **Gestion Labels**: Create/Edit/Delete certification protocols.
+- **Gestion Entreprises**: Manual management of company records and statuses.
+- **Critères**: Management of questions and criteria for each label.
+- **Flash Infos**: Real-time management of the breaking news ticker.
+- **Candidatures**: Reviewing queued applications, approving/rejecting, and auditor logic.
+
+---
+
+## 3. UI ELEMENTS & FUNCTIONS
+
+| Component | Function | System Process Triggered |
+| :--- | :--- | :--- |
+| **Global Search Bar** | Search labels/companies across the site. | Dynamic filtering of displayed content. |
+| **News Ticker** | Scrolling critical information at the top. | Real-time broadcast from Admin panel. |
+| **Notification Bell** | View system alerts (applications, comments). | Triggers unread count reset on click. |
+| **Filtre Secteur/Région** | Narrow down directory or news results. | Updates UI list via API query parameters. |
+| **Bouton "Postuler"** | Initiate a label application. | Creates a 'draft' application in DB for the Org. |
+| **Zone de Chat (Apply)** | Direct messaging between Org and Admin. | Creates [Message](file:///c:/Users/eser/Documents/Money%20making%20projects/label/Project/frontend/src/components/chat/ChatPanel.tsx#24-34) entity; triggers notifications. |
+| **Widget Vigilance** | Monitor expiring certifications (Admin). | manual check triggers expiry notifications. |
+| **Digital Badge Embed** | Copy HTML for company badges. | Fetches dynamic SVG badge data via API. |
+
+---
+
+## 4. USER ACTIONS & PROCESSES
+
+### Action: Submit Application
+- **Location**: `/apply/:id` -> "Soumettre la candidature"
+- **Interaction**: User fills criteria, uploads proofs, and clicks submit.
+- **Immediate Response**: Toast notification; Status changes from `draft` to `pending`.
+- **Backend Process**: [Application](file:///c:/Users/eser/Documents/Money%20making%20projects/label/Project/frontend/src/pages/admin/ApplicationReviewPage.tsx#76-90) status updated; [Notification](file:///c:/Users/eser/Documents/Money%20making%20projects/label/Project/frontend/src/components/notifications/NotificationBell.tsx#21-204) created for Admin.
+- **Data Modified**: [Application](file:///c:/Users/eser/Documents/Money%20making%20projects/label/Project/frontend/src/pages/admin/ApplicationReviewPage.tsx#76-90) status, `updatedAt`.
+
+### Action: Approved by Admin
+- **Location**: `/admin/applications/:id` -> "Approuver"
+- **Interaction**: Admin reviews documents and clicks Approve.
+- **Immediate Response**: Application disappears from pending queue.
+- **Backend Process**: Status -> `approved`; Company status -> `certified`; PDF Certificate generated; Notification sent to Org.
+- **Data Created**: [Notification](file:///c:/Users/eser/Documents/Money%20making%20projects/label/Project/frontend/src/components/notifications/NotificationBell.tsx#21-204), PDF file on disk, `certificateUrl` in App.
+
+### Action: Initiate Renewal
+- **Location**: `/org-hub/history` -> "Renouveler"
+- **Interaction**: User clicks renewal button on an expiring certificate.
+- **Immediate Response**: Redirects to a new pre-filled application form.
+- **Backend Process**: Creates a new [Draft](file:///c:/Users/eser/Documents/Money%20making%20projects/label/Project/frontend/src/pages/ApplyPage.tsx#79-94) application linked via `renewedFrom`.
+- **Data Created**: New [Application](file:///c:/Users/eser/Documents/Money%20making%20projects/label/Project/frontend/src/pages/admin/ApplicationReviewPage.tsx#76-90) document.
+
+---
+
+## 5. ACTION CONSEQUENCES
+
+| User Action | Org Dashboard Result | Admin Dashboard Result |
+| :--- | :--- | :--- |
+| **Posts Comment** | Comment appears under article; "My Activity" updated. | Appears in moderation queue for review/deletion. |
+| **Uploads Document** | Document shows as "Uploaded" in step. | Admin sees "New Document" in the review panel. |
+| **Sends Message** | Message appears in chat history. | Admin receives notification; Message appears in Review panel. |
+| **Subscription Paid**| Status upgraded; Premium content unlocked. | Revenue logged in Subscription Admin panel. |
+
+---
+
+## 6. CROSS-DASHBOARD EFFECTS (CHAINS)
+
+### Certification Workflow
+1. **Prospective Org**: Submits application (`pending`).
+2. **System**: Generates notification for Admin.
+3. **Admin**: Reads notification -> Opens Review Page.
+4. **Admin**: Sends message asking for clarification.
+5. **System**: Notifies Org of a new message.
+6. **Org**: Responds and uploads missing document.
+7. **Admin**: Reviews final proof -> Clicks **Approve**.
+8. **System**: Updates Company to `certified` -> Generates PDF -> Notifies Org.
+9. **Final Result**: Org sees Certificate in History; Public Badge appears on their profile.
+
+---
+
+## 7. DASHBOARD STRUCTURES
+
+### Organization Dashboard (`/org-hub`)
+- **Overview**: Active certification status, quick links to history/apps.
+- **Applications**: Tabular view of all progress (Draft/Pending/Archived).
+- **History**: Vertical timeline of every certificate ever earned.
+- **Tools**: Digital Badge generator, Document vault.
+
+### Admin Dashboard (`/admin`)
+- **Vigilance**: Countdown of certifications expiring in 60/30/7 days.
+- **Content Engine**: Forms for News articles, Kiosk reports, and Multimedia.
+- **Workflow**: Queued applications with real-time audit tools.
+- **Configuration**: Settings for breaking news ticker and ad banners.
+
+---
+
+## 8. NOTIFICATION SYSTEM
+
+- **Trigger Actions**: Status change, New Message, New Application, Expiry Reminder (60d, 30d, 7d).
+- **Recipients**: Targeted (Org Owner) or Role-based (All Admins).
+- **Delivery**: Real-time via UI Bell (Websocket/Polling) and future Email integration.
+- **Types**: `info`, `success`, `warning` (expiry), [error](file:///c:/Users/eser/Documents/Money%20making%20projects/label/Project/backend/src/middleware/errorHandler.ts#20-39).
+
+---
+
+## 9. MESSAGING SYSTEM
+
+- **Context**: Conversations are tied to specific [Application](file:///c:/Users/eser/Documents/Money%20making%20projects/label/Project/frontend/src/pages/admin/ApplicationReviewPage.tsx#76-90) IDs.
+- **Participants**: Company Owner <-> Admin Team.
+- **States**: Every message is persisted with `senderId`, `content`, and `timestamp`.
+- **Visibility**: Shared across all Admins for continuity.
+
+---
+
+## 10. MENU STRUCTURE (HIERARCHY)
+
+- **Main Navigation (Public)**
+  - Accueil
+  - Protocoles
+  - Répertoire
+  - Actualités (Dropdown: Secteurs)
+  - Kiosque & Multimédia
+- **User Dropdown**
+  - Profil
+  - Ma Bibliothèque
+  - **Hub Organisation** (if Pro)
+    - Tableau de bord
+    - Historique & Certificats
+    - Mes Candidatures
+  - **Administration** (if Admin)
+    - Dashboard
+    - Labels & Critères
+    - Candidatures
+    - Flash Infos
+- **Footer**
+  - Contact
+  - Mentions Légales
+  - Newsletter Signup
+
+---
+
+## 11. COMPLETE INTERACTION MAP (OVERVIEW)
+
+```mermaid
+graph TD
+    Guest[Visiteur] -->|Inscription| User[Utilisateur]
+    User -->|Abonnement/Audit| Pro[Pro/Org]
+    
+    Pro -->|Soumet Candidature| App[Application System]
+    App -->|Notification| Admin[Administrateur]
+    
+    Admin -->|Review/Chat| App
+    Admin -->|Approbation| Cert[Certification System]
+    
+    Cert -->|Génère PDF| Hist[Historique Pro]
+    Cert -->|Met à jour| Directory[Répertoire Public]
+    Cert -->|Active| Badge[Badge Digital]
+    
+    System[System Cron] -->|Scan Expirations| Cert
+    System -->|Alerte| Pro
+    System -->|Alerte| Admin
+```
+
+---
+
+*Fin du document d'interaction. Ce guide doit être utilisé comme référence pour maintenir la cohérence de l'UX et de la logique métier.*
