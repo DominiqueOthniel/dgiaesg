@@ -170,25 +170,27 @@ const MultimediaPage = () => {
                                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                                 />
                                                 <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
-                                                <div className="absolute inset-0 flex items-center justify-center">
-                                                    <button
-                                                        onClick={() => window.open(item.embedUrl, "_blank")}
-                                                        className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group-hover:bg-brand-primary group-hover:border-brand-primary transition-all duration-300"
-                                                    >
+                                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                                    <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group-hover:bg-brand-primary group-hover:border-brand-primary transition-all duration-300">
                                                         {item.type === "video" ? (
                                                             <Play className="w-6 h-6 text-white fill-white ml-1" />
                                                         ) : (
                                                             <Mic className="w-6 h-6 text-white" />
                                                         )}
-                                                    </button>
+                                                    </div>
                                                 </div>
-                                                <div className="absolute top-6 left-6">
+                                                <button
+                                                    onClick={() => window.open(item.embedUrl, "_blank")}
+                                                    className="absolute inset-0 z-20 cursor-pointer"
+                                                    aria-label={item.type === "video" ? "Lire la vidéo" : "Écouter le podcast"}
+                                                />
+                                                <div className="absolute top-6 left-6 z-10 pointer-events-none">
                                                     <Badge className="rounded-full px-4 py-1.5 bg-brand-accent text-white border-none font-black text-[9px] uppercase tracking-widest shadow-lg">
                                                         {item.type === "video" ? "FA TV" : "PODCAST"}
                                                     </Badge>
                                                 </div>
                                             </div>
-                                            <div className="p-8">
+                                            <div className="p-8 relative">
                                                 <div className="flex items-center gap-4 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">
                                                     <span className="flex items-center gap-2">
                                                         <Tag className="w-3.5 h-3.5 text-brand-primary" />
@@ -205,12 +207,14 @@ const MultimediaPage = () => {
                                                 <p className="text-slate-500 text-sm leading-relaxed line-clamp-2 mb-8">
                                                     {getLocalized(item.description, i18n.language)}
                                                 </p>
+                                                <div className="inline-flex items-center gap-2 text-[10px] font-bold text-brand-primary uppercase tracking-widest group/btn">
+                                                    Consulter le contenu <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                                                </div>
                                                 <button
                                                     onClick={() => window.open(item.embedUrl, "_blank")}
-                                                    className="inline-flex items-center gap-2 text-[10px] font-bold text-brand-primary uppercase tracking-widest group/btn"
-                                                >
-                                                    Consulter le contenu <ArrowRight className="w-4 h-4 group-btn:translate-x-1 transition-transform" />
-                                                </button>
+                                                    className="absolute inset-0 z-10 cursor-pointer"
+                                                    aria-hidden="true"
+                                                />
                                             </div>
                                         </motion.div>
                                     ))}

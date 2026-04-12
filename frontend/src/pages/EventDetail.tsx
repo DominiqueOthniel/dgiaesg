@@ -41,9 +41,9 @@ const EventDetail = () => {
     return (
         <div className="min-h-screen pb-24 bg-white">
             {/* Split Header */}
-            <div className="flex flex-col lg:flex-row h-auto lg:h-[70vh]">
-                <div className="flex-1 bg-brand-secondary p-12 lg:p-24 flex flex-col justify-center relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-brand-primary/10 rounded-full blur-3xl -mr-32 -mt-32" />
+            <div className="flex flex-col lg:flex-row h-auto lg:h-[65vh] border-b border-slate-100">
+                <div className="flex-1 bg-brand-secondary p-12 lg:p-20 flex flex-col justify-center relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-brand-primary/5 rounded-full blur-[120px] -mr-32 -mt-32" />
                     
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
@@ -63,7 +63,7 @@ const EventDetail = () => {
                             </span>
                         </div>
 
-                        <h1 className="text-4xl md:text-6xl font-black text-white mb-8 leading-tight tracking-tighter italic">
+                        <h1 className="text-4xl md:text-5xl lg:text-[4.5rem] font-sans font-black text-white leading-[1.05] tracking-tight italic mb-10">
                             {getLocalized(event.title, i18n.language)}
                         </h1>
 
@@ -95,8 +95,8 @@ const EventDetail = () => {
                         className="w-full h-full object-cover"
                     />
                     {event.featured && (
-                        <div className="absolute top-8 right-8 bg-brand-primary text-white py-4 px-12 font-black uppercase tracking-[0.4em] text-[10px] shadow-2xl rotate-3">
-                            {t('events.featured')}
+                        <div className="absolute top-0 right-0 bg-brand-accent text-brand-secondary py-3 px-8 font-black uppercase tracking-[0.4em] text-[9px] shadow-tactile z-30">
+                            À L'AFFICHE
                         </div>
                     )}
                 </div>
@@ -108,8 +108,8 @@ const EventDetail = () => {
                     <div className="lg:col-span-8">
                         <div className="bg-white p-8 lg:p-16 border border-surface-muted shadow-2xl">
                             <div className="prose prose-slate max-w-none">
-                                <h3 className="text-2xl font-black mb-6 uppercase tracking-tight">{t('common.details')}</h3>
-                                <p className="text-lg text-slate-600 leading-relaxed font-medium mb-12">
+                                <h3 className="text-[10px] font-black mb-8 uppercase tracking-[0.4em] text-brand-primary border-b border-slate-100 pb-4 inline-block">{t('common.details')}</h3>
+                                <p className="text-base md:text-lg text-slate-600 leading-relaxed font-medium mb-12">
                                     {getLocalized(event.description, i18n.language)}
                                 </p>
 
@@ -161,9 +161,9 @@ const EventDetail = () => {
                                     href={event.registrationUrl || "#"}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="block w-full bg-brand-primary text-white text-center py-4 text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-brand-secondary transition-all shadow-lg shadow-brand-primary/20 flex items-center justify-center gap-2"
+                                    className="block w-full bg-brand-primary text-white text-center py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-white hover:text-brand-secondary transition-all shadow-xl shadow-brand-primary/20 flex items-center justify-center gap-2 group/reg"
                                 >
-                                    {t('events.register')} <ExternalLink className="w-4 h-4" />
+                                    {t('events.register')} <ExternalLink className="w-4 h-4 group-hover/reg:translate-x-1 group-hover/reg:-translate-y-1 transition-transform" />
                                 </a>
                                 <p className="mt-6 text-[9px] text-slate-400 font-bold uppercase tracking-widest leading-relaxed">
                                     * L'inscription est obligatoire pour accéder aux sessions en direct et recevoir les supports.

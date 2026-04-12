@@ -74,7 +74,7 @@ function ForgotPasswordPage() {
                                             <input
                                                 type="email"
                                                 required
-                                                placeholder="USER@COOPLABEL.COM"
+                                                placeholder="USER@DGIA-ESG.COM"
                                                 className="w-full bg-transparent border-b-2 border-forest/10 py-3 text-forest focus:outline-none focus:border-indigo-action transition-all font-bold placeholder:text-forest/10"
                                                 value={email}
                                                 onChange={(e) => setEmail(e.target.value)}

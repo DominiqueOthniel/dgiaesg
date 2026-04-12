@@ -414,7 +414,7 @@ const AdminLayout = () => {
                                 className="fixed inset-y-0 left-0 w-72 bg-brand-secondary z-[70] flex flex-col"
                             >
                                 <div className="h-16 flex items-center justify-between px-6 border-b border-white/5">
-                                    <span className="font-bold text-white uppercase tracking-tighter">CoopLabel Admin</span>
+                                    <span className="font-bold text-white uppercase tracking-tighter">DGIA ESG Admin</span>
                                     <button onClick={() => setIsMobileMenuOpen(false)} className="text-slate-400 hover:text-white">
                                         <X className="w-6 h-6" />
                                     </button>

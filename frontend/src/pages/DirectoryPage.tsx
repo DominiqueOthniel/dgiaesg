@@ -197,6 +197,8 @@ function DirectoryPage() {
                                     </div>
                                 </CardContent>
                             </Card>
+                            <AdBanner position="top" className="my-2" />
+
 
                             {/* View Content Logic */}
                             {companiesLoading ? (

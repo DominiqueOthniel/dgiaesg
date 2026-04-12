@@ -1,4 +1,4 @@
-﻿import { Newspaper, Calendar, MapPin, Play } from "lucide-react";
+import { Newspaper, Calendar, MapPin, Play } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -97,6 +97,7 @@ function NewsPage() {
                     </div>
                 ) : (
                     <div className="space-y-12">
+                        <AdBanner position="top" className="mb-12" />
                         {news[0] && (
                             <section className="rounded-3xl overflow-hidden border border-surface-muted bg-white shadow-sm">
                                 <Link to={`/news/${news[0].slug}`} className="block">
@@ -232,7 +233,7 @@ function NewsPage() {
                                 </Link>
                             </div>
                             <div className="space-y-4">
-                                {(relatedMedia || []).slice(0, 2).map((item) => (
+                                {(relatedMedia || []).slice(0, 2).map((item: any) => (
                                     <a
                                         key={item._id}
                                         href={item.embedUrl}
@@ -243,7 +244,7 @@ function NewsPage() {
                                         <div className="w-16 h-12 bg-slate-100 overflow-hidden">
                                             <img
                                                 src={resolveImageUrl(item.coverImageUrl)}
-                                                alt={item.title}
+                                                alt={getLocalized(item.title, i18n.language)}
                                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                             />
                                         </div>
@@ -252,7 +253,7 @@ function NewsPage() {
                                                 {item.type}
                                             </p>
                                             <p className="text-sm font-bold text-brand-secondary line-clamp-2 group-hover:text-brand-primary transition-colors">
-                                                {item.title}
+                                                {getLocalized(item.title, i18n.language)}
                                             </p>
                                         </div>
                                         <Play className="w-4 h-4 text-brand-primary" />
@@ -280,7 +281,7 @@ function NewsPage() {
                                         <div className="w-12 h-16 bg-slate-100 overflow-hidden border border-surface-muted">
                                             <img
                                                 src={resolveImageUrl(mag.coverImageUrl)}
-                                                alt={mag.title}
+                                                alt={getLocalized(mag.title, i18n.language)}
                                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                             />
                                         </div>
@@ -292,7 +293,7 @@ function NewsPage() {
                                                 })}
                                             </p>
                                             <p className="text-sm font-bold text-brand-secondary line-clamp-2 group-hover:text-brand-primary transition-colors">
-                                                {mag.title}
+                                                {getLocalized(mag.title, i18n.language)}
                                             </p>
                                         </div>
                                     </a>

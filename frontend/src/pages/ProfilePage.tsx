@@ -7,13 +7,83 @@ import {
     Loader2,
     Shield,
     AtSign,
-    Save
+    Save,
+    Palette,
+    Check
 } from "lucide-react";
+import { cn } from "../lib/utils";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
 import { toast } from "react-hot-toast";
 import { resolveImageUrl } from "../lib/image";
+
+interface ThemeOption {
+    id: string;
+    name: string;
+    primary: string;
+    secondary: string;
+    accent: string;
+    surface: string;
+    preview: string[];
+}
+
+const themes: ThemeOption[] = [
+    {
+        id: "default",
+        name: "Coop Red (Default)",
+        primary: "#E30613",
+        secondary: "#000000",
+        accent: "#E30613",
+        surface: "#F8F6F3",
+        preview: ["#E30613", "#000000", "#F8F6F3"]
+    },
+    {
+        id: "forest",
+        name: "Forest Prestige",
+        primary: "#1B4332",
+        secondary: "#0D1B2A",
+        accent: "#D4A843",
+        surface: "#F8F6F3",
+        preview: ["#1B4332", "#0D1B2A", "#D4A843"]
+    },
+    {
+        id: "ocean",
+        name: "Océan Profond",
+        primary: "#1E3A5F",
+        secondary: "#0A1628",
+        accent: "#C9A96E",
+        surface: "#F5F7FA",
+        preview: ["#1E3A5F", "#0A1628", "#C9A96E"]
+    },
+    {
+        id: "bordeaux",
+        name: "Bordeaux Royal",
+        primary: "#7A1F3D",
+        secondary: "#1A1A2E",
+        accent: "#E8B75D",
+        surface: "#FBF8F4",
+        preview: ["#7A1F3D", "#1A1A2E", "#E8B75D"]
+    },
+    {
+        id: "charcoal",
+        name: "Charbon Élégant",
+        primary: "#2D2D2D",
+        secondary: "#111111",
+        accent: "#B8860B",
+        surface: "#FAFAFA",
+        preview: ["#2D2D2D", "#111111", "#B8860B"]
+    },
+    {
+        id: "emerald",
+        name: "Émeraude Classique",
+        primary: "#006B3C",
+        secondary: "#003320",
+        accent: "#FFD700",
+        surface: "#F0FAF5",
+        preview: ["#006B3C", "#003320", "#FFD700"]
+    }
+];
 
 
 function ProfilePage() {
@@ -27,6 +97,22 @@ function ProfilePage() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+
+    const [activeTheme, setActiveTheme] = useState(() => {
+        return localStorage.getItem('dgia-esg-theme-id') || "default";
+    });
+
+    const applyTheme = (theme: ThemeOption) => {
+        const root = document.documentElement;
+        root.style.setProperty('--color-brand-primary', theme.primary);
+        root.style.setProperty('--color-brand-secondary', theme.secondary);
+        root.style.setProperty('--color-brand-accent', theme.accent);
+        root.style.setProperty('--color-surface-base', theme.surface);
+        setActiveTheme(theme.id);
+        localStorage.setItem('dgia-esg-theme-id', theme.id);
+        localStorage.setItem('dgia-esg-theme-data', JSON.stringify(theme));
+        toast.success(t('theme.apply_success', "THÈME APPLIQUÉ"));
+    };
 
     useEffect(() => {
         if (user) {

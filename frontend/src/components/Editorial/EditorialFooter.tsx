@@ -81,7 +81,7 @@ const EditorialFooter = () => {
                                 </div>
                                 <div className="flex items-center gap-4 text-slate-400">
                                     <Mail className="w-4 h-4 shrink-0" />
-                                    <span className="text-[11px] font-medium">contact@cooplabel.com</span>
+                                    <span className="text-[11px] font-medium">contact@dgia-esg.com</span>
                                 </div>
                             </div>
                         </div>
@@ -91,7 +91,7 @@ const EditorialFooter = () => {
                 {/* Bottom Bar */}
                 <div className="pt-12 flex flex-col md:flex-row items-center justify-between gap-8">
                     <p className="text-[9px] font-bold uppercase tracking-[0.4em] text-slate-500">
-                        &copy; {new Date().getFullYear()} COOPLABEL GROUP. ARCHITECTURE DE CONFIANCE.
+                        &copy; {new Date().getFullYear()} DGIA ESG GROUP. ARCHITECTURE DE CONFIANCE.
                     </p>
                     <div className="flex gap-10">
                         {['Conditions', 'Confidentialité', 'Cookies'].map((item) => (

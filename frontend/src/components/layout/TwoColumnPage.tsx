@@ -14,9 +14,9 @@ type TwoColumnPageProps = {
 
 export function TwoColumnPage({ title, subtitle, headerMeta, children, className }: TwoColumnPageProps) {
   return (
-    <div className={cn("py-24", className)}>
+    <div className={cn("pb-24 pt-4", className)}>
       <div className="editorial-container">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10 border-b-4 border-brand-secondary/10 pb-6">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-6 border-b-2 border-brand-secondary/10 pb-4">
           <div>
             {headerMeta && (
               <span className="metadata mb-2 block text-brand-primary">{headerMeta}</span>

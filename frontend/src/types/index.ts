@@ -7,6 +7,7 @@ export interface ILabel {
   logoUrl?: string | null;
   sector: string;
   status: "active" | "inactive";
+  publishDate?: string;
   validationWorkflow?: { step: string; status: "complete" | "active" | "pending" }[];
   deletedAt?: string;
   createdAt: string;

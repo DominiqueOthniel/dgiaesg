@@ -17,6 +17,7 @@ export interface ILabelDocument extends Document {
     status: "complete" | "active" | "pending";
   }[];
   deletedAt: Date | null;
+  publishDate: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -58,6 +59,10 @@ const labelSchema = new Schema<ILabelDocument>(
         { step: "Audit de conformité éthique", status: "pending" },
         { step: "Certification par le comité", status: "pending" },
       ],
+    },
+    publishDate: {
+      type: Date,
+      default: Date.now,
     },
     deletedAt: {
       type: Date,

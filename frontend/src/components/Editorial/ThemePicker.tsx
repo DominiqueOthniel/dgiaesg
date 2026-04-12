@@ -80,7 +80,7 @@ const ThemePicker = ({ forcedOpen, onClose }: ThemePickerProps) => {
     const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [activeTheme, setActiveTheme] = useState(() => {
-        return localStorage.getItem('cooplabel-theme-id') || "default";
+        return localStorage.getItem('dgia-esg-theme-id') || "default";
     });
 
     useEffect(() => {
@@ -101,13 +101,13 @@ const ThemePicker = ({ forcedOpen, onClose }: ThemePickerProps) => {
         root.style.setProperty('--color-brand-accent', theme.accent);
         root.style.setProperty('--color-surface-base', theme.surface);
         setActiveTheme(theme.id);
-        localStorage.setItem('cooplabel-theme-id', theme.id);
-        localStorage.setItem('cooplabel-theme-data', JSON.stringify(theme));
+        localStorage.setItem('dgia-esg-theme-id', theme.id);
+        localStorage.setItem('dgia-esg-theme-data', JSON.stringify(theme));
         handleClose();
     };
 
     useEffect(() => {
-        const savedData = localStorage.getItem('cooplabel-theme-data');
+        const savedData = localStorage.getItem('dgia-esg-theme-data');
         if (savedData) {
             try {
                 const theme = JSON.parse(savedData) as ThemeOption;

@@ -54,7 +54,7 @@ function LoginPage() {
 
             <Link to="/" className="absolute top-12 left-12 flex items-center gap-4 text-xs font-bold text-cream/50 hover:text-indigo-action transition-all uppercase tracking-[0.2em] group">
                 <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                COOPLABEL HOME
+                DGIA ESG HOME
             </Link>
 
             <motion.div
@@ -137,7 +137,7 @@ function LoginPage() {
 
                 <div className="mt-8 flex justify-between items-center opacity-30 px-2">
                     <p className="text-[9px] font-bold text-cream uppercase tracking-[0.2em]">
-                        &copy; {new Date().getFullYear()} — COOPLABEL_CORE
+                        &copy; {new Date().getFullYear()} — DGIA ESG_CORE
                     </p>
                     <div className="flex gap-4">
                         <div className="w-2 h-2 bg-cream rounded-full" />

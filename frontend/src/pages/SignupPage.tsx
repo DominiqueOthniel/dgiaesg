@@ -80,7 +80,7 @@ function SignupPage() {
                                 Nouveau <span className="text-indigo-action">Compte</span>
                             </h1>
                             <p className="text-[10px] text-slate-neutral font-bold uppercase tracking-widest">
-                                Rejoignez le réseau COOPLABEL
+                                Rejoignez le réseau DGIA ESG
                             </p>
                         </div>
 
@@ -186,7 +186,7 @@ function SignupPage() {
 
                 <div className="mt-8 flex justify-center opacity-30 px-2">
                     <p className="text-[9px] font-bold text-cream uppercase tracking-[0.2em]">
-                        &copy; {new Date().getFullYear()} — COOPLABEL_IDENTITY
+                        &copy; {new Date().getFullYear()} — DGIA_ESG_IDENTITY
                     </p>
                 </div>
             </motion.div>

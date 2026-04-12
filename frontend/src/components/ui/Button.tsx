@@ -17,7 +17,7 @@ export interface ButtonProps
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ({ className, variant = "default", size = "default", isLoading, children, ...props }, ref) => {
-        const baseStyles = "btn-base";
+        const baseStyles = "inline-flex items-center justify-center rounded-full text-sm font-black ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-95 uppercase tracking-widest";
 
         const variants = {
             default: "bg-brand-secondary text-white hover:bg-brand-secondary/90 shadow-sm",
@@ -30,10 +30,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         };
 
         const sizes = {
-            default: "h-11 px-6",
-            sm: "h-9 px-3 text-xs",
-            lg: "h-12 px-8 text-base",
-            icon: "h-10 w-10",
+            default: "h-9 px-5 text-[10px]",
+            sm: "h-8 px-3 text-[9px]",
+            lg: "h-11 px-6 text-xs",
+            icon: "h-9 w-9",
         };
 
         return (

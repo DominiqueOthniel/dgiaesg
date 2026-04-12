@@ -7,7 +7,7 @@ import "./i18n";
 import "./index.css";
 
 const applySavedTheme = () => {
-  const savedData = localStorage.getItem("cooplabel-theme-data");
+  const savedData = localStorage.getItem("dgia-esg-theme-data");
   if (!savedData) return;
   try {
     const theme = JSON.parse(savedData) as {

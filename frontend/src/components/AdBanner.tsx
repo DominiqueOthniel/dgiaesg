@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import api from "../services/api";
 import { resolveImageUrl } from "../lib/image";
 import { ExternalLink, ArrowRight } from "lucide-react";
-import { cn } from "../lib/utils";
+import { cn, handleImageError } from "../lib/utils";
 
 interface Ad {
     _id: string;
@@ -60,7 +60,7 @@ export default function AdBanner({ position, className }: AdBannerProps) {
                     <div className="flex-1 flex flex-col md:flex-row md:items-center gap-6">
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 bg-white rounded-xl border border-slate-100 flex items-center justify-center p-2 shrink-0 shadow-sm">
-                                <img src={resolveImageUrl(ad.logoUrl || ad.imageUrl)} alt="Sponsor" className="w-full h-full object-contain" />
+                                <img src={resolveImageUrl(ad.logoUrl || ad.imageUrl)} alt="Sponsor" onError={handleImageError} className="w-full h-full object-contain" />
                             </div>
                             <div>
                                 <span className="text-[10px] font-black text-brand-primary uppercase tracking-widest block mb-0.5">Sponsorisé</span>
@@ -84,11 +84,15 @@ export default function AdBanner({ position, className }: AdBannerProps) {
     // Sidebar Layout (Widget style)
     if (position === "sidebar") {
         return (
-            <div className={cn("bg-white border-2 border-slate-100 rounded-[2rem] p-8 shadow-sm flex flex-col items-center text-center group", className)}>
-                <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] mb-8">Partenaire Stratégique</span>
+            <div className={cn("bg-gradient-to-br from-white to-slate-50 border border-brand-primary/10 rounded-[2.5rem] p-8 shadow-modern flex flex-col items-center text-center group relative overflow-hidden", className)}>
+                <div className="absolute top-0 right-0 w-24 h-24 bg-brand-primary/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
+                <span className="text-[10px] font-black text-brand-primary uppercase tracking-[0.4em] mb-8 flex items-center gap-2">
+                    <span className="w-1 h-1 bg-brand-primary rounded-full animate-pulse" />
+                    Partenaire Stratégique
+                </span>
                 
-                <div className="w-20 h-20 bg-slate-50 rounded-2xl border border-slate-100 p-4 mb-6 flex items-center justify-center group-hover:scale-105 transition-transform">
-                    <img src={resolveImageUrl(ad.logoUrl || ad.imageUrl)} alt="Sponsor" className="w-full h-full object-contain" />
+                <div className="w-20 h-20 bg-white rounded-2xl shadow-tactile border border-brand-primary/10 p-4 mb-6 flex items-center justify-center group-hover:scale-110 transition-all duration-500 group-hover:rotate-3">
+                    <img src={resolveImageUrl(ad.logoUrl || ad.imageUrl)} alt="Sponsor" onError={handleImageError} className="w-full h-full object-contain filter grayscale group-hover:grayscale-0 transition-all" />
                 </div>
                 
                 <h4 className="text-xl font-black text-brand-secondary mb-4 uppercase italic tracking-tighter leading-snug group-hover:text-brand-primary transition-colors">
@@ -104,9 +108,9 @@ export default function AdBanner({ position, className }: AdBannerProps) {
                     target="_blank" 
                     rel="noopener noreferrer" 
                     onClick={handleAdClick}
-                    className="w-full py-4 bg-brand-primary/5 text-brand-primary text-[10px] font-black uppercase tracking-widest rounded-xl border border-brand-primary/10 hover:bg-brand-primary hover:text-white transition-all text-center"
+                    className="w-full py-4 bg-brand-primary text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-brand-primary/20 hover:bg-brand-secondary hover:shadow-brand-secondary/30 transition-all text-center flex items-center justify-center gap-2 group/btn"
                 >
-                    {ad.ctaText || "Explorer"}
+                    {ad.ctaText || "Explorer"} <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                 </a>
             </div>
         );
@@ -127,6 +131,7 @@ export default function AdBanner({ position, className }: AdBannerProps) {
                     <img 
                         src={resolveImageUrl(ad.imageUrl)} 
                         alt={ad.title} 
+                        onError={handleImageError}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" 
                     />
                 </div>

@@ -1,32 +1,33 @@
 @import "tailwindcss";
 
 @theme {
-  /* Sustainable Prestige Palette */
-  --color-brand-primary: #E30613;   /* Financial Red — authority, impact */
-  --color-brand-secondary: #000000; /* Deep Black — sophistication */
-  --color-brand-accent: #E30613;    /* Using red as accent too for consistency or black */
+  /* Sustainable Prestige Palette — aligned with User Policy */
+  --color-brand-primary: #0D4D33;   /* Deep Institutional Green */
+  --color-brand-secondary: #0B3B2B; /* Deep Forest Green (Reverted from Black) */
+  --color-brand-accent: #FFBF00;    /* Vibrant Gold/Yellow */
   
-  --color-surface-base: #F8F6F3;    /* Warm Linen — clean, sophisticated */
+  --color-surface-base: #F7F5F2;    /* Warm Linen */
   --color-surface-card: #FFFFFF;
-  --color-surface-muted: #E8E4DE;
+  --color-surface-muted: #E5E1DB;
 
-  --color-text-main: #3D3D3D;       /* Warm Charcoal for body */
-  --color-text-heading: #0D1B2A;    /* Same as secondary for headings */
-  --color-text-muted: #7A7A7A;
+  --color-text-main: #1F2937;       /* Darker Charcoal — standard SaaS contrast */
+  --color-text-heading: #0B1726;    /* Deep Navy — strong heading contrast */
+  --color-text-muted: #4B5563;      /* Slate-600 — improved accessible muted text */
 
   --color-success: #059669;
   --color-warning: #D97706;
   --color-error: #DC2626;
 
-  /* Classic Typography */
-  --font-serif: "Georgia", "Times New Roman", ui-serif, serif;
+  /* Classic Typography - Global Hierarchy Scale */
+  --font-serif: "Playfair Display", "Georgia", "Times New Roman", ui-serif, serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif; /* Unified with Sans as per policy */
 
   /* Editorial Geometry */
   --radius-sm: 0px;
-  --radius-md: 2px;
-  --radius-lg: 4px;
-  --radius-xl: 8px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 16px;
 
   /* Paper Shadows */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.04);
@@ -36,20 +37,27 @@
 
 @layer base {
   body {
-    @apply bg-surface-base text-text-main font-sans antialiased;
+    @apply bg-surface-base text-text-main antialiased;
+    font-family: var(--font-sans);
+    font-size: 16px; /* Global Body Size Rule: 16-18px */
+    line-height: 1.6;
+    letter-spacing: 0.01em;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-serif font-bold tracking-tight text-text-heading leading-tight;
+    @apply font-serif font-black text-brand-secondary italic;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
   }
 
-  h1 { @apply text-3xl md:text-4xl mb-6; }
-  h2 { @apply text-2xl md:text-3xl mb-4; }
+  h1 { @apply text-[40px] mb-6; }
+  h2 { @apply text-[28px] mb-5; }
+  h3 { @apply text-[22px] mb-4; }
   
-  p { @apply leading-relaxed mb-4 text-sm; }
+  p { @apply leading-relaxed mb-4 text-[16px]; }
 
   ::-webkit-scrollbar {
-    width: 8px;
+    width: 10px;
   }
   ::-webkit-scrollbar-track {
     @apply bg-surface-base;
@@ -82,11 +90,25 @@
   }
 
   .btn-paper {
-    @apply bg-brand-primary text-white px-8 py-3 rounded-sm font-bold uppercase tracking-widest text-xs hover:bg-brand-secondary transition-all shadow-sm;
+    @apply bg-brand-primary text-white px-5 py-2 rounded-xl font-black uppercase tracking-[0.2em] text-[10px] hover:bg-brand-secondary active:scale-95 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:pointer-events-none;
+    font-family: var(--font-display);
+  }
+
+  .btn-paper-secondary {
+    @apply bg-transparent border-2 border-white/80 text-white px-5 py-2 rounded-xl font-black uppercase tracking-[0.2em] text-[10px] hover:bg-white hover:text-brand-secondary active:scale-95 transition-all backdrop-blur-sm;
+    font-family: var(--font-display);
+  }
+
+  .saas-card {
+    @apply bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-brand-primary/20 transition-all duration-300 overflow-hidden;
   }
 
   .nav-item {
-    @apply text-xs font-bold uppercase tracking-widest text-text-heading hover:text-brand-primary transition-colors py-3 border-b-2 border-transparent hover:border-brand-primary;
+    @apply text-xs font-bold uppercase tracking-[0.2em] text-slate-500 hover:text-brand-primary transition-all py-2 border-b-2 border-transparent hover:border-brand-primary/50 relative;
+  }
+  
+  .nav-item-active {
+    @apply text-brand-primary border-brand-primary font-black;
   }
   
   .metadata {
@@ -94,7 +116,7 @@
   }
 }
 
-/* Ticker animation */
+/* Ticker & Marquee Animations */
 @keyframes ticker {
   0% { transform: translateX(0%); }
   100% { transform: translateX(-33.33%); }
@@ -102,6 +124,15 @@
 
 .animate-ticker {
   animation: ticker 20s linear infinite;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-33.33%); }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
 }
 
 @keyframes flash-ticker {
@@ -138,4 +169,98 @@
 .no-scrollbar::-webkit-scrollbar,
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* Viewport-locked sections for desktop */
+@media (min-width: 1024px) {
+  .viewport-section {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+/* Premium display font utility */
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* ── Institutional Card System ── */
+.dgia-card {
+  background: #FFFFFF;
+  border: 1px solid var(--color-surface-muted);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.dgia-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border-color: var(--color-brand-primary);
+}
+
+.dgia-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  box-shadow: 0 0 20px 4px rgba(200, 16, 46, 0.15);
+}
+
+.dgia-card:hover::after {
+  opacity: 1;
+}
+
+/* ── Micro-Interaction Keyframes ── */
+@keyframes subtle-shake {
+  0%, 100% { transform: translateX(0) translateY(-4px); }
+  20% { transform: translateX(-2px) translateY(-4px); }
+  40% { transform: translateX(2px) translateY(-4px); }
+  60% { transform: translateX(-1px) translateY(-4px); }
+  80% { transform: translateX(1px) translateY(-4px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 0 0 rgba(200, 16, 46, 0); }
+  50% { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 20px 6px rgba(200, 16, 46, 0.15); }
+}
+
+.dgia-card-interactive:hover {
+  animation: subtle-shake 0.5s ease-in-out, glow-pulse 1.5s ease-in-out infinite 0.5s;
+}
+@keyframes soft-pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 191, 0, 0.4); } 70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(255, 191, 0, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 191, 0, 0); } } .animate-soft-pulse { animation: soft-pulse 2s infinite ease-in-out; }
+.glow-yellow { box-shadow: 0 0 15px rgba(255, 199, 0, 0.4); border: 2px solid rgba(255, 199, 0, 0.6); } .focus-outline-accent:focus { outline: 3px solid #FFC700; outline-offset: 2px; } .focus-outline-primary:focus { outline: 2px solid #0B6B4F; outline-offset: 2px; }
+
+/* High-Contrast Accessibility & Elevation Utilities */
+.focus-ring-accent {
+  @apply outline-none ring-4 ring-brand-accent ring-offset-2 ring-offset-brand-secondary transition-all;
+}
+
+.shadow-premium {
+  box-shadow: 0 20px 50px rgba(0,0,0,0.12), 0 5px 15px rgba(0,0,0,0.04);
+}
+
+.shadow-featured {
+  box-shadow: 0 30px 60px rgba(11, 107, 79, 0.15), 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.text-contrast-aa {
+  @apply text-slate-700 font-bold;
+}
+
+.glow-white {
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+}
+
+.focus-ring-primary {
+  @apply outline-none ring-4 ring-brand-primary ring-offset-2 ring-offset-white;
 }

@@ -111,7 +111,7 @@ const resources = {
                 southern: "Afrique Australe"
             },
             home: {
-                hero_title: "À La Une",
+                hero_title: "L'EXCELLENCE AFRICAINE CERTIFIÉE",
                 latest_analyses: "Dernières Analyses",
                 magazines_title: "Publications & Revues",
                 more_articles: "Plus d'Articles",
@@ -126,7 +126,11 @@ const resources = {
                 latest_newsletter: "Dernière Newsletter",
                 read_more: "Lire la Suite",
                 view_all_newsletters: "Voir Toutes les Newsletters",
-                subscribe: "S'Abonner"
+                subscribe: "S'Abonner",
+                certified_enterprises: "Entreprises Certifiées",
+                about_title: "NOTRE MISSION",
+                about_desc: "DGIA ESG est le portail panafricain de référence pour la certification et la transparence économique. Nous connectons les organisations d'excellence aux investisseurs et partenaires mondiaux par des protocoles d'audit rigoureux et des standards de gouvernance de haut niveau.",
+                digital_ecosystem: "Écosystème Digital"
             }
         }
     },
@@ -238,7 +242,7 @@ const resources = {
                 southern: "Southern Africa"
             },
             home: {
-                hero_title: "Headlines",
+                hero_title: "THE STANDARD OF AFRICAN EXCELLENCE",
                 latest_analyses: "Latest Analyses",
                 magazines_title: "Publications & Reviews",
                 more_articles: "More Articles",
@@ -253,13 +257,17 @@ const resources = {
                 latest_newsletter: "Latest Newsletter",
                 read_more: "Read More",
                 view_all_newsletters: "View All Newsletters",
-                subscribe: "Subscribe"
+                subscribe: "Subscribe",
+                certified_enterprises: "Certified Enterprises",
+                about_title: "OUR MISSION",
+                about_desc: "DGIA ESG is the leading pan-African portal for certification and economic transparency. We connect excellent organizations with global investors and partners through rigorous audit protocols and high-level governance standards.",
+                digital_ecosystem: "Digital Ecosystem"
             },
             labels: {
                 certification_standards: "Certification Standards",
                 registry_title_prefix: "Architecture of",
                 registry_title_accent: "Cooperative Labels",
-                hero_desc: "Explore all labelling standards, their evaluation criteria and the sectors covered by CoopLabel.",
+                hero_desc: "Explore all labelling standards, their evaluation criteria and the sectors covered by DGIA ESG.",
                 search_placeholder: "Search a label, standard or framework..."
             }
         }

@@ -17,7 +17,9 @@ import {
   LogOut,
   Crown,
   Calendar,
-  Palette
+  Palette,
+  Mic,
+  BookOpen
 } from "lucide-react";
 import { searchEntities } from "../services/SearchService";
 import type { SearchResults } from "../services/SearchService";
@@ -28,33 +30,18 @@ import { useTranslation } from "react-i18next";
 import NewsTicker from "./NewsTicker";
 import { NewsletterPopup } from "./NewsletterPopup";
 import { useAuth } from "../context/AuthContext";
-import AdBanner from "./AdBanner";
 import ThemePicker from "./Editorial/ThemePicker";
 
 const navigation = [
   { name: "Accueil", href: "/", icon: ShieldCheck },
-  {
-    name: "Secteurs",
-    href: "#",
-    children: [
-      { name: "ESG & Finance", href: "/news/sector/finance" },
-      { name: "RSE & Gouvernance", href: "/news/sector/governance" },
-      { name: "Tech & Durable", href: "/news/sector/tech" },
-      { name: "Énergie & Bio", href: "/news/sector/energy" },
-      { name: "Leadership & Impact", href: "/news/sector/leadership" }
-    ]
-  },
   { name: "Labels", href: "/labels", icon: Award },
   { name: "Annuaire", href: "/directory", icon: Users },
   { name: "Journal", href: "/news", icon: Newspaper },
-  { name: "Médiatique", href: "/multimedia", icon: Play },
-  { name: "Kiosque", href: "/kiosk", icon: Bookmark },
-  { name: "Événements", href: "/events", icon: Calendar },
-  { name: "Premium", href: "/pricing", icon: Crown }
+  { name: "Événements", href: "/events", icon: Calendar }
 ];
 
 const Layout = () => {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const { user, isAuthenticated, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -67,9 +54,6 @@ const Layout = () => {
   const [isThemePickerOpen, setIsThemePickerOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const sectorsRef = useRef<HTMLDivElement>(null);
-  const [sectorsPos, setSectorsPos] = useState({ left: 0, top: 0 });
-  const [isSectorsOpen, setIsSectorsOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -138,20 +122,22 @@ const Layout = () => {
     }
   };
 
-  const updateSectorsPos = () => {
-    if (sectorsRef.current) {
-      const rect = sectorsRef.current.getBoundingClientRect();
-      setSectorsPos({ left: rect.left, top: rect.bottom });
-    }
-  };
+
 
   const UserMenu = () => {
     if (!isAuthenticated) {
       return (
-        <Link to="/login" className="hidden lg:flex items-center gap-2 group">
-          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-brand-primary transition-colors">Se connecter</span>
-          <div className="w-10 h-10 bg-slate-50 flex items-center justify-center rounded-2xl group-hover:bg-brand-primary group-hover:text-white transition-all shadow-tactile-sm">
-            <User className="w-4 h-4" />
+        <Link to="/login" className="hidden lg:flex items-center gap-6 group">
+          <div className="flex items-center gap-4">
+             <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-colors">
+                <Palette className="w-4 h-4 text-brand-primary" />
+             </div>
+             <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-colors">
+                <User className="w-4 h-4 text-brand-primary" />
+             </div>
+          </div>
+          <div className="bg-[#0D4D33] text-white px-5 py-2 rounded-full font-black text-[10px] uppercase tracking-[0.2em] hover:bg-[#0A3D29] transition-all shadow-tactile active:scale-95 shrink-0">
+             Se Connecter
           </div>
         </Link>
       );
@@ -161,10 +147,10 @@ const Layout = () => {
       <div className="relative" ref={userMenuRef}>
         <button
           onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-          className="flex items-center gap-4 bg-slate-50/50 p-1.5 rounded-2xl border border-slate-100 hover:border-brand-primary/30 transition-all group"
+          className="flex items-center gap-4 bg-slate-50/50 p-2 rounded-2xl border border-slate-100 hover:border-brand-primary/30 transition-all group min-w-[44px] min-h-[44px] justify-center"
         >
           <div className="text-right hidden lg:block pl-3 border-l-2 border-brand-primary/10">
-            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1 text-left">Bonjour,</p>
+            <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest leading-none mb-1 text-left">Bonjour,</p>
             <p className="text-xs font-black text-brand-secondary group-hover:text-brand-primary transition-colors uppercase tracking-tight italic">{user?.name}</p>
           </div>
           <div className={cn(
@@ -176,7 +162,7 @@ const Layout = () => {
                 <Crown className="w-2.5 h-2.5 text-white fill-white" />
               </div>
             )}
-            <User className={cn("w-4 h-4", user?.isPro ? "text-amber-600" : "text-brand-primary group-hover:text-white")} />
+            <User className={cn("w-5 h-5", user?.isPro ? "text-amber-600" : "text-brand-primary group-hover:text-white")} />
           </div>
         </button>
 
@@ -201,7 +187,7 @@ const Layout = () => {
               <Link
                 to="/profile"
                 onClick={() => setIsUserMenuOpen(false)}
-                className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-slate-50 text-slate-600 hover:text-brand-primary transition-all group"
+                className="flex items-center gap-3 w-full p-4 rounded-full hover:bg-slate-50 text-slate-600 hover:text-brand-primary transition-all group"
               >
                 <User className="w-4 h-4 group-hover:scale-110 transition-transform" />
                 <span className="text-xs font-bold uppercase tracking-widest">Mon Profil</span>
@@ -211,7 +197,7 @@ const Layout = () => {
                 <Link
                   to="/admin"
                   onClick={() => setIsUserMenuOpen(false)}
-                  className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-slate-50 text-slate-600 hover:text-brand-primary transition-all group"
+                  className="flex items-center gap-3 w-full p-4 rounded-full hover:bg-slate-50 text-slate-600 hover:text-brand-primary transition-all group"
                 >
                   <LayoutDashboard className="w-4 h-4 group-hover:scale-110 transition-transform" />
                   <span className="text-xs font-bold uppercase tracking-widest">Dashboard Admin</span>
@@ -223,7 +209,7 @@ const Layout = () => {
                   logout();
                   setIsUserMenuOpen(false);
                 }}
-                className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-red-50 text-slate-400 hover:text-red-500 transition-all group"
+                className="flex items-center gap-3 w-full p-4 rounded-full hover:bg-red-50 text-slate-400 hover:text-red-500 transition-all group"
               >
                 <LogOut className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 <span className="text-xs font-bold uppercase tracking-widest">Déconnexion</span>
@@ -242,112 +228,42 @@ const Layout = () => {
       {/* Professional Header */}
       <header
         className={cn(
-          "sticky top-8 z-50 w-full transition-all duration-300 border-b",
+          "sticky top-0 z-[100] w-full transition-all duration-500",
           isScrolled
-            ? "bg-white/95 backdrop-blur-md py-3 border-slate-200 shadow-lg shadow-slate-200/20"
-            : "bg-white py-5 border-slate-100"
+            ? "bg-white/95 backdrop-blur-md py-2 shadow-[0_4px_30px_rgba(0,0,0,0.05)] border-b border-slate-100"
+            : "bg-white py-6"
         )}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-4">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-3 shrink-0">
-              <div className="w-10 h-10 bg-brand-primary rounded-lg flex items-center justify-center shadow-sm">
-                <ShieldCheck className="text-white w-6 h-6" />
+            <Link to="/" className="flex items-center gap-2 shrink-0 group">
+              <div className="w-8 h-8 bg-[#0D4D33] rounded-md flex items-center justify-center">
+                <ShieldCheck className="text-white w-5 h-5" />
               </div>
-              <div className="hidden sm:flex flex-col">
-                <span className="text-lg font-bold text-brand-secondary leading-tight">
-                  CoopLabel
-                </span>
-                <span className="text-[10px] font-medium text-brand-accent uppercase tracking-wider">
-                  Certification Plateforme
-                </span>
-              </div>
+              <span className="text-base font-black text-[#0D4D33] tracking-tight uppercase">
+                DGIA ESG
+              </span>
             </Link>
 
             {/* Desktop Navigation Container */}
-            <nav className="hidden md:flex flex-1 min-w-0 relative group/nav-container items-center" aria-label="Primary">
-              {/* Scroll Controls */}
-              <button
-                onClick={() => scrollNav('left')}
-                className="absolute left-0 z-20 p-1.5 bg-white/80 backdrop-blur-sm border border-slate-100 rounded-full shadow-md opacity-0 group-hover/nav-container:opacity-100 transition-opacity hover:bg-brand-primary hover:text-white"
-                aria-label="Scroll left"
-              >
-                <ChevronRight className="w-4 h-4 rotate-180" />
-              </button>
-              
-              <button
-                onClick={() => scrollNav('right')}
-                className="absolute right-0 z-20 p-1.5 bg-white/80 backdrop-blur-sm border border-slate-100 rounded-full shadow-md opacity-0 group-hover/nav-container:opacity-100 transition-opacity hover:bg-brand-primary hover:text-white"
-                aria-label="Scroll right"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-
-              {/* Fade masks for scroll indications */}
-              <div className="absolute left-8 top-0 bottom-0 w-8 bg-gradient-to-r from-white/95 to-transparent z-10 pointer-events-none opacity-0 group-hover/nav-container:opacity-100 transition-opacity" />
-              <div className="absolute right-8 top-0 bottom-0 w-8 bg-gradient-to-l from-white/95 to-transparent z-10 pointer-events-none opacity-0 group-hover/nav-container:opacity-100 transition-opacity" />
-
-              <div
-                ref={scrollRef}
-                className="flex-1 overflow-x-auto no-scrollbar scroll-smooth overscroll-x-contain touch-pan-x flex items-center snap-x snap-mandatory scroll-px-4 max-w-[520px] w-full"
-                onWheel={handleNavWheel}
-                style={{ marginInline: "auto" }}
-              >
-                <div className="flex items-center gap-1 min-w-max px-4">
+            <nav className="hidden lg:flex flex-1 justify-center items-center" aria-label="Primary">
+                <div className="flex items-center gap-8">
                 {navigation.map((item) => {
                   const isActive = item.href === "/"
                     ? location.pathname === "/"
                     : item.href !== "#"
                       ? location.pathname.startsWith(item.href)
                       : false;
-                  if (item.children) {
-                    return (
-                      <div 
-                        key={item.name} 
-                        className="relative group/nav shrink-0 min-w-[130px] snap-start snap-always"
-                        ref={item.name === "Secteurs" ? sectorsRef : undefined}
-                        onMouseEnter={() => {
-                          if (item.name === "Secteurs") {
-                            updateSectorsPos();
-                            setIsSectorsOpen(true);
-                          }
-                        }}
-                        onMouseLeave={() => {
-                          if (item.name === "Secteurs") setIsSectorsOpen(false);
-                        }}
-                      >
-                        <button
-                          className="w-full px-4 py-2 rounded-md text-sm font-bold text-text-muted hover:text-brand-primary flex items-center justify-center gap-1 transition-all"
-                        >
-                          {item.name} <ChevronRight className="w-3.5 h-3.5 rotate-90" />
-                        </button>
-                        {/* The dropdown is now fixed to avoid clipping */}
-                        {item.name !== "Secteurs" && (
-                          <div className="absolute top-full left-0 w-56 bg-white border border-slate-100 rounded-xl shadow-2xl opacity-0 translate-y-2 pointer-events-none group-hover/nav:opacity-100 group-hover/nav:translate-y-0 group-hover/nav:pointer-events-auto transition-all duration-300 p-2 z-[70]">
-                            {item.children.map(child => (
-                              <Link
-                                key={child.name}
-                                to={child.href}
-                                className="block px-4 py-2 text-xs font-bold text-slate-600 hover:text-brand-primary hover:bg-slate-50 rounded-lg transition-all"
-                              >
-                                {child.name}
-                              </Link>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  }
                   return (
                     <Link
                       key={item.name}
                       to={item.href}
                       className={cn(
-                        "px-3 py-2 rounded-md text-sm font-bold transition-all shrink-0 min-w-[130px] text-center snap-start snap-always",
+                        "text-[10px] font-black uppercase tracking-[0.2em] transition-all relative py-2",
                         isActive
-                          ? "text-brand-primary bg-brand-primary/5"
-                          : "text-text-muted hover:text-brand-primary hover:bg-slate-50"
+                          ? "text-[#0D4D33] border-b-2 border-brand-accent"
+                          : "text-slate-400 hover:text-[#0D4D33]"
                       )}
                     >
                       {item.name}
@@ -355,20 +271,11 @@ const Layout = () => {
                   );
                 })}
                 </div>
-              </div>
             </nav>
 
             {/* Desktop search removed to free space */}
 
             <div className="flex items-center gap-4 shrink-0">
-              <button
-                onClick={() => setIsThemePickerOpen(true)}
-                className="hidden md:inline-flex items-center gap-2 px-3 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-all"
-                aria-label="Choose color palette"
-              >
-                <Palette className="w-4 h-4 text-brand-primary" />
-                <span className="text-[10px] font-black uppercase tracking-widest">Palette</span>
-              </button>
               {isAuthenticated && (
                 <Link to="/library" className="hidden lg:flex items-center gap-2 text-xs font-black text-brand-secondary hover:text-brand-primary transition-all uppercase tracking-widest italic pt-1 group">
                   <Bookmark className="w-4 h-4 text-brand-primary group-hover:fill-brand-primary transition-all" /> Ma Bibliothèque
@@ -379,7 +286,7 @@ const Layout = () => {
 
               {/* Mobile Menu Toggle */}
               <button
-                className="p-2 text-text-muted hover:text-brand-primary hover:bg-slate-100 rounded-md transition-colors"
+                className="p-2 text-text-muted hover:text-brand-primary hover:bg-slate-100 rounded-full transition-colors"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 aria-label="Open menu"
               >
@@ -425,7 +332,7 @@ const Layout = () => {
                           .catch(console.error);
                       }}
                       className={cn(
-                        "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border",
+                        "px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border",
                         searchSector === s
                           ? "bg-brand-primary text-white border-brand-primary shadow-lg shadow-brand-primary/20"
                           : "bg-slate-50 text-slate-400 border-slate-200 hover:border-brand-primary/30"
@@ -517,34 +424,7 @@ const Layout = () => {
       </header>
       <ThemePicker forcedOpen={isThemePickerOpen} onClose={() => setIsThemePickerOpen(false)} />
 
-      {/* Secteurs Dropdown (Fixed to avoid clipping) */}
-      <AnimatePresence>
-        {isSectorsOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            className="fixed w-64 bg-white border border-slate-100 rounded-xl shadow-2xl p-2 z-[100]"
-            style={{ 
-              left: sectorsPos.left, 
-              top: sectorsPos.top + 4 
-            }}
-            onMouseEnter={() => setIsSectorsOpen(true)}
-            onMouseLeave={() => setIsSectorsOpen(false)}
-          >
-            {navigation.find(n => n.name === "Secteurs")?.children?.map(child => (
-              <Link
-                key={child.name}
-                to={child.href}
-                className="block px-4 py-2 text-xs font-bold text-slate-600 hover:text-brand-primary hover:bg-slate-50 rounded-lg transition-all"
-                onClick={() => setIsSectorsOpen(false)}
-              >
-                {child.name}
-              </Link>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Secteurs Dropdown removed */}
 
       {/* Mobile Navigation (Outside header) */}
       <AnimatePresence>
@@ -562,13 +442,13 @@ const Layout = () => {
               animate={{ x: 0 }}
               exit={{ x: -320 }}
               transition={{ type: "tween", duration: 0.25 }}
-              className="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-white border-r border-slate-100 shadow-2xl z-[80] overflow-y-auto"
+              className="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-white border-r border-slate-100 shadow-2xl z-[100] overflow-y-auto"
             >
               <div className="px-6 py-6 space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black uppercase tracking-widest text-slate-400">Navigation</span>
                   <button
-                    className="p-2 text-slate-500 hover:text-brand-primary hover:bg-slate-100 rounded-md transition-colors"
+                    className="p-2 text-slate-500 hover:text-brand-primary hover:bg-slate-100 rounded-full transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                     aria-label="Close menu"
                   >
@@ -608,27 +488,44 @@ const Layout = () => {
                     <Link
                       to={item.href}
                       className="flex items-center gap-4 p-3 rounded-lg text-lg font-black text-brand-secondary hover:bg-slate-50 transition-colors"
-                      onClick={() => setIsMenuOpen(false)} // Close menu on navigation
+                      onClick={() => setIsMenuOpen(false)}
                     >
-                      {item.icon && <item.icon className="w-5 h-5 text-brand-accent" />}
+                      {item.icon && <item.icon className="w-5 h-5 text-brand-primary" />}
                       {item.name}
                     </Link>
-                    {item.children && (
-                      <div className="pl-12 grid grid-cols-1 gap-2">
-                        {item.children.map(child => (
-                          <Link
-                            key={child.name}
-                            to={child.href}
-                            className="text-sm font-bold text-slate-500 py-1 hover:text-brand-primary"
-                            onClick={() => setIsMenuOpen(false)} // Close menu on navigation
-                          >
-                            {child.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 ))}
+                
+                <div className="pt-6 border-t border-slate-100 mt-6 pb-2">
+                   <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-3">Espace Débats & Expertise</span>
+                </div>
+                
+                <div className="space-y-2">
+                    <Link
+                      to="/kiosk"
+                      className="flex items-center gap-4 p-3 rounded-lg text-lg font-black text-brand-secondary hover:bg-slate-50 transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <BookOpen className="w-5 h-5 text-brand-primary" />
+                      Le Kiosque
+                    </Link>
+                    <Link
+                      to="/multimedia"
+                      className="flex items-center gap-4 p-3 rounded-lg text-lg font-black text-brand-secondary hover:bg-slate-50 transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <Mic className="w-5 h-5 text-brand-primary" />
+                      Médiathèque
+                    </Link>
+                    <Link
+                      to="/pricing"
+                      className="flex items-center gap-4 p-3 rounded-lg text-lg font-black text-brand-secondary hover:bg-slate-50 transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <Crown className="w-5 h-5 text-amber-500" />
+                      Offre Premium
+                    </Link>
+                </div>
                 <div className="pt-6 border-t border-slate-100 flex flex-col gap-3">
                   {!isAuthenticated ? (
                     <>
@@ -682,10 +579,7 @@ const Layout = () => {
       </AnimatePresence>
 
       {/* Main Content Area */}
-      <main className="flex-1 pt-[144px] sm:pt-[156px]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <AdBanner position="top" />
-        </div>
+      <main className="flex-1 pt-0">
         <Outlet />
       </main>
       {/* Footer promo blocks removed to avoid repeating events/newsletters on every page */}
@@ -699,7 +593,7 @@ const Layout = () => {
                 <div className="w-10 h-10 bg-brand-accent rounded-lg flex items-center justify-center">
                   <ShieldCheck className="text-white w-6 h-6" />
                 </div>
-                <span className="text-2xl font-bold tracking-tight">CoopLabel</span>
+                <span className="text-2xl font-bold tracking-tight">DGIA ESG</span>
               </Link>
               <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
                 La plateforme de référence pour la certification et l'annuaire des coopératives engagées vers l'excellence.
@@ -745,7 +639,7 @@ const Layout = () => {
           </div>
 
           <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-slate-500 text-xs font-medium">
-            <p>© {new Date().getFullYear()} CoopLabel — Solution Professionnelle Certifiée.</p>
+            <p>© {new Date().getFullYear()} DGIA ESG — Solution Professionnelle Certifiée.</p>
             <div className="flex items-center gap-6">
               <span className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-success animate-pulse" />

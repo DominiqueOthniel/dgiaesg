@@ -45,7 +45,7 @@ const NewsTicker = () => {
     if (items.length === 0) return null;
 
     return (
-        <div className="fixed top-0 inset-x-0 z-[80] bg-brand-secondary text-white border-b border-white/5 h-8 overflow-hidden">
+        <div className="relative z-[80] bg-brand-secondary text-white border-b border-white/5 h-8 overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-brand-primary/10 via-transparent to-brand-primary/10 pointer-events-none" />
             <div className="h-full flex items-center gap-4 px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center gap-2 px-3 py-1 bg-brand-accent/20 rounded-full border border-brand-accent/30 shrink-0">
