@@ -8,7 +8,6 @@ export interface ILabel {
   sector: string;
   status: "active" | "inactive";
   publishDate?: string;
-  validationWorkflow?: { step: string; status: "complete" | "active" | "pending" }[];
   deletedAt?: string;
   createdAt: string;
   updatedAt: string;
@@ -34,17 +33,6 @@ export interface ICompany {
   updatedAt: string;
 }
 
-export interface ICriteria {
-  _id: string;
-  labelId: string | ILabel;
-  category: "governance" | "environment" | "social" | "economic" | "quality";
-  title: LocalizedString;
-  description: LocalizedString;
-  weight: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface INews {
   _id: string;
   title: { fr: string; en: string };
@@ -54,23 +42,12 @@ export interface INews {
   author: string;
   imageUrl: string;
   category?: string | { _id: string; name: string };
-  subCategory?: string | { _id: string; name: string };
   sector?: string;
   readingTime?: string;
   published: boolean;
   premium: boolean;
   publishedAt: string | null;
   deletedAt?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface ICompanyCriteria {
-  _id: string;
-  companyId: string | ICompany;
-  criteriaId: string | ICriteria;
-  score: number;
-  notes: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -100,11 +77,6 @@ export interface IEvent {
   organizer: LocalizedString;
   imageUrl?: string;
   registrationUrl?: string;
-  agenda?: {
-    time: string;
-    label: LocalizedString;
-    description?: LocalizedString;
-  }[];
   published: boolean;
   featured: boolean;
   createdAt: string;
@@ -119,24 +91,6 @@ export interface MonthlyReview {
   publishDate: string;
   featured: boolean;
 }
-
-export interface IUser {
-  _id: string;
-  name: string;
-  email: string;
-  role: "admin" | "editor" | "viewer";
-  savedArticles: string[];
-  isPro?: boolean;
-  subscriptionId?: string;
-  proExpiry?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export type LabelStatus = ILabel["status"];
-export type CompanyStatus = ICompany["status"];
-export type CriteriaCategory = ICriteria["category"];
-export type UserRole = IUser["role"];
 
 export interface ApiResponse<T> {
   success: boolean;

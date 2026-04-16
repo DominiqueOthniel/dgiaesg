@@ -13,7 +13,7 @@ const resources = {
                 kiosk: "Kiosque",
                 multimedia: "Médiathèque",
                 pricing: "Premium",
-                login: "Connexion",
+                login: "Se Connecter",
                 logout: "Déconnexion",
                 profile: "Profil",
                 org_hub: "Audit & Gestion",
@@ -111,6 +111,57 @@ const resources = {
                 southern: "Afrique Australe"
             },
             home: {
+                hero: {
+                  badge: "Standard d'Excellence Africain",
+                  title1: "L'Excellence Africaine,",
+                  title2: "Certifiée.",
+                  subtitle: "Propulsez votre impact ESG vers de nouveaux sommets grâce à notre plateforme de certification panafricaine de classe mondiale.",
+                  cta_labels: "Découvrir nos Labels",
+                  cta_directory: "Consulter le Registre",
+                },
+                mission: {
+                  title: "Notre Mission",
+                  text: "Structurer, certifier et promouvoir l'excellence coopérative et entrepreneuriale en Afrique à travers des standards internationaux rigoureux.",
+                },
+                labels: {
+                  title: "Labels & Certifications",
+                  view_all: "Voir tout",
+                  verified: "Vérifié",
+                  explore: "Explorer le label",
+                },
+                news: {
+                  title: "Intelligence Éditoriale",
+                  subtitle: "Analyses & Rapports Stratégiques",
+                  read_more: "Lire la Suite",
+                  view_all: "Toutes les actualités",
+                },
+                companies: {
+                  title: "Entreprises Certifiées",
+                  view_profile: "Voir profil",
+                  view_all: "Voir l'annuaire complet",
+                },
+                events: {
+                  title: "Agenda & Événements",
+                  register: "S'inscrire",
+                  view_all: "Tous les événements",
+                },
+                multimedia: {
+                  title: "Médiathèque & Excellence",
+                  videos: "Vidéos",
+                  podcasts: "Podcasts",
+                  view_all: "Voir tout",
+                },
+                kiosk: {
+                  title: "Publications & Revues",
+                  subtitle: "Publications & Revues Mensuelles",
+                  view_all: "Accéder au kiosque",
+                },
+                newsletter: {
+                  title: "Restez Informé",
+                  subtitle: "Recevez nos analyses exclusives, nos rapports sectoriels et les dernières actualités de la certification africaine.",
+                  placeholder: "Votre adresse email",
+                  subscribe: "S'Abonner",
+                },
                 hero_title: "L'EXCELLENCE AFRICAINE CERTIFIÉE",
                 latest_analyses: "Dernières Analyses",
                 magazines_title: "Publications & Revues",
@@ -144,7 +195,7 @@ const resources = {
                 kiosk: "Kiosk",
                 multimedia: "Multimedia Hub",
                 pricing: "Premium",
-                login: "Login",
+                login: "Sign In",
                 logout: "Logout",
                 profile: "Profile",
                 org_hub: "Audit & Management",
@@ -242,6 +293,57 @@ const resources = {
                 southern: "Southern Africa"
             },
             home: {
+                hero: {
+                  badge: "African Excellence Standard",
+                  title1: "African Excellence,",
+                  title2: "Certified.",
+                  subtitle: "Elevate your ESG impact with our world-class pan-African certification platform.",
+                  cta_labels: "Discover Our Labels",
+                  cta_directory: "Browse the Registry",
+                },
+                mission: {
+                  title: "Our Mission",
+                  text: "Structure, certify and promote cooperative and entrepreneurial excellence in Africa through rigorous international standards.",
+                },
+                labels: {
+                  title: "Labels & Certifications",
+                  view_all: "View all",
+                  verified: "Verified",
+                  explore: "Explore label",
+                },
+                news: {
+                  title: "Editorial Intelligence",
+                  subtitle: "Strategic Analyses & Reports",
+                  read_more: "Read More",
+                  view_all: "All news",
+                },
+                companies: {
+                  title: "Certified Enterprises",
+                  view_profile: "View profile",
+                  view_all: "View full directory",
+                },
+                events: {
+                  title: "Upcoming Events",
+                  register: "Register",
+                  view_all: "All events",
+                },
+                multimedia: {
+                  title: "Media Hub & Excellence",
+                  videos: "Videos",
+                  podcasts: "Podcasts",
+                  view_all: "View all",
+                },
+                kiosk: {
+                  title: "Publications & Reviews",
+                  subtitle: "Monthly Publications & Reviews",
+                  view_all: "Explore Kiosk",
+                },
+                newsletter: {
+                  title: "Stay Informed",
+                  subtitle: "Subscribe to our newsletter for the latest analyses and certifications.",
+                  placeholder: "Your email address",
+                  subscribe: "Subscribe",
+                },
                 hero_title: "THE STANDARD OF AFRICAN EXCELLENCE",
                 latest_analyses: "Latest Analyses",
                 magazines_title: "Publications & Reviews",

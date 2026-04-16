@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
-import Layout from "./components/Layout";
+import SiteLayout from "./components/SiteLayout";
 import ScrollToTop from "./components/ScrollToTop";
 import { Loader2 } from "lucide-react";
 import { Toaster } from "react-hot-toast";
@@ -62,61 +62,62 @@ const LoadingPage = () => (
 function App() {
   return (
     <Suspense fallback={<LoadingPage />}>
-      <Toaster position="top-right" reverseOrder={false} />
-      <ScrollToTop />
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="labels" element={<LabelsPage />} />
-          <Route path="labels/:id" element={<LabelDetailPage />} />
-          <Route path="directory" element={<DirectoryPage />} />
-          <Route path="directory/:id" element={<CompanyDetailPage />} />
-          <Route path="news" element={<NewsPage />} />
-          <Route path="news/:slug" element={<NewsArticlePage />} />
-          <Route path="news/sector/:sector" element={<SectorPage />} />
-          <Route path="kiosk" element={<KioskPage />} />
-          <Route path="multimedia" element={<MultimediaPage />} />
-          <Route path="events" element={<Events />} />
-          <Route path="events/:id" element={<EventDetail />} />
-          <Route path="pricing" element={<PricingPage />} />
+        <Toaster position="top-right" reverseOrder={false} />
+        <ScrollToTop />
+        <Routes>
+          <Route path="/" element={<SiteLayout />}>
+            <Route index element={<Home />} />
+            <Route path="labels" element={<LabelsPage />} />
+            <Route path="labels/:id" element={<LabelDetailPage />} />
+            <Route path="directory" element={<DirectoryPage />} />
+            <Route path="directory/:id" element={<CompanyDetailPage />} />
+            <Route path="news" element={<NewsPage />} />
+            <Route path="news/:slug" element={<NewsArticlePage />} />
+            <Route path="news/sector/:sector" element={<SectorPage />} />
+            <Route path="kiosk" element={<KioskPage />} />
+            <Route path="multimedia" element={<MultimediaPage />} />
+            <Route path="events" element={<Events />} />
+            <Route path="events/:id" element={<EventDetail />} />
+            <Route path="pricing" element={<PricingPage />} />
 
-          <Route element={<ProtectedRoute />}>
-            <Route path="profile" element={<ProfilePage />} />
-            <Route path="library" element={<SavedArticles />} />
-            <Route path="org-hub" element={<OrgProfilePage />} />
-            <Route path="org-hub/applications" element={<MyApplicationsPage />} />
-            <Route path="org-hub/history" element={<CertificationHistoryPage />} />
-            <Route path="apply/:id" element={<ApplyPage />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="profile" element={<ProfilePage />} />
+              <Route path="library" element={<SavedArticles />} />
+              <Route path="org-hub" element={<OrgProfilePage />} />
+              <Route path="org-hub/applications" element={<MyApplicationsPage />} />
+              <Route path="org-hub/history" element={<CertificationHistoryPage />} />
+              <Route path="apply/:id" element={<ApplyPage />} />
+            </Route>
           </Route>
-        </Route>
 
-        <Route element={<AdminRoute allowedRoles={['admin']} />}>
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="labels" element={<LabelsAdmin />} />
-            <Route path="companies" element={<CompaniesAdmin />} />
-            <Route path="criteria" element={<CriteriaAdmin />} />
-            <Route path="news" element={<NewsAdmin />} />
-            <Route path="breaking" element={<BreakingNewsAdmin />} />
-            <Route path="reviews" element={<ReviewAdmin />} />
-            <Route path="multimedia" element={<MultimediaAdmin />} />
-            <Route path="ads" element={<AdAdmin />} />
-            <Route path="subscriptions" element={<SubscriptionAdmin />} />
-            <Route path="applications" element={<ApplicationsAdmin />} />
-            <Route path="applications/:id" element={<ApplicationReviewPage />} />
-            <Route path="events" element={<EventsAdmin />} />
-            <Route path="newsletters" element={<NewsletterAdmin />} />
+          <Route element={<AdminRoute allowedRoles={['admin']} />}>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<Dashboard />} />
+              <Route path="labels" element={<LabelsAdmin />} />
+              <Route path="companies" element={<CompaniesAdmin />} />
+              <Route path="criteria" element={<CriteriaAdmin />} />
+              <Route path="news" element={<NewsAdmin />} />
+              <Route path="breaking" element={<BreakingNewsAdmin />} />
+              <Route path="reviews" element={<ReviewAdmin />} />
+              <Route path="multimedia" element={<MultimediaAdmin />} />
+              <Route path="ads" element={<AdAdmin />} />
+              <Route path="subscriptions" element={<SubscriptionAdmin />} />
+              <Route path="applications" element={<ApplicationsAdmin />} />
+              <Route path="applications/:id" element={<ApplicationReviewPage />} />
+              <Route path="events" element={<EventsAdmin />} />
+              <Route path="newsletters" element={<NewsletterAdmin />} />
+            </Route>
           </Route>
-        </Route>
 
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<SignupPage />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
-        <Route path="*" element={<div className="min-h-screen flex items-center justify-center font-bold text-slate-300 tracking-tighter uppercase italic">404 — MATRICE NON RÉFÉRENCÉE</div>} />
-      </Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<SignupPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+          <Route path="*" element={<div className="min-h-screen flex items-center justify-center font-bold text-slate-300 tracking-tighter uppercase italic">404 — MATRICE NON RÉFÉRENCÉE</div>} />
+        </Routes>
     </Suspense>
   );
 }
+
 
 export default App;
