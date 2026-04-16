@@ -54,6 +54,8 @@
   --color-brand-emerald: hsl(var(--brand-emerald));
   --color-brand-gold: hsl(var(--brand-gold));
   --color-brand-gold-dark: hsl(var(--brand-gold-dark));
+  --color-brand-gold-foreground: hsl(var(--brand-gold-foreground));
+  --color-brand-dark: hsl(var(--brand-dark));
   --color-surface-warm: hsl(var(--surface-warm));
   --color-surface-cool: hsl(var(--surface-cool));
 
@@ -98,11 +100,13 @@
     --radius: 0.75rem;
 
     /* Custom brand tokens */
+    --brand-dark: 160 30% 6%;
     --brand-deep: 160 78% 17%;
     --brand-forest: 160 60% 22%;
     --brand-emerald: 160 84% 39%;
     --brand-gold: 45 100% 50%;
     --brand-gold-dark: 40 90% 42%;
+    --brand-gold-foreground: 160 30% 8%;
     --surface-warm: 40 30% 98%;
     --surface-cool: 210 20% 98%;
   }

@@ -37,6 +37,8 @@ const router = Router();
 router.get("/", optionalProtect, getNews);
 router.post("/", protect, authorize("admin", "editor"), validate(createNewsSchema), createNews);
 
+router.get("/slug/:slug", getNewsBySlug);
+
 /**
  * @swagger
  * /news/{id}:
@@ -64,8 +66,6 @@ router.post("/", protect, authorize("admin", "editor"), validate(createNewsSchem
 router.get("/:id", optionalProtect, getNewsById);
 router.put("/:id", protect, authorize("admin", "editor"), validate(updateNewsSchema), updateNews);
 router.delete("/:id", protect, authorize("admin"), deleteNews);
-
-router.get("/slug/:slug", getNewsBySlug);
 
 /**
  * @swagger

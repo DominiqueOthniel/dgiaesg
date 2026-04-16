@@ -7,47 +7,30 @@ import { useNews } from "@/hooks/useNews";
 import { cn, getLocalized } from "@/lib/utils";
 import { resolveImageUrl } from "@/lib/image";
 import api from "@/services/api";
-import { toast } from "react-hot-toast";
 
 const IMAGE_FALLBACK = "https://placehold.co/800x400/e2e8f0/94a3b8?text=Article";
 
+const sectorFilters = [
+  { value: "all", label: "Tous" },
+  { value: "finance", label: "Finance" },
+  { value: "tech", label: "Technologie" },
+  { value: "governance", label: "Gouvernance" },
+  { value: "energy", label: "Énergie" },
+];
+
 function NewsPage() {
-  const { i18n, t } = useTranslation();
+  const { i18n } = useTranslation();
   const lang = i18n.language;
   const [sectorFilter, setSectorFilter] = useState("all");
   const [email, setEmail] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { data: newsData, isLoading } = useNews({ page: 1, limit: 12 });
   const news = newsData?.data || [];
 
-  const sectorFilters = [
-    { value: "all", label: t("common.all") || "Tous" },
-    { value: "finance", label: t("sectors.finance") || "Finance" },
-    { value: "tech", label: t("sectors.tech") || "Technologie" },
-    { value: "governance", label: t("sectors.governance") || "Gouvernance" },
-    { value: "energy", label: t("sectors.energy") || "Énergie" },
-  ];
-
   const filtered = sectorFilter === "all" ? news : news.filter((n: any) => n.sector === sectorFilter);
 
-  const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim()) return;
-    setIsSubmitting(true);
-    try {
-      await api.post("/newsletter/subscribe", { email });
-      toast.success("Merci ! Vous êtes inscrit à la newsletter.");
-      setEmail("");
-    } catch (error) {
-      toast.error("Impossible d'inscrire cet email.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background">
       {/* Hero */}
       <section className="relative bg-primary overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_hsl(var(--brand-emerald)/0.3),transparent_70%)]" />
@@ -58,10 +41,10 @@ function NewsPage() {
               <span className="text-xs font-bold uppercase tracking-widest text-primary-foreground/70">Intelligence Éditoriale</span>
             </div>
             <h1 className="text-3xl md:text-5xl font-extrabold text-primary-foreground tracking-tight mb-4">
-              {t("home.news.title")}
+              Journal & Actualités
             </h1>
             <p className="text-lg text-primary-foreground/70 max-w-xl">
-              {t("home.news.subtitle") || "Analyses stratégiques, rapports sectoriels et actualités de l'économie certifiée."}
+              Analyses stratégiques, rapports sectoriels et actualités de l'économie certifiée.
             </p>
           </motion.div>
         </div>
@@ -75,7 +58,7 @@ function NewsPage() {
               key={s.value}
               onClick={() => setSectorFilter(s.value)}
               className={cn(
-                "px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all",
+                "px-4 py-2 rounded-full text-xs font-semibold transition-all",
                 sectorFilter === s.value ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"
               )}
             >
@@ -109,15 +92,15 @@ function NewsPage() {
                   </div>
                   <div className="p-6 md:p-8 flex flex-col justify-center">
                     {filtered[0].sector && (
-                      <span className="text-[10px] font-black uppercase tracking-widest text-primary mb-3">{filtered[0].sector}</span>
+                      <span className="text-xs font-semibold uppercase tracking-wider text-primary mb-3">{filtered[0].sector}</span>
                     )}
-                    <h2 className="text-xl md:text-3xl font-extrabold text-foreground group-hover:text-primary transition-colors mb-3 line-clamp-3 leading-tight">
+                    <h2 className="text-xl md:text-2xl font-bold text-foreground group-hover:text-primary transition-colors mb-3 line-clamp-3">
                       {getLocalized(filtered[0].title, lang)}
                     </h2>
-                    <p className="text-sm text-muted-foreground line-clamp-3 mb-6 leading-relaxed">
+                    <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
                       {getLocalized(filtered[0].excerpt, lang)}
                     </p>
-                    <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
                       <Calendar className="w-3.5 h-3.5" />
                       <span>{new Date(filtered[0].publishedAt || filtered[0].createdAt).toLocaleDateString("fr-FR")}</span>
                       {filtered[0].readingTime && <span>· {filtered[0].readingTime}</span>}
@@ -128,11 +111,11 @@ function NewsPage() {
             )}
 
             {/* Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filtered.slice(1).map((article: any, idx: number) => (
                 <motion.div key={article._id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.03 }}>
-                  <Link to={`/news/${article.slug}`} className="group block bg-card border border-border rounded-2xl overflow-hidden hover-lift h-full flex flex-col">
-                    <div className="aspect-video bg-muted overflow-hidden">
+                  <Link to={`/news/${article.slug}`} className="group block bg-card border border-border rounded-xl overflow-hidden hover-lift h-full">
+                    <div className="aspect-[16/10] bg-muted overflow-hidden">
                       <img
                         src={resolveImageUrl(article.imageUrl) || IMAGE_FALLBACK}
                         alt={getLocalized(article.title, lang)}
@@ -140,23 +123,20 @@ function NewsPage() {
                         onError={(e) => { (e.target as HTMLImageElement).src = IMAGE_FALLBACK; }}
                       />
                     </div>
-                    <div className="p-6 flex-1 flex flex-col">
+                    <div className="p-5">
                       {article.sector && (
-                        <span className="text-[9px] font-black uppercase tracking-widest text-primary mb-2 block">{article.sector}</span>
+                        <span className="text-[11px] font-semibold uppercase tracking-wider text-primary mb-2 block">{article.sector}</span>
                       )}
-                      <h3 className="text-lg font-extrabold text-foreground group-hover:text-primary transition-colors line-clamp-2 mb-3 leading-snug">
+                      <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 mb-2">
                         {getLocalized(article.title, lang)}
                       </h3>
-                      <p className="text-sm text-muted-foreground line-clamp-2 mb-6 leading-relaxed flex-1">
+                      <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
                         {getLocalized(article.excerpt, lang)}
                       </p>
-                      <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          {new Date(article.publishedAt || article.createdAt).toLocaleDateString("fr-FR")}
-                        </span>
-                        <ArrowRight className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
-                      </div>
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        {new Date(article.publishedAt || article.createdAt).toLocaleDateString("fr-FR")}
+                      </span>
                     </div>
                   </Link>
                 </motion.div>
@@ -164,34 +144,36 @@ function NewsPage() {
             </div>
           </>
         ) : (
-          <div className="text-center py-20 bg-muted/20 rounded-3xl border border-dashed border-border">
+          <div className="text-center py-20">
             <BookOpen className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-            <p className="text-muted-foreground">{t("common.no_results")}</p>
+            <p className="text-muted-foreground">Aucun article pour le moment.</p>
           </div>
         )}
 
         {/* Newsletter CTA */}
-        <div className="mt-16 bg-primary rounded-3xl p-8 md:p-12 text-primary-foreground relative overflow-hidden shadow-2xl">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-accent/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
+        <div className="mt-16 bg-primary rounded-2xl p-8 md:p-12 text-primary-foreground relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary-foreground/5 rounded-full blur-[100px]" />
           <div className="relative z-10 max-w-xl">
-            <div className="flex items-center gap-2 mb-4">
-               <div className="w-1 h-4 bg-accent" />
-               <span className="text-xs font-black uppercase tracking-[0.2em] text-accent">Newsletter</span>
-            </div>
-            <h3 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-4">{t("home.newsletter.title")}</h3>
-            <p className="text-primary-foreground/70 mb-8 leading-relaxed">
-              {t("home.newsletter.subtitle")}
+            <h3 className="text-xl font-bold mb-2">Restez Informé</h3>
+            <p className="text-sm text-primary-foreground/70 mb-6">
+              Inscrivez-vous à notre newsletter pour les dernières analyses et certifications.
             </p>
-            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (email) { api.post("/newsletter/subscribe", { email }).catch(() => {}); setEmail(""); }
+              }}
+              className="flex flex-col sm:flex-row gap-3"
+            >
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder={t("home.newsletter.placeholder")}
-                className="flex-1 px-5 py-3.5 rounded-xl bg-primary-foreground/10 border border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/30 text-sm focus:outline-none focus:ring-2 focus:ring-accent transition-all"
+                placeholder="Votre adresse email"
+                className="flex-1 px-4 py-3 rounded-lg bg-primary-foreground/10 border border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/40 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
               />
-              <button type="submit" disabled={isSubmitting} className="px-8 py-3.5 bg-accent text-accent-foreground font-black uppercase tracking-widest text-xs rounded-xl hover:brightness-110 transition-all active:scale-95 shadow-xl shrink-0 disabled:opacity-50">
-                {isSubmitting ? "..." : t("home.newsletter.subscribe")}
+              <button type="submit" className="px-6 py-3 bg-accent text-accent-foreground font-semibold text-sm rounded-lg hover:brightness-110 transition-all active:scale-95 shadow-lg shrink-0">
+                S'inscrire
               </button>
             </form>
           </div>

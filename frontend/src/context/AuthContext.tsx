@@ -3,10 +3,11 @@ import api from '../services/api';
 
 interface User {
     id: string;
+    _id: string; // Alias for redesign compatibility
     name: string;
     username: string;
     email: string;
-    role: 'admin' | 'editor' | 'viewer';
+    role: 'admin' | 'editor' | 'viewer' | string;
     avatar?: string;
     savedArticles: string[];
     savedLabels: string[];
@@ -42,6 +43,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             const userData = response.data.data;
             setUser({
                 id: userData._id,
+                _id: userData._id,
                 name: userData.name,
                 username: userData.username,
                 email: userData.email,

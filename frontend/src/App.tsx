@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate, Link } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import SiteLayout from "./components/SiteLayout";
 import ScrollToTop from "./components/ScrollToTop";
@@ -34,7 +34,7 @@ const ApplyPage = lazy(() => import("./pages/ApplyPage"));
 const MyApplicationsPage = lazy(() => import("./pages/MyApplicationsPage"));
 const CertificationHistoryPage = lazy(() => import("./pages/CertificationHistoryPage"));
 
-// Admin pages with lazy loading
+// Admin pages
 const Dashboard = lazy(() => import("./pages/admin/Dashboard"));
 const LabelsAdmin = lazy(() => import("./pages/admin/LabelsAdmin"));
 const CompaniesAdmin = lazy(() => import("./pages/admin/CompaniesAdmin"));
@@ -51,10 +51,10 @@ const EventsAdmin = lazy(() => import("./pages/admin/EventsAdmin"));
 const NewsletterAdmin = lazy(() => import("./pages/admin/NewsletterAdmin"));
 
 const LoadingPage = () => (
-  <div className="min-h-screen bg-white flex items-center justify-center">
-    <div className="flex flex-col items-center gap-4">
-      <Loader2 className="w-10 h-10 text-brand-primary animate-spin" />
-      <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Initialisation des protocoles...</p>
+  <div className="min-h-screen bg-background flex items-center justify-center">
+    <div className="flex flex-col items-center gap-6">
+      <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin shadow-lg shadow-primary/20" />
+      <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Initialisation du système...</p>
     </div>
   </div>
 );
@@ -110,14 +110,29 @@ function App() {
           </Route>
 
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<SignupPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          {/* Legacy route redirection */}
+          <Route path="/register" element={<Navigate to="/signup" replace />} />
+          
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
-          <Route path="*" element={<div className="min-h-screen flex items-center justify-center font-bold text-slate-300 tracking-tighter uppercase italic">404 — MATRICE NON RÉFÉRENCÉE</div>} />
+          
+          {/* SEO & Compatibility Redirects */}
+          <Route path="/journal" element={<Navigate to="/news" replace />} />
+          <Route path="/articles" element={<Navigate to="/news" replace />} />
+          <Route path="/label" element={<Navigate to="/labels" replace />} />
+          <Route path="/annuaire" element={<Navigate to="/directory" replace />} />
+          
+          <Route path="*" element={
+            <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center">
+               <h1 className="text-9xl font-black text-muted/10 absolute select-none">404</h1>
+               <h2 className="text-2xl font-black text-foreground uppercase italic tracking-tighter mb-4 relative z-10">Matrice non référencée</h2>
+               <Link to="/" className="text-xs font-black uppercase tracking-widest text-primary hover:underline relative z-10">Retour à la base</Link>
+            </div>
+          } />
         </Routes>
     </Suspense>
   );
 }
-
 
 export default App;

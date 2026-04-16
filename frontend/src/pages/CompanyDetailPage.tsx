@@ -1,335 +1,189 @@
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import {
-    Building2,
-    MapPin,
-    ShieldCheck,
-    ArrowLeft,
-    ExternalLink,
-    Award,
-    BarChart3,
-    CalendarCheck2,
-    Globe,
-    Briefcase,
-    Zap,
-    Download,
-    Share2
-} from "lucide-react";
 import { motion } from "framer-motion";
-import { useCompany } from "../hooks/useCompanies";
-import { useLabel } from "../hooks/useLabels";
-import { Badge } from "../components/ui/Badge";
-import { Button } from "../components/ui/Button";
-import { Card, CardContent } from "../components/ui/Card";
-import { cn, getLocalized } from "../lib/utils";
-import { resolveImageUrl } from "../lib/image";
-import DigitalBadge from "../components/badges/DigitalBadge";
+import { 
+  Building2, MapPin, ShieldCheck, ArrowLeft, ExternalLink, 
+  Award, BarChart3, Globe, Download, Share2, Briefcase 
+} from "lucide-react";
+import { useCompany } from "@/hooks/useCompanies";
+import { useLabel } from "@/hooks/useLabels";
+import { getLocalized, cn } from "@/lib/utils";
+import { resolveImageUrl } from "@/lib/image";
+import DigitalBadge from "@/components/badges/DigitalBadge";
+import { Button } from "@/components/ui/Button";
+
+const IMAGE_FALLBACK = "https://placehold.co/400x400/e2e8f0/94a3b8?text=Logo";
 
 function CompanyDetailPage() {
-    const { i18n } = useTranslation();
-    const { id } = useParams<{ id: string }>();
-    const { data: company, isLoading: companyLoading } = useCompany(id);
-    const labelId = typeof company?.labelId === 'string' ? company.labelId : company?.labelId?._id;
-    const { data: label, isLoading: labelLoading } = useLabel(labelId);
+  const { i18n, t } = useTranslation();
+  const lang = i18n.language;
+  const { id } = useParams<{ id: string }>();
+  
+  const { data: company, isLoading: companyLoading } = useCompany(id);
+  const labelId = typeof company?.labelId === "string" ? company.labelId : (company?.labelId as any)?._id;
+  const { data: label } = useLabel(labelId);
 
-    if (companyLoading) {
-        return (
-            <div className="bg-white min-h-screen pt-32 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-7xl mx-auto">
-                    <div className="h-64 rounded-[2.5rem] bg-slate-50 animate-pulse mb-12" />
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                        <div className="lg:col-span-8 h-96 rounded-[2.5rem] bg-slate-50 animate-pulse" />
-                        <div className="lg:col-span-4 h-96 rounded-[2.5rem] bg-slate-50 animate-pulse" />
-                    </div>
-                </div>
-            </div>
-        );
-    }
+  if (companyLoading) {
+    return <div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" /></div>;
+  }
 
-    if (!company) return (
-        <div className="bg-white min-h-screen flex items-center justify-center">
-            <div className="text-center">
-                <Building2 className="w-16 h-16 text-slate-200 mx-auto mb-6" />
-                <h1 className="text-2xl font-bold text-brand-secondary">Société non trouvée</h1>
-                <Link to="/directory" className="text-brand-primary font-bold mt-4 inline-block hover:underline">REVENIR À L'ANNUAIRE</Link>
-            </div>
-        </div>
-    );
-
+  if (!company) {
     return (
-        <div className="bg-white min-h-screen">
-            {/* Premium Institutional Header */}
-            <section className="bg-brand-secondary pt-24 pb-40 md:pb-56 relative overflow-hidden">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5 pointer-events-none" />
-                <div className="absolute top-0 right-0 w-1/3 h-full bg-brand-primary/5 -skew-x-12 translate-x-1/2" />
-
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-                    <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-                        <Link to="/directory" className="inline-flex items-center gap-2 text-slate-400 text-xs font-bold uppercase tracking-widest mb-16 hover:text-brand-accent transition-colors">
-                            <ArrowLeft className="w-4 h-4" /> REVENIR À L'ANNUAIRE
-                        </Link>
-                    </motion.div>
-
-                    <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-start lg:items-end">
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="w-32 h-32 md:w-48 md:h-48 bg-white rounded-[2rem] flex-shrink-0 flex items-center justify-center p-8 shadow-2xl shadow-black/20"
-                        >
-                            {company.logoUrl ? (
-                                <img src={resolveImageUrl(company.logoUrl)} alt={getLocalized(company.name, i18n.language)} className="w-full h-full object-cover" />
-                            ) : (
-                                <Building2 className="w-20 h-20 text-slate-200" />
-                            )}
-                        </motion.div>
-
-                        <div className="flex-1">
-                            <div className="flex flex-wrap items-center gap-4 mb-6">
-                                <Badge variant="outline" className={cn(
-                                    "rounded-full px-4 py-1.5 font-bold text-xs uppercase tracking-wider",
-                                    getLocalized(company?.status, i18n.language) === 'certified'
-                                        ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                                        : "bg-red-500/10 text-red-400 border-red-500/20"
-                                )}>
-                                    Certifié {getLocalized(company?.status, i18n.language) || "Inactif"}
-                                </Badge>
-                                <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
-                                    <MapPin className="w-4 h-4 text-brand-accent" /> {getLocalized(company.region, i18n.language)}
-                                </div>
-                                <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
-                                    <Briefcase className="w-4 h-4 text-brand-accent" /> {getLocalized(company.sector, i18n.language)}
-                                </div>
-                            </div>
-                             <h1 className="text-4xl md:text-7xl font-bold tracking-tight text-white mb-6 leading-tight">
-                                {getLocalized(company.name, i18n.language)}
-                            </h1>
-                        </div>
-
-                        <div className="flex items-center gap-4 w-full lg:w-auto">
-                            {company.website && (
-                                <a href={company.website} target="_blank" rel="noopener noreferrer" className="flex-1 lg:flex-none">
-                                    <Button size="lg" className="w-full rounded-full px-8 shadow-xl shadow-brand-primary/20">
-                                        Consulter le Site <ExternalLink className="w-4 h-4 ml-2" />
-                                    </Button>
-                                </a>
-                            )}
-                            <Button variant="outline" size="lg" className="rounded-full border-white/20 text-white hover:bg-white/10 p-3 flex-shrink-0">
-                                <Share2 className="w-5 h-5" />
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Content Discovery Section */}
-            <section className="-mt-24 md:-mt-32 relative z-20 pb-32">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-
-                        {/* Analysis & Profile Content */}
-                        <div className="lg:col-span-8 space-y-12">
-                            <Card className="rounded-[2.5rem] border-slate-200/60 shadow-xl shadow-slate-200/40 overflow-hidden">
-                                <CardContent className="p-10 md:p-14">
-                                    <div className="flex items-center gap-2 text-brand-primary text-xs font-bold uppercase tracking-widest mb-10">
-                                        <div className="w-2 h-2 rounded-full bg-brand-primary" /> Synthèse de Profil
-                                    </div>
-                                    <div className="prose prose-slate max-w-none break-words overflow-hidden">
-                                        <p className="text-xl md:text-2xl font-medium text-brand-secondary leading-relaxed first-letter:text-5xl first-letter:font-bold first-letter:text-brand-primary first-letter:mr-3 first-letter:float-left">
-                                            {getLocalized(company.description, i18n.language)}
-                                        </p>
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            {/* Impact Performance Matrix */}
-                            <Card className="rounded-[2.5rem] bg-brand-secondary border-none shadow-2xl shadow-brand-secondary/40 overflow-hidden relative">
-                                <div className="absolute top-0 right-0 w-64 h-64 bg-brand-primary/10 rounded-full blur-3xl" />
-                                <CardContent className="p-10 md:p-14 relative z-10">
-                                    <div className="flex items-center gap-4 mb-16">
-                                        <div className="w-14 h-14 rounded-2xl bg-brand-accent/20 flex items-center justify-center text-brand-accent">
-                                            <BarChart3 className="w-7 h-7" />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <h3 className="text-2xl font-bold text-white tracking-tight">Performance d'Impact</h3>
-                                            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Métriques de Maturité Coopérative</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-                                        <div className="flex flex-col items-center justify-center p-12 bg-white/5 rounded-3xl border border-white/10 relative overflow-hidden group">
-                                            <div className="text-center relative z-10">
-                                                <span className="text-8xl font-black text-white tracking-tighter leading-none">
-                                                    {company.score || 0}<span className="text-brand-accent text-5xl">%</span>
-                                                </span>
-                                                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.4em] mt-4">SCORE GLOBAL</p>
-                                            </div>
-                                            <div className="absolute bottom-0 left-0 h-1.5 bg-brand-accent transition-all duration-1000 shadow-[0_0_15px_rgba(255,255,255,0.3)]" style={{ width: `${company.score || 0}%` }} />
-                                        </div>
-
-                                        <div className="space-y-10">
-                                            <div className="space-y-4">
-                                                <div className="flex justify-between items-end">
-                                                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Dimension Sociale</span>
-                                                    <span className="text-xl font-bold text-white tracking-tight">{company.socialScore || 0}%</span>
-                                                </div>
-                                                <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                                                    <motion.div initial={{ width: 0 }} whileInView={{ width: `${company.socialScore || 0}%` }} className="h-full bg-brand-primary rounded-full shadow-[0_0_10px_rgba(37,99,235,0.3)]" />
-                                                </div>
-                                            </div>
-                                            <div className="space-y-4">
-                                                <div className="flex justify-between items-end">
-                                                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Gouvernance Éthique</span>
-                                                    <span className="text-xl font-bold text-white tracking-tight">{company.governanceScore || 0}%</span>
-                                                </div>
-                                                <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                                                    <motion.div initial={{ width: 0 }} whileInView={{ width: `${company.governanceScore || 0}%` }} className="h-full bg-brand-accent rounded-full shadow-[0_0_10px_rgba(245,158,11,0.3)]" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </div>
-
-                        {/* Validation & Details Sidebar */}
-                        <aside className="lg:col-span-4 space-y-8">
-                            {company && (
-                                <DigitalBadge
-                                    companyId={company._id}
-                                    companyName={getLocalized(company.name, i18n.language)}
-                                    status={getLocalized(company.status, i18n.language)}
-                                />
-                            )}
-                            <Card className="rounded-[2.5rem] border-slate-200/60 shadow-xl shadow-slate-200/40 overflow-hidden">
-                                <CardContent className="p-0">
-                                    <div className="bg-slate-50 p-8 text-center border-b border-slate-100">
-                                        <div className="w-20 h-20 bg-brand-secondary rounded-2xl flex items-center justify-center text-white mx-auto shadow-xl shadow-brand-secondary/20 mb-6">
-                                            <Award className="w-10 h-10 text-brand-accent" />
-                                        </div>
-                                        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2">Label de Référence</p>
-                                        {labelLoading ? (
-                                            <div className="h-8 w-40 bg-slate-200 animate-pulse mx-auto rounded" />
-                                        ) : label ? (
-                                            <Link to={`/labels/${label._id}`} className="group inline-flex items-center gap-2">
-                                                <h3 className="text-2xl font-bold text-brand-secondary group-hover:text-brand-primary transition-colors leading-tight">
-                                                    {getLocalized(label.name, i18n.language)}
-                                                </h3>
-                                                <Zap className="w-5 h-5 text-brand-accent fill-brand-accent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                            </Link>
-                                        ) : (
-                                            <p className="text-sm font-bold text-slate-300">CERTIFICATION INDÉPENDANTE</p>
-                                        )}
-                                    </div>
-
-                                    <div className="p-10 space-y-10">
-                                        <div className="flex items-center gap-5">
-                                            <div className="w-12 h-12 rounded-xl bg-brand-primary/5 flex items-center justify-center shrink-0">
-                                                <CalendarCheck2 className="w-5 h-5 text-brand-primary" />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Émission de Certification</span>
-                                                <span className="text-sm font-bold text-brand-secondary">
-                                                    {company.certificationDate ? new Date(company.certificationDate).toLocaleDateString("fr-FR", { day: 'numeric', month: 'long', year: 'numeric' }) : "En attente"}
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-center gap-5">
-                                            <div className="w-12 h-12 rounded-xl bg-orange-500/5 flex items-center justify-center shrink-0">
-                                                <ShieldCheck className="w-5 h-5 text-orange-500" />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Validité Jusqu'au</span>
-                                                <span className="text-sm font-bold text-brand-secondary">
-                                                    {company.expiryDate ? new Date(company.expiryDate).toLocaleDateString("fr-FR", { day: 'numeric', month: 'long', year: 'numeric' }) : "Permanent"}
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <div className="pt-8 border-t border-slate-100 flex flex-col sm:flex-row gap-4">
-                                            <Button variant="outline" className="flex-1 min-w-0 rounded-2xl py-6 hover:text-brand-secondary hover:bg-slate-50 transition-all group">
-                                                <div className="flex items-center justify-center w-full gap-2">
-                                                    <Download className="w-4 h-4 shrink-0 text-slate-400 group-hover:text-brand-primary" />
-                                                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 group-hover:text-brand-secondary truncate">
-                                                        Rapports d'impact
-                                                    </span>
-                                                </div>
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            {/* Dynamic Validation Workflow */}
-                            <Card className="rounded-[2.5rem] border-slate-200/60 shadow-xl shadow-slate-200/40 overflow-hidden">
-                                <CardContent className="p-8">
-                                    <div className="flex items-center gap-3 mb-8">
-                                        <div className="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary">
-                                            <ShieldCheck className="w-5 h-5" />
-                                        </div>
-                                        <h3 className="text-lg font-bold text-brand-secondary uppercase tracking-tight">Workflow de Validation</h3>
-                                    </div>
-
-                                    <div className="space-y-6">
-                                        {(label?.validationWorkflow || [
-                                            { step: "Analyse documentaire", status: "complete" },
-                                            { step: "Inspection sur site", status: "active" },
-                                            { step: "Audit de conformité éthique", status: "pending" },
-                                            { step: "Certification par le comité", status: "pending" }
-                                        ]).map((step: any, idx: number) => (
-                                            <div key={idx} className="flex items-center gap-4 group">
-                                                <div className={cn(
-                                                    "w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all",
-                                                    step.status === 'complete' ? "bg-emerald-500 border-emerald-500 text-white" :
-                                                        step.status === 'active' ? "border-brand-primary text-brand-primary animate-pulse" :
-                                                            "border-slate-200 text-slate-300"
-                                                )}>
-                                                    {step.status === 'complete' ? (
-                                                        <ShieldCheck className="w-4 h-4" />
-                                                    ) : (
-                                                        <span className="text-xs font-bold">{idx + 1}</span>
-                                                    )}
-                                                </div>
-                                                <div className="flex-1 border-b border-slate-50 pb-4">
-                                                    <p className={cn(
-                                                        "text-xs font-bold uppercase tracking-widest",
-                                                        step.status === 'complete' ? "text-slate-500" :
-                                                            step.status === 'active' ? "text-brand-primary" : "text-slate-400"
-                                                    )}>
-                                                        {step.step}
-                                                    </p>
-                                                    <p className="text-[9px] font-medium text-slate-400 mt-1 uppercase tracking-tight">
-                                                        {step.status === 'complete' ? "Validation effectuée" :
-                                                            step.status === 'active' ? "Phase en cours de traitement" : "En attente de démarrage"}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            <Card className="rounded-3xl bg-slate-50 border-slate-100 p-8 shadow-sm">
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-2 text-[10px] font-bold text-brand-primary uppercase tracking-widest">
-                                        <Globe className="w-4 h-4" /> Statut du Registre
-                                    </div>
-                                    <div className="space-y-2 font-mono text-[11px] text-slate-400 leading-relaxed">
-                                        <p>&gt; Validating connection...</p>
-                                        <p>&gt; Integrity check: SECURE</p>
-                                        <div className="flex items-center gap-2 text-emerald-500">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                            <span>LIVE REPOSITORY DISPONIBLE</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Card>
-                        </aside>
-                    </div>
-                </div>
-            </section>
-        </div>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+        <Building2 className="w-12 h-12 text-muted-foreground/20" />
+        <h2 className="text-xl font-bold text-foreground">Société non trouvée</h2>
+        <Link to="/directory" className="text-sm font-semibold text-primary hover:underline">← Retour à l'annuaire</Link>
+      </div>
     );
+  }
+
+  const scores = [
+    { label: "Score Global", value: company.score, icon: BarChart3, color: "text-primary" },
+    { label: "Social", value: company.socialScore, icon: ShieldCheck, color: "text-brand-emerald" },
+    { label: "Gouvernance", value: company.governanceScore, icon: Award, color: "text-accent" },
+  ].filter((s) => s.value != null);
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <section className="bg-primary relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_hsl(var(--brand-emerald)/0.3),transparent_70%)]" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 relative z-10">
+          <Link to="/directory" className="inline-flex items-center gap-2 text-sm text-primary-foreground/60 hover:text-primary-foreground mb-10 transition-colors">
+            <ArrowLeft className="w-4 h-4" /> Retour à l'annuaire
+          </Link>
+          
+          <div className="flex flex-col md:flex-row items-start md:items-end gap-8">
+            <div className="w-24 h-24 md:w-32 md:h-32 bg-white rounded-[2rem] flex items-center justify-center p-5 shrink-0 shadow-2xl relative">
+              {company.logoUrl ? (
+                <img src={resolveImageUrl(company.logoUrl)} alt={getLocalized(company.name, lang)} className="w-full h-full object-contain" onError={(e) => { (e.target as HTMLImageElement).src = IMAGE_FALLBACK; }} />
+              ) : (
+                <Building2 className="w-12 h-12 text-muted-foreground/20" />
+              )}
+            </div>
+            <div className="flex-1">
+              <div className="flex flex-wrap items-center gap-3 mb-4">
+                <span className={cn(
+                  "inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border",
+                  getLocalized(company.status as any, lang) === "certified" 
+                    ? "bg-brand-emerald/10 text-brand-emerald border-brand-emerald/20"
+                    : "bg-red-500/10 text-red-500 border-red-500/20"
+                )}>
+                  <ShieldCheck className="w-3.5 h-3.5" /> {getLocalized(company.status as any, lang) === "certified" ? "Certifié" : "Inactif"}
+                </span>
+                <div className="flex items-center gap-1.5 text-[10px] font-bold text-primary-foreground/40 uppercase tracking-widest">
+                  <MapPin className="w-3.5 h-3.5 text-accent" /> {getLocalized(company.region, lang)}
+                </div>
+              </div>
+              <h1 className="text-3xl md:text-5xl font-extrabold text-primary-foreground tracking-tight mb-4 leading-tight">
+                {getLocalized(company.name, lang)}
+              </h1>
+              <div className="flex items-center gap-2 text-primary-foreground/60 text-sm">
+                <Briefcase className="w-4 h-4" />
+                <span>{getLocalized(company.sector, lang)}</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 w-full md:w-auto">
+               <Button className="flex-1 md:flex-none rounded-full px-8 shadow-xl shadow-black/20" onClick={() => window.open(company.website, '_blank')}>
+                 Visiter le Site <ExternalLink className="w-4 h-4 ml-2" />
+               </Button>
+               <Button variant="outline" className="rounded-full w-12 h-12 p-0 border-white/20 text-white hover:bg-white/10">
+                 <Share2 className="w-5 h-5" />
+               </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Score Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {scores.map((s) => (
+                <div key={s.label} className="bg-card border border-border rounded-2xl p-6 text-center group hover:border-primary/30 transition-all">
+                  <s.icon className={cn("w-5 h-5 mx-auto mb-3", s.color)} />
+                  <div className="text-3xl font-black text-foreground group-hover:text-primary transition-colors">{s.value}%</div>
+                  <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em] mt-2">{s.label}</div>
+                  <div className="mt-4 h-1 w-full bg-muted rounded-full overflow-hidden">
+                    <motion.div initial={{ width: 0 }} animate={{ width: `${s.value}%` }} className={cn("h-full rounded-full bg-current", s.color)} />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* About Card */}
+            <div className="bg-card border border-border rounded-2xl p-8 md:p-10 shadow-sm">
+              <div className="flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-widest mb-6">
+                <div className="w-2 h-2 rounded-full bg-primary" /> Synthèse de Profil
+              </div>
+              <p className="text-lg text-foreground/80 leading-relaxed font-medium whitespace-pre-wrap">
+                {getLocalized(company.description, lang) || "Aucune description institutionnelle n'a été fournie pour cette entité."}
+              </p>
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-8">
+            {/* Digital Badge Section */}
+            <DigitalBadge 
+              companyId={company._id}
+              companyName={getLocalized(company.name, lang)}
+              status={getLocalized(company.status as any, lang)}
+            />
+
+            {/* Detailed Info Card */}
+            <div className="bg-card border border-border rounded-2xl p-8">
+              <h3 className="text-sm font-bold text-foreground uppercase tracking-widest mb-6 border-b border-border pb-4">Détails de Certification</h3>
+              <dl className="space-y-6">
+                <div>
+                  <dt className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest mb-1">Date d'Émission</dt>
+                  <dd className="font-bold text-foreground text-sm">{company.certificationDate ? new Date(company.certificationDate).toLocaleDateString("fr-FR", { day: 'numeric', month: 'long', year: 'numeric' }) : "—"}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest mb-1">Validité du Badge</dt>
+                  <dd className="font-bold text-foreground text-sm">{company.expiryDate ? new Date(company.expiryDate).toLocaleDateString("fr-FR", { day: 'numeric', month: 'long', year: 'numeric' }) : "Indéterminée"}</dd>
+                </div>
+                {company.website && (
+                  <div>
+                    <dt className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest mb-1">Portail Officiel</dt>
+                    <dd className="truncate">
+                      <a href={company.website} target="_blank" rel="noreferrer" className="text-primary font-bold text-sm hover:underline inline-flex items-center gap-1.5">
+                        Consulter <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    </dd>
+                  </div>
+                )}
+              </dl>
+              <Button variant="outline" className="w-full mt-8 rounded-xl h-12 text-xs font-bold uppercase tracking-widest gap-2 bg-muted/30 border-none hover:bg-mutedTransition flex items-center justify-center">
+                <Download className="w-4 h-4" /> Rapports d'Impact
+              </Button>
+            </div>
+
+            {/* Related Label Card */}
+            {label && (
+              <div className="bg-primary rounded-2xl p-8 text-primary-foreground shadow-xl">
+                <h3 className="text-xs font-bold uppercase tracking-widest mb-6 opacity-60">Label de Référence</h3>
+                <Link to={`/labels/${labelId}`} className="group block space-y-4">
+                  <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center group-hover:bg-accent transition-colors">
+                    <Award className="w-7 h-7 text-accent group-hover:text-accent-foreground" />
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-bold group-hover:text-accent transition-colors leading-tight">{getLocalized(label.name, lang)}</h4>
+                    <p className="text-xs opacity-50 font-bold uppercase tracking-widest mt-1">{label.sector}</p>
+                  </div>
+                  <div className="pt-4 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-accent group-hover:gap-4 transition-all">
+                    Explorer le Referentiel <ArrowLeft className="w-4 h-4 rotate-180" />
+                  </div>
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default CompanyDetailPage;
