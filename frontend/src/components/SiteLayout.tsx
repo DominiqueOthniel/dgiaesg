@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "./ui/Button";
 import { motion, AnimatePresence } from "framer-motion";
+import { ChatbotWidget } from "./ChatbotWidget";
 
 const topNavItems = [
   { key: "nav.labels", href: "/labels", icon: ShieldCheck },
@@ -252,30 +253,45 @@ const SiteLayout = () => {
         <Outlet />
       </main>
 
-      {/* Footer (Preserved) */}
-      <footer className="bg-foreground text-primary-foreground mt-auto">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      {/* Footer — Redesigned Premium Dark Theme */}
+      <footer className="relative bg-gradient-to-br from-brand-deep via-brand-dark to-brand-forest text-white mt-auto overflow-hidden">
+        {/* Decorative aurora lights */}
+        <div className="pointer-events-none absolute -top-32 -left-32 w-[420px] h-[420px] rounded-full bg-brand-emerald/25 blur-[120px] animate-aurora-slow" />
+        <div className="pointer-events-none absolute -bottom-32 -right-32 w-[420px] h-[420px] rounded-full bg-brand-gold/15 blur-[120px] animate-aurora" />
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
             <div className="md:col-span-12 lg:col-span-5">
               <div className="flex items-center gap-3 mb-8 group">
-                <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center shadow-2xl">
-                  <ShieldCheck className="w-7 h-7 text-primary-foreground" />
+                <div className="w-12 h-12 bg-brand-gold rounded-2xl flex items-center justify-center shadow-2xl shadow-brand-gold/40">
+                  <ShieldCheck className="w-7 h-7 text-brand-dark" />
                 </div>
                 <div>
-                   <span className="text-xl md:text-2xl font-black italic block">Co-op Label</span>
-                   <span className="text-[10px] font-bold text-primary-foreground/40 uppercase tracking-[0.3em]">Infrastructure d'Excellence</span>
+                  <span className="text-xl md:text-2xl font-black italic block text-white uppercase tracking-tight">
+                    Co-op Label
+                  </span>
+                  <span className="text-[10px] font-bold text-brand-gold uppercase tracking-[0.3em]">
+                    Infrastructure d'Excellence
+                  </span>
                 </div>
               </div>
-              <p className="text-base text-primary-foreground/60 max-w-sm leading-relaxed font-medium">
-                La référence panafricaine pour la certification et l'accompagnement des structures à fort impact.
+              <p className="text-base text-white/85 max-w-sm leading-relaxed font-medium">
+                La référence panafricaine pour la certification et
+                l'accompagnement des structures à fort impact.
               </p>
             </div>
-            
+
             <div className="md:col-span-4 lg:col-span-2 lg:ml-auto">
-              <h4 className="text-[11px] font-black mb-8 uppercase tracking-[0.2em] text-primary">Plateforme</h4>
+              <h4 className="text-[11px] font-black mb-8 uppercase tracking-[0.2em] text-brand-gold">
+                Plateforme
+              </h4>
               <div className="flex flex-col gap-4">
                 {topNavItems.map((item) => (
-                  <Link key={item.href} to={item.href} className="text-sm font-bold text-primary-foreground/40 hover:text-primary transition-colors">
+                  <Link
+                    key={item.href}
+                    to={item.href}
+                    className="text-sm font-bold text-white/80 hover:text-brand-gold transition-colors"
+                  >
                     {t(item.key)}
                   </Link>
                 ))}
@@ -283,31 +299,62 @@ const SiteLayout = () => {
             </div>
 
             <div className="md:col-span-4 lg:col-span-2">
-              <h4 className="text-[11px] font-black mb-8 uppercase tracking-[0.2em] text-primary">Media</h4>
+              <h4 className="text-[11px] font-black mb-8 uppercase tracking-[0.2em] text-brand-gold">
+                Media
+              </h4>
               <div className="flex flex-col gap-4">
-                <Link to="/kiosk" className="text-sm font-bold text-primary-foreground/40 hover:text-primary transition-colors">{t("nav.kiosk")}</Link>
-                <Link to="/multimedia" className="text-sm font-bold text-primary-foreground/40 hover:text-primary transition-colors">{t("nav.multimedia")}</Link>
-                <Link to="/pricing" className="text-sm font-bold text-primary-foreground/40 hover:text-primary transition-colors">Premium</Link>
+                <Link to="/kiosk" className="text-sm font-bold text-white/80 hover:text-brand-gold transition-colors">
+                  {t("nav.kiosk")}
+                </Link>
+                <Link to="/multimedia" className="text-sm font-bold text-white/80 hover:text-brand-gold transition-colors">
+                  {t("nav.multimedia")}
+                </Link>
+                <Link to="/pricing" className="text-sm font-bold text-white/80 hover:text-brand-gold transition-colors">
+                  Premium
+                </Link>
               </div>
             </div>
 
             <div className="md:col-span-4 lg:col-span-3">
-              <h4 className="text-[11px] font-black mb-8 uppercase tracking-[0.2em] text-primary">Newsletter</h4>
-              <p className="text-xs text-primary-foreground/40 font-bold mb-6">Analyses stratégiques mensuelles anonymisées.</p>
-              <form className="relative">
-                 <input type="email" placeholder="EMAIL_ID@RESEAU" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs placeholder:text-white/20 outline-none focus:ring-2 focus:ring-primary/50 transition-all font-bold" />
-                 <button className="absolute right-1 top-1 bottom-1 px-4 bg-primary text-primary-foreground rounded-lg text-[10px] font-black uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all">S'inscrire</button>
+              <h4 className="text-[11px] font-black mb-8 uppercase tracking-[0.2em] text-brand-gold">
+                Newsletter
+              </h4>
+              <p className="text-xs text-white/75 font-bold mb-6">
+                Analyses stratégiques mensuelles anonymisées.
+              </p>
+              <form 
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  // Existing submission logic elsewhere or can be added here
+                }}
+                className="relative"
+              >
+                <input
+                  type="email"
+                  placeholder="EMAIL_ID@RESEAU"
+                  className="w-full bg-white/10 border border-white/25 rounded-xl px-4 py-3 text-xs text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-brand-gold focus:border-brand-gold transition-all font-bold"
+                />
+                <button
+                  type="submit"
+                  className="absolute right-1 top-1 bottom-1 px-4 bg-brand-gold text-brand-dark rounded-lg text-[10px] font-black uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-brand-gold/30"
+                >
+                  S'inscrire
+                </button>
               </form>
             </div>
           </div>
-          
-          <div className="mt-20 pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-            <p className="text-[10px] font-bold text-primary-foreground/20 uppercase tracking-[0.3em]">
-              © {new Date().getFullYear()} Co-op Label — Infrastructure d'Excellence.
+
+          <div className="mt-20 pt-10 border-t border-white/15 flex flex-col md:flex-row justify-between items-center gap-6">
+            <p className="text-[10px] font-bold text-white/60 uppercase tracking-[0.3em]">
+              © {new Date().getFullYear()} Co-op Label — Infrastructure
+              d'Excellence.
             </p>
           </div>
         </div>
       </footer>
+
+      {/* Global UI widgets */}
+      <ChatbotWidget />
     </div>
   );
 };

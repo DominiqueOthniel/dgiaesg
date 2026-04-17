@@ -473,31 +473,33 @@ function Home() {
         </div>
       </section>
 
-      {/* ═══════════ 2. INTELLIGENCE ÉDITORIALE (NEWS) — REDESIGNED ═══════════ */}
-      <section className="relative py-16 md:py-24 overflow-hidden bg-[#0a2a1a]">
+      {/* ═══════════ 2. INTELLIGENCE ÉDITORIALE (NEWS) — REDESIGNED 2.0 ═══════════ */}
+      <section className="relative py-6 sm:py-10 md:py-14 overflow-hidden bg-[#0a2a1a]">
         {/* Decorative blurs */}
         <div className="pointer-events-none absolute top-0 left-0 w-[500px] h-[500px] rounded-full bg-brand-emerald/10 blur-[120px]" />
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-          {/* Custom Header matching Image 1 */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <BookOpen className="w-4 h-4 text-brand-gold" />
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-gold">
+          {/* Header — compact, refined typography */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 sm:gap-5 mb-4 sm:mb-6 md:mb-8">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 mb-2">
+                <BookOpen className="w-3 h-3 text-brand-gold shrink-0" />
+                <span className="text-[9px] font-semibold uppercase tracking-[0.28em] text-brand-gold">
                   Intelligence Éditoriale
                 </span>
               </div>
-              <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-none uppercase">
-                L'actualité décryptée <br />
-                <span className="opacity-90">des leaders africains</span>
+              <h2 className="font-serif text-[1.15rem] leading-[1.15] sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-white tracking-tight text-balance">
+                L'actualité décryptée{" "}
+                <span className="italic text-white/70">
+                  des leaders africains
+                </span>
               </h2>
             </div>
             <Link
               to="/news"
-              className="inline-flex items-center gap-3 bg-brand-gold text-brand-dark px-8 py-4 rounded-full text-xs font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-xl shadow-brand-gold/20 shrink-0 self-start md:self-end"
+              className="inline-flex items-center gap-2 bg-brand-gold text-brand-dark px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-[10px] font-bold uppercase tracking-[0.18em] hover:brightness-110 transition-all shadow-lg shadow-brand-gold/20 shrink-0 self-start md:self-end"
             >
-              Tous les articles <ArrowRight className="w-4 h-4" />
+              Tous les articles <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
 
@@ -506,7 +508,7 @@ function Home() {
           ) : (
             <>
               {/* ── Featured carousel (auto-rotating) ───────────────────── */}
-              <div className="relative rounded-[2rem] overflow-hidden border border-white/5 shadow-3xl shadow-black/60 group/feat transition-all duration-700 mb-12 min-h-[400px] md:h-[520px]">
+              <div className="relative rounded-xl sm:rounded-2xl overflow-hidden border border-white/5 shadow-2xl shadow-black/60 mb-4 sm:mb-6 h-[200px] sm:h-[300px] md:h-[360px] lg:h-[400px]">
                 <AnimatePresence mode="wait">
                   {news.slice(0, 5).map((article: any, idx: number) =>
                     idx === featuredIdx ? (
@@ -522,7 +524,6 @@ function Home() {
                           to={`/news/${article.slug || article._id}`}
                           className="relative block w-full h-full group"
                         >
-                          {/* Background Image */}
                           <div className="absolute inset-0 z-0">
                             {article.imageUrl ? (
                               <img
@@ -534,20 +535,18 @@ function Home() {
                             ) : (
                               <div className="w-full h-full bg-brand-dark" />
                             )}
-                            {/* Gradient Overlay matching Image 1 depth */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90" />
                           </div>
 
-                          {/* Content Overlay */}
-                          <div className="absolute bottom-0 left-0 w-full p-8 md:p-14 z-10">
-                            <div className="flex items-center gap-5 mb-6">
+                          <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-10 lg:p-12 z-10">
+                            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
                               {article.sector && (
-                                <span className="px-5 py-2 bg-brand-gold text-brand-dark text-[11px] font-black uppercase tracking-widest rounded-lg">
+                                <span className="inline-flex items-center bg-brand-gold text-brand-dark px-2.5 py-1 rounded text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.18em]">
                                   {article.sector}
                                 </span>
                               )}
                               {article.publishedAt && (
-                                <span className="text-[11px] font-black text-white uppercase tracking-[0.2em]">
+                                <span className="text-[9px] sm:text-[10px] font-semibold text-white/80 uppercase tracking-[0.18em]">
                                   {new Date(article.publishedAt).toLocaleDateString(lang || "fr", {
                                     day: "2-digit",
                                     month: "long",
@@ -557,11 +556,11 @@ function Home() {
                               )}
                             </div>
 
-                            <h3 className="text-3xl md:text-5xl lg:text-6xl font-black text-white uppercase tracking-tighter leading-[0.95] mb-6 max-w-5xl">
+                            <h3 className="font-serif text-lg sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-white leading-[1.15] tracking-tight mb-2 sm:mb-3 max-w-3xl text-balance group-hover:text-brand-gold transition-colors">
                               {getLocalized(article.title, lang)}
                             </h3>
 
-                            <p className="text-sm md:text-lg text-white/80 line-clamp-2 max-w-3xl font-medium leading-relaxed">
+                            <p className="hidden sm:block text-xs md:text-sm text-white/75 line-clamp-2 max-w-2xl leading-relaxed">
                               {getLocalized(article.excerpt, lang)}
                             </p>
                           </div>
@@ -571,412 +570,623 @@ function Home() {
                   )}
                 </AnimatePresence>
 
-                {/* Pagination bars (Top Right) matching Image 1 */}
-                <div className="absolute top-10 right-10 flex gap-2 z-20">
+                <div className="absolute top-3 right-3 sm:top-6 sm:right-6 md:top-8 md:right-8 flex gap-1.5 z-20">
                   {news.slice(0, 5).map((_: any, i: number) => (
                     <button
                       key={i}
                       onClick={() => setFeaturedIdx(i)}
                       aria-label={`Article ${i + 1}`}
                       className={cn(
-                        "h-1.5 rounded-full transition-all duration-500",
-                        i === featuredIdx ? "w-10 bg-brand-gold" : "w-6 bg-white/20 hover:bg-white/40"
+                        "h-1 sm:h-1.5 rounded-full transition-all duration-500",
+                        i === featuredIdx
+                          ? "w-6 sm:w-8 bg-brand-gold"
+                          : "w-3 sm:w-4 bg-white/25 hover:bg-white/45"
                       )}
                     />
                   ))}
                 </div>
               </div>
 
-              {/* ── Secondary articles: horizontal scroll row ────────────── */}
-              {news.length > 1 && (
-                <div className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth -mx-4 px-4 [scrollbar-width:thin]">
-                  {news.slice(1).map((article: any) => (
-                    <Link
-                      key={article._id}
-                      to={`/news/${article.slug || article._id}`}
-                      className="snap-start shrink-0 w-[260px] sm:w-[300px] group/card bg-brand-dark/60 backdrop-blur-sm border border-brand-gold/30 ring-1 ring-brand-gold/10 rounded-xl overflow-hidden shadow-xl shadow-black/30 hover:-translate-y-2 hover:scale-[1.02] hover:ring-brand-gold/60 hover:shadow-2xl hover:shadow-brand-gold/30 hover:border-brand-gold transition-all duration-300"
-                    >
-                      <div className="aspect-[16/10] bg-white/5 overflow-hidden">
-                        {article.imageUrl ? (
-                          <img
-                            src={resolveImageUrl(article.imageUrl)}
-                            alt={getLocalized(article.title, lang)}
-                            className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-500"
-                            onError={handleImageError}
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <BookOpen className="w-10 h-10 text-white/20" />
-                          </div>
-                        )}
-                      </div>
-                      <div className="p-4">
-                        {article.sector && (
-                          <span className="text-[9px] font-black uppercase tracking-widest text-brand-gold block mb-2">
-                            {article.sector}
-                          </span>
-                        )}
-                        <h4 className="text-sm font-bold text-white uppercase tracking-tight line-clamp-2 group-hover/card:text-brand-gold transition-colors">
-                          {getLocalized(article.title, lang)}
-                        </h4>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              )}
+              {/* Secondary articles row — compact cards */}
+              <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scroll-smooth -mx-4 px-4 scrollbar-hide">
+                {news.slice(1).map((article: any) => (
+                  <Link
+                    key={article._id}
+                    to={`/news/${article.slug || article._id}`}
+                    className="snap-start shrink-0 w-[150px] sm:w-[200px] md:w-[240px] group/card bg-brand-dark/60 backdrop-blur-sm border border-brand-gold/25 ring-1 ring-brand-gold/10 rounded-lg overflow-hidden shadow-xl shadow-black/30 hover:-translate-y-1.5 hover:ring-brand-gold/60 hover:shadow-2xl hover:shadow-brand-gold/25 hover:border-brand-gold transition-all duration-300"
+                  >
+                    <div className="aspect-[16/10] bg-white/5 overflow-hidden">
+                      {article.imageUrl ? (
+                        <img
+                          src={resolveImageUrl(article.imageUrl)}
+                          alt={getLocalized(article.title, lang)}
+                          className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-500"
+                          onError={handleImageError}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <BookOpen className="w-8 h-8 text-white/20" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-2.5 sm:p-3">
+                      {article.sector && (
+                        <span className="text-[8px] font-semibold uppercase tracking-[0.18em] text-brand-gold block mb-1">
+                          {article.sector}
+                        </span>
+                      )}
+                      <h4 className="font-serif text-[12px] sm:text-[13px] font-medium text-white leading-snug line-clamp-2 group-hover/card:text-brand-gold transition-colors">
+                        {getLocalized(article.title, lang)}
+                      </h4>
+                    </div>
+                  </Link>
+                ))}
+              </div>
             </>
           )}
         </div>
       </section>
 
-      {/* ═══════════ 3. KIOSQUE & MAGAZINES ═══════════ */}
-      <section className="py-16 md:py-20 bg-surface-warm border-y border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeader
-            icon={BookOpen}
-            title={t("home.kiosk.title")}
-            subtitle={t("home.kiosk.subtitle")}
-            action={t("home.kiosk.view_all")}
-            actionHref="/kiosk"
-          />
+      {/* ═══════════ 3. PUBLICATIONS & REVUES (REDESIGNED) ═══════════ */}
+      <section className="relative py-8 sm:py-12 md:py-16 bg-gradient-to-b from-surface-warm via-background to-surface-warm border-y border-border overflow-hidden">
+        {/* Subtle decorative wash */}
+        <div className="pointer-events-none absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 20% 10%, hsl(var(--primary)) 0, transparent 40%), radial-gradient(circle at 90% 90%, hsl(var(--brand-gold)) 0, transparent 40%)",
+          }}
+        />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Editorial header — compact */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 sm:gap-5 mb-5 sm:mb-8 md:mb-10">
+            <div className="max-w-2xl min-w-0">
+              <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                <span className="h-px w-6 bg-primary/40" />
+                <BookOpen className="w-3 h-3 text-primary" />
+                <span className="text-[9px] font-semibold uppercase tracking-[0.28em] text-primary">
+                  {t("home.kiosk.title")}
+                </span>
+              </div>
+              <h2 className="font-serif text-[1.15rem] leading-[1.15] sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-foreground tracking-tight text-balance">
+                 Publications & Revues <span className="italic text-primary">Mensuelles</span>
+              </h2>
+              <p className="mt-2 sm:mt-3 text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-xl">
+                {t("home.kiosk.subtitle")}
+              </p>
+            </div>
+            <Link
+              to="/kiosk"
+              className="group inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-primary hover:text-primary/80 transition-colors self-start md:self-end whitespace-nowrap"
+            >
+              {t("home.kiosk.view_all")}
+              <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
 
           {magazinesLoading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <Skeleton key={i} className="aspect-[3/4] rounded-xl" />
-              ))}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+               <Skeleton className="lg:col-span-5 aspect-[16/10] lg:h-[450px] rounded-2xl" />
+               <div className="lg:col-span-7 grid grid-cols-2 gap-4">
+                  {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="aspect-[4/5] rounded-xl" />)}
+               </div>
             </div>
           ) : magazines && magazines.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5">
-              {magazines.slice(0, 5).map((mag: any) => (
-                <Link key={mag._id} to="/kiosk" className="group hover-lift">
-                  <div className="aspect-[3/4] bg-muted rounded-xl overflow-hidden border border-border shadow-sm group-hover:shadow-md transition-shadow relative">
-                    {mag.coverImageUrl ? (
-                      <img
-                        src={resolveImageUrl(mag.coverImageUrl)}
-                        alt={getLocalized(mag.title, lang)}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        onError={handleImageError}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <BookOpen className="w-8 h-8 text-muted-foreground/30" />
-                      </div>
-                    )}
-                    {/* Hover overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
-                      <span className="text-[10px] font-black text-primary-foreground uppercase tracking-widest">
-                        {t("home.news.read_more")} →
-                      </span>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
+              {/* Featured publication — larger, "floating" card */}
+              <Link
+                to="/kiosk"
+                className="lg:col-span-5 group relative bg-card rounded-2xl overflow-hidden ring-1 ring-border/60 shadow-[0_20px_50px_-20px_rgba(13,77,51,0.25)] hover:shadow-[0_30px_70px_-25px_rgba(13,77,51,0.40)] hover:-translate-y-1.5 transition-all duration-500"
+              >
+                <div className="aspect-[16/9] sm:aspect-[16/10] lg:aspect-auto lg:h-full bg-muted overflow-hidden">
+                  {magazines[0].coverImageUrl ? (
+                    <img
+                      src={resolveImageUrl(magazines[0].coverImageUrl)}
+                      alt={getLocalized(magazines[0].title, lang)}
+                      className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700"
+                      onError={handleImageError}
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-primary/10 flex items-center justify-center p-8">
+                       <BookOpen className="w-16 h-16 text-primary/20" />
                     </div>
-                  </div>
-                  <h4 className="text-[11px] font-black text-foreground mt-3 line-clamp-2 group-hover:text-primary transition-colors uppercase tracking-tight italic italic">
-                    {getLocalized(mag.title, lang)}
-                  </h4>
-                </Link>
-              ))}
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent" />
+                </div>
+
+                <div className="absolute top-3 left-3 right-3 sm:top-5 sm:left-5 sm:right-5 flex items-start justify-between gap-2">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-brand-gold text-brand-gold-foreground text-[9px] font-bold uppercase tracking-[0.18em] shadow-md">
+                    <span className="w-1.5 h-1.5 rounded-full bg-brand-gold-foreground/70" />
+                    Édition du mois
+                  </span>
+                  <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-white/80 backdrop-blur-sm bg-black/30 rounded-full px-2.5 py-1 border border-white/10">
+                    {magazines[0].tag || "Nouveauté"}
+                  </span>
+                </div>
+
+                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
+                  <p className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.22em] text-brand-gold mb-1.5 sm:mb-2 italic">
+                    {magazines[0].issue || "MAGAZINE"} · {magazines[0].date || new Date().getFullYear()}
+                  </p>
+                  <h3 className="font-serif text-lg sm:text-2xl md:text-3xl font-semibold text-white leading-[1.15] tracking-tight mb-2 sm:mb-3 text-balance">
+                    {getLocalized(magazines[0].title, lang)}
+                  </h3>
+                  <p className="hidden sm:block text-xs sm:text-sm text-white/80 leading-relaxed line-clamp-2 mb-3 sm:mb-4 max-w-md">
+                    {getLocalized(magazines[0].excerpt, lang)}
+                  </p>
+                  <span className="inline-flex items-center gap-2 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.18em] text-white group-hover:text-brand-gold transition-colors">
+                    Lire l'édition
+                    <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </div>
+              </Link>
+
+              {/* Secondary publications — 2x2 elevated cards */}
+              <div className="lg:col-span-7 grid grid-cols-2 gap-3 sm:gap-5">
+                {magazines.slice(1, 5).map((mag: any) => (
+                  <Link
+                    key={mag._id}
+                    to="/kiosk"
+                    className="group relative bg-card rounded-xl overflow-hidden ring-1 ring-border/50 shadow-[0_12px_30px_-15px_rgba(13,77,51,0.20)] hover:shadow-[0_20px_45px_-15px_rgba(13,77,51,0.35)] hover:-translate-y-1 hover:ring-primary/20 transition-all duration-400"
+                  >
+                    <div className="aspect-[4/5] sm:aspect-video lg:aspect-[4/5] bg-muted overflow-hidden relative">
+                      {mag.coverImageUrl ? (
+                        <img
+                          src={resolveImageUrl(mag.coverImageUrl)}
+                          alt={getLocalized(mag.title, lang)}
+                          className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-700"
+                          onError={handleImageError}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-primary/5">
+                           <BookOpen className="w-6 h-6 text-primary/10" />
+                        </div>
+                      )}
+                      {/* Interactive overlay */}
+                      <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                         <div className="w-10 h-10 rounded-full bg-brand-gold text-brand-dark flex items-center justify-center scale-0 group-hover:scale-100 transition-transform duration-300 shadow-xl">
+                            <BookOpen className="w-4 h-4" />
+                         </div>
+                      </div>
+                    </div>
+                    <div className="p-3 sm:p-4">
+                      <div className="flex items-center justify-between gap-2 mb-1.5 sm:mb-2">
+                        <span className="text-[8px] sm:text-[9px] font-bold uppercase tracking-widest text-primary">
+                          {mag.tag || "Édition"}
+                        </span>
+                        <span className="text-[8px] font-medium text-muted-foreground uppercase">
+                           {mag.date || "2024"}
+                        </span>
+                      </div>
+                      <h4 className="font-serif text-sm sm:text-base font-semibold text-foreground leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+                        {getLocalized(mag.title, lang)}
+                      </h4>
+                    </div>
+                  </Link>
+                ))}
+              </div>
             </div>
           ) : (
-            <p className="text-center text-muted-foreground py-8">Aucune publication pour le moment.</p>
+            <div className="py-12 text-center border-2 border-dashed border-border rounded-3xl">
+               <p className="text-sm font-medium text-muted-foreground">Aucune publication disponible.</p>
+            </div>
           )}
         </div>
       </section>
 
-      {/* ═══════════ 4. CERTIFIED ENTERPRISES GRID ═══════════ */}
-      <section className="py-16 md:py-20 bg-background border-b border-border">
+      {/* ═══════════ 4. CERTIFIED ENTERPRISES (ANNUAIRE REDESIGN) ═══════════ */}
+      <section className="py-16 md:py-20 bg-background border-b border-border overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-            {/* Sector Sidebar */}
-            <div className="lg:col-span-3 lg:sticky lg:top-24 space-y-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Sector Sidebar (Trimmed per guide) */}
+            <div className="lg:col-span-3 lg:sticky lg:top-24 space-y-6">
               {/* Data Central Gateway */}
-              <div className="p-6 border border-border rounded-2xl bg-muted/50 shadow-sm">
+              <div className="p-6 border border-border rounded-2xl bg-muted/30 backdrop-blur-sm shadow-sm">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="p-2 bg-primary/10 rounded-xl">
                     <BookOpen className="w-5 h-5 text-primary" />
                   </div>
                   <h4 className="text-[10px] font-black uppercase tracking-widest text-foreground">Accès DATA Direct</h4>
                 </div>
-                <p className="text-xs text-muted-foreground leading-relaxed mb-4 font-bold">
+                <p className="text-[11px] text-muted-foreground leading-relaxed mb-5 font-bold">
                   Accédez à l'index exhaustif de l'économie africaine certifiée.
                 </p>
                 <Link
                   to="/directory"
-                  className="flex items-center justify-center w-full py-3 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-primary/90 transition-all active:scale-95 shadow-xl shadow-primary/10"
+                  className="flex items-center justify-center w-full py-3.5 bg-brand-gold text-brand-gold-foreground text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:brightness-110 transition-all active:scale-95 shadow-lg shadow-brand-gold/10"
                 >
                   Ouvrir le Registre
                 </Link>
               </div>
 
               {/* Sectors */}
-              <div>
-                <h3 className="text-[10px] font-black text-foreground mb-4 uppercase tracking-[0.3em]">Data Par Secteur</h3>
-                <div className="space-y-1">
-                  {[
-                    { name: "ESG & FINANCE", count: 124, icon: TrendingUp },
-                    { name: "CSR & GOVERNANCE", count: 86, icon: ShieldCheck },
-                    { name: "TECH & SUSTAINABLE", count: 54, icon: Globe },
-                    { name: "ENERGY & BIO", count: 42, icon: Zap },
-                    { name: "LEADERSHIP & IMPACT", count: 31, icon: Award },
-                  ].map((s) => {
-                    const sectorKey = s.name.split(" ")[0];
-                    return (
+              <div className="p-4">
+                 <h3 className="text-[10px] font-black text-foreground mb-4 uppercase tracking-[0.3em] opacity-60">Data Par Secteur</h3>
+                 <div className="space-y-1">
+                    {[
+                      { name: "ESG & FINANCE", count: 124, icon: TrendingUp, key: "Finance" },
+                      { name: "CSR & GOVERNANCE", count: 86, icon: ShieldCheck, key: "Gouvernance" },
+                      { name: "TECH & SUSTAINABLE", count: 54, icon: Globe, key: "Tech" },
+                      { name: "ENERGY & BIO", count: 42, icon: Zap, key: "Énergie" },
+                      { name: "LEADERSHIP & IMPACT", count: 31, icon: Award, key: "Leadership" },
+                    ].map((s) => (
                       <button
                         key={s.name}
-                        onClick={() => setActiveSector(sectorKey)}
+                        onClick={() => setActiveSector(s.key)}
                         className={cn(
-                          "w-full flex items-center justify-between p-3.5 rounded-xl transition-all text-left group",
-                          activeSector === sectorKey
-                            ? "bg-primary text-primary-foreground shadow-lg"
-                            : "hover:bg-muted text-muted-foreground"
+                          "w-full flex items-center justify-between p-3 rounded-lg transition-all text-left",
+                          activeSector === s.key
+                            ? "bg-primary text-primary-foreground shadow-md"
+                            : "hover:bg-muted text-muted-foreground/80 hover:text-foreground"
                         )}
                       >
-                        <div className="flex items-center gap-3">
-                          <s.icon className={cn("w-4 h-4", activeSector === sectorKey ? "text-brand-gold" : "opacity-30")} />
-                          <span className="text-[10px] font-black uppercase tracking-widest">{s.name}</span>
-                        </div>
-                        <span className="text-[10px] font-black opacity-40">{s.count}</span>
+                         <div className="flex items-center gap-2.5">
+                            <s.icon className={cn("w-3.5 h-3.5", activeSector === s.key ? "text-brand-gold" : "opacity-40")} />
+                            <span className="text-[9px] font-black uppercase tracking-wider">{s.name}</span>
+                         </div>
+                         <span className="text-[9px] font-black opacity-30">{s.count}</span>
                       </button>
-                    );
-                  })}
-                </div>
+                    ))}
+                 </div>
               </div>
             </div>
 
-            {/* Labels Grid */}
+            {/* Main annuaire listing */}
             <div className="lg:col-span-9">
-              <SectionHeader
-                icon={Award}
-                title="Certified Enterprises"
-                action="Voir l'Annuaire"
-                actionHref="/directory"
-              />
+              <div className="flex items-center justify-between mb-8 pb-4 border-b border-border">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-brand-emerald/10 rounded-lg">
+                       <Award className="w-5 h-5 text-brand-emerald" />
+                    </div>
+                    <h2 className="text-xl md:text-2xl font-bold text-foreground tracking-tight">Certified Enterprises</h2>
+                  </div>
+                  <Link to="/directory" className="text-xs font-bold text-primary hover:text-primary/80 transition-colors uppercase tracking-widest">Voir l'Annuaire →</Link>
+              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {companiesLoading
-                  ? Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-72 rounded-xl" />)
-                  : companies?.slice(0, 6).map((company: any) => (
-                      <Link
-                        key={company._id}
-                        to={`/directory/${company._id}`}
-                        className="group bg-card border border-border rounded-2xl p-7 flex flex-col relative hover:border-brand-gold/40 hover:shadow-2xl hover:shadow-brand-gold/10 hover:-translate-y-1 transition-all duration-300"
-                      >
-                        <div className="absolute top-0 right-6 w-9 h-10 bg-primary/5 rounded-b-xl flex items-center justify-center border-x border-b border-primary/10 group-hover:bg-primary group-hover:text-primary-foreground transition-all">
-                          <Building2 className="w-4 h-4" />
+              <div className="flex flex-col gap-4">
+                {companiesLoading ? (
+                  Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-24 rounded-2xl" />)
+                ) : companies && companies.length > 0 ? (
+                  companies.slice(0, 6).map((company: any) => (
+                    <Link
+                      key={company._id}
+                      to={`/directory/${company._id}`}
+                      className="group/dir relative block bg-card rounded-xl p-[1.5px] overflow-hidden transition-all duration-300"
+                      style={{
+                        backgroundImage:
+                          "linear-gradient(hsl(var(--card)), hsl(var(--card))), linear-gradient(110deg, hsl(var(--brand-gold) / 0), hsl(var(--brand-gold) / 0) 30%, hsl(var(--brand-gold) / 0) 70%, hsl(var(--brand-gold) / 0))",
+                        backgroundOrigin: "border-box",
+                        backgroundClip: "padding-box, border-box",
+                        backgroundSize: "100% 100%, 250% 100%",
+                        backgroundPosition: "0 0, 0% 0%",
+                      }}
+                      onMouseEnter={(e) => {
+                        (e.currentTarget as HTMLElement).style.backgroundImage =
+                          "linear-gradient(hsl(var(--card)), hsl(var(--card))), linear-gradient(110deg, hsl(var(--brand-gold) / 0.55), hsl(var(--brand-gold) / 0.15) 30%, hsl(var(--brand-gold) / 0.15) 70%, hsl(var(--brand-gold) / 0.55))";
+                        (e.currentTarget as HTMLElement).style.backgroundPosition =
+                          "0 0, 100% 0%";
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLElement).style.backgroundImage =
+                          "linear-gradient(hsl(var(--card)), hsl(var(--card))), linear-gradient(110deg, hsl(var(--brand-gold) / 0), hsl(var(--brand-gold) / 0) 30%, hsl(var(--brand-gold) / 0) 70%, hsl(var(--brand-gold) / 0))";
+                        (e.currentTarget as HTMLElement).style.backgroundPosition =
+                          "0 0, 0% 0%";
+                      }}
+                    >
+                      <div className="flex items-stretch gap-3 sm:gap-5 bg-card rounded-[10px] p-3 sm:p-5 group-hover/dir:bg-card/95 transition-colors">
+                        {/* Index badge */}
+                        <div className="shrink-0 w-12 sm:w-16 flex flex-col items-center justify-center rounded-lg bg-gradient-to-br from-brand-emerald/15 to-brand-emerald/5 border border-brand-emerald/30 shadow-inner">
+                          {company.logoUrl ? (
+                             <img 
+                               src={resolveImageUrl(getLocalized(company.logoUrl, lang))}
+                               className="w-8 h-8 object-contain mb-1" 
+                               onError={handleImageError} 
+                               alt=""
+                             />
+                          ) : (
+                             <Building2 className="w-5 h-5 text-brand-emerald mb-0.5" />
+                          )}
+                          <span className="text-[8px] font-black uppercase tracking-widest text-brand-emerald/70">Indexé</span>
                         </div>
 
-                        <div className="flex items-start gap-4 mb-6">
-                          <div className="w-16 h-16 shrink-0 rounded-2xl bg-white border border-border flex items-center justify-center overflow-hidden p-2 group-hover:border-primary/30 transition-colors shadow-sm">
-                            {company.logoUrl ? (
-                              <img
-                                src={resolveImageUrl(getLocalized(company.logoUrl, lang))}
-                                alt={getLocalized(company.name, lang)}
-                                className="w-full h-full object-contain"
-                                onError={handleImageError}
-                              />
-                            ) : (
-                              <Building2 className="w-6 h-6 text-muted-foreground/30" />
-                            )}
-                          </div>
-                          <div className="min-w-0 flex-1 pt-1">
-                            <h3 className="text-sm font-black text-foreground group-hover:text-primary transition-colors leading-tight uppercase tracking-tight italic line-clamp-2">
-                              {getLocalized(company.name, lang)}
-                            </h3>
-                          </div>
-                        </div>
+                        {/* Body */}
+                        <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center sm:gap-6">
+                           <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2 mb-1.5">
+                                 <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-brand-gold-dark">
+                                    {getLocalized(company.sector, lang) || "EXCELLENCE"}
+                                 </span>
+                                 <span className="hidden sm:inline-flex items-center gap-1 text-[9px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+                                    <ShieldCheck className="w-3 h-3 text-brand-emerald" />
+                                    Certifié
+                                 </span>
+                              </div>
+                              <h3 className="font-serif text-base sm:text-xl font-semibold text-foreground leading-tight tracking-tight group-hover/dir:text-brand-gold-dark transition-colors line-clamp-1 italic italic">
+                                 {getLocalized(company.name, lang)}
+                              </h3>
+                              <p className="text-[11px] sm:text-sm text-muted-foreground leading-snug line-clamp-1 mt-1 font-medium">
+                                 {getLocalized(company.description, lang)}
+                              </p>
+                           </div>
 
-                        <p className="text-xs font-bold text-muted-foreground leading-relaxed line-clamp-3 flex-1 mb-6">
-                          {getLocalized(company.description, lang) ||
-                            "Entreprise certifiée pour son excellence institutionnelle et sa gouvernance d'impact."}
-                        </p>
-
-                        <div className="flex items-center justify-between mt-auto pt-4 border-t border-border/50">
-                           <span className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-1.5 group-hover:gap-2.5 transition-all">
-                              Fiche Profil <ChevronRight className="w-3.5 h-3.5" />
-                           </span>
-                           <div className="flex items-center gap-1.5 opacity-40">
-                              <ShieldCheck className="w-3 h-3 text-brand-emerald" />
-                              <span className="text-[9px] font-bold uppercase tracking-widest">Indexé</span>
+                           {/* CTA Pill */}
+                           <div className="shrink-0 mt-3 sm:mt-0">
+                              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-gold/10 border border-brand-gold/25 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-gold-dark group-hover/dir:bg-brand-gold group-hover/dir:text-white group-hover/dir:border-brand-gold transition-all duration-300">
+                                 Fiche profil
+                                 <ChevronRight className="w-3.5 h-3.5 group-hover/dir:translate-x-1 transition-transform" />
+                              </div>
                            </div>
                         </div>
-                      </Link>
-                    ))}
+                      </div>
+                    </Link>
+                  ))
+                ) : (
+                  <p className="text-center text-muted-foreground py-12 border-2 border-dashed border-border rounded-2xl">Aucun enregistrement indexé dans ce secteur.</p>
+                )}
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ═══════════ 5. MULTIMEDIA (VIDEOS + PODCASTS) ═══════════ */}
-      <section className="py-16 md:py-20 bg-primary text-primary-foreground relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-primary-foreground/5 rounded-full blur-[120px]" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 pb-4 border-b border-primary-foreground/10">
-            <div className="flex items-start gap-3">
-              <div className="p-2.5 bg-primary-foreground/10 rounded-xl">
-                <Play className="w-5 h-5 text-accent" />
-              </div>
-              <div>
-                <h2 className="text-xl md:text-2xl font-bold text-primary-foreground tracking-tight">
-                  {t("home.multimedia.title")}
-                </h2>
-              </div>
+      {/* ═══════════ 5. MULTIMEDIA HUB (VIDEOS + PODCASTS) — REDESIGNED ═══════════ */}
+      <section className="py-24 lg:py-32 bg-brand-dark text-primary-foreground relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_50%,rgba(255,255,255,0.03),transparent)]" />
+        
+        <div className="relative max-w-7xl mx-auto px-6 z-10">
+          {/* Hub Header matching redesign */}
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12 pb-6 border-b border-primary-foreground/10">
+            <div>
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-gold mb-2 block">
+                DGIA TV & EXCELLENCE
+              </span>
+              <h2 className="font-heading text-3xl sm:text-4xl font-black text-primary-foreground tracking-tight uppercase">
+                {t("home.multimedia.title")} Hub
+              </h2>
             </div>
             <Link
               to="/multimedia"
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:text-accent/80 transition-colors group"
+              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-xl shadow-primary/20 active:scale-95"
             >
-              {t("home.multimedia.view_all")}
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              Tout le multimédia <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Videos */}
-            <div className="lg:col-span-8">
-              <h3 className="text-[10px] font-black text-primary-foreground/60 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                <Play className="w-4 h-4" />
-                {t("home.multimedia.videos")}
-              </h3>
+          <div className="grid lg:grid-cols-12 gap-10">
+            {/* Video hub (8 cols) */}
+            <div className="lg:col-span-8 space-y-8">
               {videoItems.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  {videoItems.slice(0, 4).map((item: any) => (
-                    <Link
-                      key={item._id}
-                      to="/multimedia"
-                      className="group rounded-xl overflow-hidden hover-lift"
-                    >
-                      <div className="aspect-video bg-primary-foreground/5 relative overflow-hidden rounded-xl">
-                        {item.coverImageUrl ? (
-                          <img
-                            src={resolveImageUrl(item.coverImageUrl)}
-                            alt={getLocalized(item.title, lang)}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                            onError={handleImageError}
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <Play className="w-8 h-8 text-primary-foreground/20" />
-                          </div>
-                        )}
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-foreground/30">
-                          <div className="w-12 h-12 bg-primary-foreground rounded-full flex items-center justify-center shadow-lg">
-                            <Play className="w-5 h-5 text-primary fill-primary" />
-                          </div>
+                <>
+                  {/* Featured video */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="group relative rounded-2xl overflow-hidden aspect-video bg-foreground/20 cursor-pointer shadow-3xl shadow-black/40 ring-1 ring-white/10"
+                  >
+                    <Link to="/multimedia" className="block w-full h-full">
+                      {videoItems[0].coverImageUrl ? (
+                        <img
+                          src={resolveImageUrl(videoItems[0].coverImageUrl)}
+                          alt={getLocalized(videoItems[0].title, lang)}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
+                          onError={handleImageError}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-brand-dark flex items-center justify-center">
+                          <Play className="w-12 h-12 text-white/10" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform ring-4 ring-white/10">
+                          <Play className="w-8 h-8 text-white ml-1.5 fill-white" />
                         </div>
                       </div>
-                      <h4 className="text-sm font-bold text-primary-foreground mt-3 line-clamp-2 group-hover:text-accent transition-colors uppercase tracking-tight italic italic">
-                        {getLocalized(item.title, lang)}
-                      </h4>
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-primary-foreground/40 italic py-8">
-                  Aucune vidéo pour le moment.
-                </p>
-              )}
-            </div>
-
-            {/* Podcasts */}
-            <div className="lg:col-span-4">
-              <h3 className="text-[10px] font-black text-primary-foreground/60 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                <Headphones className="w-4 h-4" />
-                {t("home.multimedia.podcasts")}
-              </h3>
-              {podcastItems.length > 0 ? (
-                <div className="space-y-3">
-                  {podcastItems.slice(0, 4).map((item: any) => (
-                    <Link
-                      key={item._id}
-                      to="/multimedia"
-                      className="group flex items-start gap-3 p-4 bg-primary-foreground/5 border border-primary-foreground/10 rounded-xl hover:bg-primary-foreground/10 transition-all"
-                    >
-                      <div className="w-10 h-10 shrink-0 bg-accent/20 rounded-lg flex items-center justify-center">
-                        <Headphones className="w-5 h-5 text-accent" />
-                      </div>
-                      <div className="min-w-0">
-                        <h4 className="text-[11px] font-black text-primary-foreground line-clamp-2 group-hover:text-accent transition-colors uppercase tracking-tight">
-                          {getLocalized(item.title, lang)}
-                        </h4>
-                        <p className="text-[10px] text-primary-foreground/50 mt-1 line-clamp-1 font-bold">
-                          {getLocalized(item.description, lang)}
+                      <div className="absolute bottom-0 left-0 p-8 lg:p-10">
+                        <h3 className="font-heading text-xl sm:text-3xl font-black text-white mb-3 group-hover:text-brand-gold transition-colors uppercase tracking-tight italic">
+                          "{getLocalized(videoItems[0].title, lang)}"
+                        </h3>
+                        <p className="text-sm text-white/70 italic font-medium max-w-2xl line-clamp-1">
+                          {getLocalized(videoItems[0].description, lang)}
                         </p>
                       </div>
                     </Link>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-primary-foreground/40 italic py-8">
-                  Aucun podcast pour le moment.
-                </p>
-              )}
+                  </motion.div>
 
-              {/* Multimedia CTA */}
-              <Link
-                to="/multimedia"
-                className="mt-6 flex items-center justify-center w-full py-4 bg-accent text-accent-foreground rounded-xl text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all active:scale-95 shadow-xl shadow-accent/20"
-              >
-                Explorer tout le multimédia
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Link>
+                  {/* Video reel (compact grid) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    {videoItems.slice(1, 4).map((v: any, i: number) => (
+                      <motion.div
+                        key={v._id || i}
+                        initial={{ opacity: 0, y: 12 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.1 }}
+                      >
+                        <Link to="/multimedia" className="group block">
+                          <div className="aspect-video rounded-xl overflow-hidden bg-white/5 border border-white/10 relative mb-4 shadow-xl">
+                            {v.coverImageUrl ? (
+                              <img
+                                src={resolveImageUrl(v.coverImageUrl)}
+                                alt={getLocalized(v.title, lang)}
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                onError={handleImageError}
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <Play className="w-6 h-6 text-white/10" />
+                              </div>
+                            )}
+                            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <div className="w-10 h-10 bg-primary/80 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                                <Play className="w-4 h-4 text-white fill-white" />
+                              </div>
+                            </div>
+                          </div>
+                          <h4 className="text-[12px] font-black text-white group-hover:text-brand-gold transition-colors line-clamp-2 uppercase tracking-tight italic">
+                            {getLocalized(v.title, lang)}
+                          </h4>
+                        </Link>
+                      </motion.div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <div className="py-20 text-center border-2 border-dashed border-white/5 rounded-3xl">
+                  <p className="text-sm text-white/40 italic">Aucune capsule vidéo indexée.</p>
+                </div>
+              )}
+            </div>
+
+            {/* Podcast sidebar (4 cols) */}
+            <div className="lg:col-span-4 h-full">
+              <div className="bg-white/5 border border-white/10 rounded-3xl p-6 lg:p-8 h-full flex flex-col backdrop-blur-md shadow-2xl relative overflow-hidden group/sidebar">
+                <div className="absolute -top-24 -right-24 w-48 h-48 bg-brand-gold/10 rounded-full blur-[80px]" />
+                
+                <div className="flex items-center gap-3 mb-8 relative z-10">
+                  <div className="p-2 bg-emerald-500/20 rounded-lg">
+                    <Headphones className="w-5 h-5 text-emerald-400" />
+                  </div>
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/60">
+                    Podcasts & Audios
+                  </h3>
+                </div>
+
+                <Link
+                  to="/multimedia"
+                  className="mb-8 flex items-center justify-center gap-2 w-full py-4 bg-emerald-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-500 transition-all shadow-xl shadow-emerald-500/20 relative z-10 active:scale-[0.98]"
+                >
+                  Tous les audios
+                  <span className="text-[10px] bg-black/20 px-2 py-0.5 rounded ml-1">
+                    {podcastItems.length}
+                  </span>
+                </Link>
+
+                <div className="space-y-4 flex-1 relative z-10">
+                  {podcastItems.length > 0 ? (
+                    podcastItems.slice(0, 5).map((p: any, i: number) => (
+                      <motion.div
+                        key={p._id || i}
+                        initial={{ opacity: 0, x: 12 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.1 }}
+                      >
+                        <Link
+                          to="/multimedia"
+                          className={cn(
+                            "group flex items-center gap-4 p-3.5 rounded-2xl transition-all border border-transparent shadow-sm",
+                            i === 0
+                              ? "bg-white/10 border-white/10 shadow-xl"
+                              : "hover:bg-white/5 hover:border-white/5"
+                          )}
+                        >
+                          <div className={cn(
+                             "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors",
+                             i === 0 ? "bg-emerald-500 shadow-lg shadow-emerald-500/30" : "bg-white/5 group-hover:bg-emerald-500/20"
+                          )}>
+                            <Play className={cn(
+                              "w-4 h-4 fill-current",
+                              i === 0 ? "text-white" : "text-emerald-400"
+                            )} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[12px] font-black text-white truncate group-hover:text-brand-gold transition-colors uppercase tracking-tight italic">
+                              {getLocalized(p.title, lang)}
+                            </p>
+                            <p className="text-[10px] text-white/40 font-bold mt-0.5 uppercase tracking-widest">
+                               {i === 0 ? "DERNIER ÉPISODE" : `PISTE ${podcastItems.length - i}`} • AUDIO
+                            </p>
+                          </div>
+                        </Link>
+                      </motion.div>
+                    ))
+                  ) : (
+                    <p className="text-xs text-white/30 italic py-10 text-center">Aucun podcast archivé.</p>
+                  )}
+                </div>
+
+                {/* Decorative element */}
+                <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between opacity-40 group-hover/sidebar:opacity-100 transition-opacity">
+                   <span className="text-[9px] font-black uppercase tracking-widest text-brand-gold">DGIA HUB</span>
+                   <TrendingUp className="w-4 h-4 text-brand-gold" />
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ═══════════ 6. FINAL CTA (STATS + BENEFITS) ═══════════ */}
-      <section className="py-16 md:py-20 bg-muted/20 relative overflow-hidden">
+      {/* ═══════════ 6. FINAL CTA (STATS + BENEFITS) — REDESIGNED ═══════════ */}
+      <section className="relative py-24 md:py-32 overflow-hidden bg-gradient-to-br from-surface-warm via-background to-secondary/40">
+        {/* Animated lighting */}
+        <div className="pointer-events-none absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full bg-brand-gold/25 blur-[110px] animate-aurora" />
+        <div className="pointer-events-none absolute -bottom-32 -right-20 w-[460px] h-[460px] rounded-full bg-brand-emerald/25 blur-[120px] animate-aurora-slow" />
+        <div className="pointer-events-none absolute top-1/3 left-1/2 w-[280px] h-[280px] -translate-x-1/2 rounded-full bg-primary/10 blur-[90px] animate-aurora" />
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Left: Benefits */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
-              <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-4 block">
-                CONFORMITÉ STRATÉGIQUE
+              <span className="inline-flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-6 px-4 py-2 rounded-full bg-brand-gold/15 border border-brand-gold/40 shadow-sm">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand-gold animate-pulse" />
+                Conformité Stratégique
               </span>
-              <h2 className="text-2xl md:text-3xl font-black text-foreground tracking-tighter mb-6 leading-tight uppercase italic italic">
-                Transformez votre vision en certification.
+              <h2 className="text-3xl md:text-5xl font-black text-brand-dark tracking-tighter mb-8 leading-[1.1] italic text-balance uppercase">
+                Transformez votre vision en{" "}
+                <span className="bg-gradient-to-r from-brand-emerald via-primary to-brand-gold-dark bg-clip-text text-transparent">
+                  certification
+                </span>
+                .
               </h2>
-              <ul className="space-y-4 mb-8">
+              <ul className="space-y-4 mb-10">
                 {[
-                  { title: "Expertise Panafricaine", desc: "Réseau d'influence institutionnel.", icon: Globe },
-                  { title: "Protocoles Rigoureux", desc: "Audit étape par étape.", icon: ShieldCheck },
-                  { title: "Visibilité Accrue", desc: "Indexation au Registre prioritaires.", icon: Zap },
+                  { title: "Expertise Panafricaine", desc: "Réseau d'influence institutionnel.", icon: Globe, accent: "from-brand-emerald/15 to-brand-emerald/5", ring: "ring-brand-emerald/30", iconColor: "text-brand-emerald" },
+                  { title: "Protocoles Rigoureux", desc: "Audit étape par étape.", icon: ShieldCheck, accent: "from-brand-gold/20 to-brand-gold/5", ring: "ring-brand-gold/40", iconColor: "text-brand-gold-dark" },
+                  { title: "Visibilité Accrue", desc: "Indexation au Registre prioritaires.", icon: Zap, accent: "from-primary/15 to-primary/5", ring: "ring-primary/30", iconColor: "text-primary" },
                 ].map((item, idx) => (
                   <motion.li
                     key={idx}
-                    initial={{ opacity: 0, x: -10 }}
+                    initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.1 }}
-                    className="flex items-start gap-3"
+                    className={cn(
+                      "group flex items-start gap-4 p-4 rounded-2xl bg-white/60 backdrop-blur-sm border border-white ring-1 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-gold/10",
+                      item.ring
+                    )}
                   >
-                    <div className="mt-1 w-8 h-8 flex items-center justify-center rounded-lg bg-primary/10">
-                      <item.icon className="w-4 h-4 text-primary" />
+                    <div className={cn("mt-1 w-12 h-12 flex items-center justify-center rounded-xl bg-gradient-to-br shadow-inner shrink-0", item.accent)}>
+                      <item.icon className={cn("w-6 h-6", item.iconColor)} />
                     </div>
                     <div>
-                      <p className="text-[11px] font-black text-foreground uppercase tracking-tight">{item.title}</p>
-                      <p className="text-xs text-muted-foreground font-medium">{item.desc}</p>
+                      <p className="text-[13px] font-black text-brand-dark uppercase tracking-tight">{item.title}</p>
+                      <p className="text-xs text-brand-dark/70 font-semibold mt-0.5">{item.desc}</p>
                     </div>
                   </motion.li>
                 ))}
               </ul>
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-4">
                 <Link
                   to="/signup"
-                  className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 active:scale-95"
+                  className="group relative inline-flex items-center gap-2 overflow-hidden bg-gradient-to-r from-brand-emerald via-primary to-brand-emerald bg-[length:200%_100%] bg-left text-primary-foreground px-10 py-4.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all duration-500 hover:bg-right shadow-2xl shadow-primary/30 active:scale-95"
                 >
-                  Démarrer mon Audit
+                  <span className="absolute inset-0 -translate-x-full group-hover:animate-shine-sweep bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+                  <ShieldCheck className="w-4.5 h-4.5 relative z-10" />
+                  <span className="relative z-10">Démarrer mon Audit</span>
+                  <ArrowRight className="w-4 h-4 ml-1 relative z-10 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
             </div>
 
-            {/* Right: Stats Grid */}
-            <div className="grid grid-cols-2 gap-4">
+            {/* Stats Grid with dynamic borders */}
+            <div className="grid grid-cols-2 gap-4 sm:gap-6">
               {[
-                { label: "ENTITÉS", value: "2400+", icon: TrendingUp },
-                { label: "PAYS", value: "24", icon: Globe },
-                { label: "AUDITS", value: "850", icon: ShieldCheck },
-                { label: "IMPACT", value: "A+", icon: Award },
+                { label: "ENTITÉS", value: "2400+", icon: TrendingUp, border: "before:from-brand-emerald before:to-brand-gold", iconBg: "bg-brand-emerald/15", iconColor: "text-brand-emerald" },
+                { label: "PAYS", value: "24", icon: Globe, border: "before:from-brand-gold before:to-primary", iconBg: "bg-brand-gold/20", iconColor: "text-brand-gold-dark" },
+                { label: "AUDITS", value: "850", icon: ShieldCheck, border: "before:from-primary before:to-brand-emerald", iconBg: "bg-primary/10", iconColor: "text-primary" },
+                { label: "IMPACT", value: "A+", icon: Award, border: "before:from-brand-gold-dark before:to-brand-gold", iconBg: "bg-brand-gold/20", iconColor: "text-brand-gold-dark" },
               ].map((s, idx) => (
                 <motion.div
                   key={idx}
@@ -984,16 +1194,20 @@ function Home() {
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 }}
-                  className="p-6 bg-card rounded-2xl flex flex-col items-center text-center group hover:shadow-lg transition-all border border-border overflow-hidden relative"
+                  className={cn(
+                    "relative p-8 rounded-3xl flex flex-col items-center text-center group transition-all duration-300 hover:-translate-y-2 overflow-hidden",
+                    "bg-white/80 backdrop-blur-sm shadow-[0_15px_40px_-15px_rgba(13,77,51,0.1)] hover:shadow-2xl hover:shadow-brand-gold/20",
+                    "before:content-[''] before:absolute before:inset-0 before:rounded-3xl before:p-[2px] before:bg-gradient-to-br before:[mask:linear-gradient(#000,#000)_content-box,linear-gradient(#000,#000)] before:[mask-composite:exclude] before:opacity-40 group-hover:before:opacity-100 before:transition-opacity",
+                    s.border
+                  )}
                 >
-                  <div className="absolute top-0 right-0 w-16 h-16 bg-primary/5 rounded-bl-[40px] -mr-4 -mt-4" />
-                  <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform relative z-10">
-                    <s.icon className="w-5 h-5 text-primary" />
+                  <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center mb-4 relative z-10 transition-transform group-hover:scale-110 shadow-sm", s.iconBg)}>
+                    <s.icon className={cn("w-6 h-6", s.iconColor)} />
                   </div>
-                  <div className="text-2xl md:text-3xl font-black text-foreground leading-none mb-1 relative z-10 italic italic">
+                  <div className="text-3xl md:text-5xl font-black text-brand-dark leading-none mb-2 relative z-10 italic">
                     {s.value}
                   </div>
-                  <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] relative z-10">
+                  <p className="text-[10px] font-black text-brand-dark/40 uppercase tracking-[0.25em] relative z-10">
                     {s.label}
                   </p>
                 </motion.div>
@@ -1004,7 +1218,7 @@ function Home() {
       </section>
 
       {/* ═══════════ 7. ENGAGEMENT: NEWSLETTER + EVENTS ═══════════ */}
-      <section className="py-16 md:py-20 bg-background border-b border-border">
+      <section className="py-24 md:py-32 bg-background border-b border-border relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHeader
             icon={Mail}
@@ -1012,18 +1226,26 @@ function Home() {
             subtitle="Connecter l'économie réelle à l'intelligence stratégique"
           />
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Newsletter */}
-            <div className="bg-brand-dark rounded-2xl p-8 text-white relative overflow-hidden shadow-2xl border border-white/5">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[100px]" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            {/* Newsletter — brand green portal */}
+            <div className="relative rounded-3xl p-10 overflow-hidden shadow-2xl shadow-primary/20 bg-gradient-to-br from-brand-deep via-primary to-brand-forest text-primary-foreground border border-brand-emerald/30 group/newsletter">
+              <div className="absolute -top-32 -right-32 w-80 h-80 bg-brand-emerald/30 rounded-full blur-[110px] animate-aurora" />
+              <div className="absolute -bottom-24 -left-20 w-72 h-72 bg-brand-gold/20 rounded-full blur-[100px] animate-aurora-slow" />
+              
               <div className="relative z-10">
-                <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center mb-5">
-                  <Mail className="w-5 h-5 text-brand-gold" />
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-gold/20 border border-brand-gold/30 mb-8 backdrop-blur-md">
+                  <Mail className="w-4 h-4 text-brand-gold" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-gold">
+                    RESTONS CONNECTÉS
+                  </span>
                 </div>
-                <h3 className="text-xl font-black mb-2 uppercase tracking-tight italic italic">{t("home.newsletter.title")}</h3>
-                <p className="text-xs text-white/50 leading-relaxed mb-8 font-medium">
-                  {t("home.newsletter.subtitle")}
+                <h3 className="text-3xl md:text-4xl font-black mb-4 tracking-tighter italic text-balance uppercase leading-tight">
+                  Newsletter Stratégique
+                </h3>
+                <p className="text-sm text-primary-foreground/70 leading-relaxed mb-10 font-medium max-w-md">
+                   Analyses stratégiques, rapports d'audits et tendances panafricaines, livrés exclusivement chaque mois.
                 </p>
+                
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
@@ -1032,81 +1254,92 @@ function Home() {
                       setEmail("");
                     }
                   }}
-                  className="flex flex-col sm:flex-row gap-3"
+                  className="flex flex-col sm:flex-row gap-4"
                 >
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder={t("home.newsletter.placeholder")}
-                    className="flex-1 px-5 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/20 text-xs outline-none focus:ring-2 focus:ring-brand-gold/50 transition-all font-bold"
+                    placeholder="votre.organisation@email.id"
+                    className="flex-1 px-6 py-4.5 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/30 text-xs outline-none focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold transition-all font-bold backdrop-blur-md"
                   />
                   <button
                     type="submit"
-                    className="px-8 py-3.5 bg-brand-gold text-brand-gold-foreground font-black text-[10px] uppercase tracking-widest rounded-xl hover:brightness-110 transition-all active:scale-95 shadow-xl shadow-brand-gold/20 shrink-0"
+                    className="group relative overflow-hidden px-10 py-4.5 bg-brand-gold text-brand-gold-foreground font-black text-[10px] uppercase tracking-[0.2em] rounded-2xl hover:brightness-110 transition-all active:scale-95 shadow-2xl shadow-brand-gold/40 shrink-0"
                   >
-                    {t("home.newsletter.subscribe")}
+                    <span className="absolute inset-0 -translate-x-full group-hover:animate-shine-sweep bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+                    <span className="relative">S'ABONNER</span>
                   </button>
                 </form>
               </div>
             </div>
 
-            {/* Events */}
-            <div className="space-y-4">
+            {/* Events Redesign */}
+            <div className="space-y-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-[10px] font-black text-foreground flex items-center gap-2 uppercase tracking-[0.3em]">
-                  <Calendar className="w-4 h-4 text-primary" />
-                  {t("home.events.title")}
-                </h3>
+                <div className="flex items-center gap-3">
+                   <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                   <h3 className="text-[11px] font-black text-brand-dark flex items-center gap-2 uppercase tracking-[0.3em]">
+                     {t("home.events.title")}
+                   </h3>
+                </div>
                 <Link
                   to="/events"
-                  className="text-[10px] font-black text-primary hover:text-primary/80 transition-colors flex items-center gap-1.5 uppercase tracking-widest"
+                  className="text-[11px] font-black text-primary hover:text-brand-gold-dark transition-colors flex items-center gap-1.5 uppercase tracking-widest group"
                 >
                   {t("home.events.view_all")}
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1.5" />
                 </Link>
               </div>
 
               {eventsLoading ? (
-                [1, 2, 3].map((i) => <Skeleton key={i} className="h-24 rounded-2xl" />)
+                [1, 2, 3].map((i) => <Skeleton key={i} className="h-28 rounded-3xl" />)
               ) : events && events.length > 0 ? (
-                events.slice(0, 3).map((event: any) => {
-                  const startDate = new Date(event.startDate);
-                  return (
-                    <Link
-                      key={event._id}
-                      to={`/events/${event._id}`}
-                      className="group flex gap-5 bg-card border border-border rounded-2xl p-4 hover-lift"
-                    >
-                      <div className="shrink-0 w-16 h-16 bg-primary/5 rounded-2xl flex flex-col items-center justify-center border border-primary/10">
-                        <span className="text-xl font-black text-primary leading-none italic italic">
-                          {startDate.getDate()}
-                        </span>
-                        <span className="text-[9px] font-black uppercase text-primary/40 mt-1 tracking-widest">
-                          {startDate.toLocaleString("fr", { month: "short" })}
-                        </span>
-                      </div>
-                      <div className="min-w-0 flex-1 pt-0.5">
-                        <div className="flex items-center gap-2 mb-1.5">
-                           <span className="text-[9px] font-black uppercase tracking-widest text-primary bg-primary/5 px-2 py-0.5 rounded border border-primary/10">
-                             {event.type}
-                           </span>
-                        </div>
-                        <h4 className="text-[13px] font-black text-foreground group-hover:text-primary transition-colors line-clamp-1 uppercase tracking-tight italic italic">
-                          {getLocalized(event.title, lang)}
-                        </h4>
-                        {getLocalized(event.location, lang) && (
-                          <div className="flex items-center gap-1.5 mt-1.5 text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
-                            <MapPin className="w-3 h-3" />
-                            <span>{getLocalized(event.location, lang)}</span>
-                          </div>
-                        )}
-                      </div>
-                    </Link>
-                  );
-                })
+                <div className="flex flex-col gap-4">
+                  {events.slice(0, 3).map((event: any, idx: number) => {
+                    const startDate = new Date(event.startDate);
+                    return (
+                      <Link
+                        key={event._id}
+                        to={`/events/${event._id}`}
+                        className="group relative block rounded-2xl bg-white p-5 transition-all duration-300 hover:-translate-y-1.5 shadow-[0_12px_35px_-15px_rgba(13,77,51,0.2)] hover:shadow-[0_25px_50px_-15px_rgba(188,154,82,0.4)] border-2 border-brand-gold/20 hover:border-brand-gold overflow-hidden"
+                      >
+                         <span className="pointer-events-none absolute inset-0 -translate-x-full group-hover:animate-shine-sweep bg-gradient-to-r from-transparent via-brand-gold/15 to-transparent" />
+                         
+                         <div className="relative flex gap-6">
+                            <div className="shrink-0 w-16 h-16 rounded-2xl flex flex-col items-center justify-center bg-gradient-to-br from-brand-gold/20 to-brand-gold/5 border border-brand-gold/30 shadow-inner group-hover:scale-105 transition-transform duration-500">
+                               <span className="text-2xl font-black text-brand-dark leading-none italic">
+                                 {startDate.getDate()}
+                               </span>
+                               <span className="text-[10px] font-black uppercase text-brand-gold-dark/60 mt-1 tracking-widest">
+                                 {startDate.toLocaleString("fr", { month: "short" })}
+                               </span>
+                            </div>
+                            
+                            <div className="min-w-0 flex-1 pt-0.5">
+                               <div className="flex items-center gap-2 mb-2">
+                                  <span className="text-[10px] font-black uppercase tracking-widest text-brand-gold-dark bg-brand-gold/10 px-2.5 py-0.5 rounded-lg border border-brand-gold/20">
+                                    {event.type}
+                                  </span>
+                                  {idx === 0 && (
+                                     <span className="text-[9px] font-bold text-primary animate-pulse tracking-widest">● LIVE</span>
+                                  )}
+                               </div>
+                               <h4 className="text-[15px] font-black text-brand-dark group-hover:text-primary transition-colors line-clamp-1 uppercase tracking-tight italic">
+                                 {getLocalized(event.title, lang)}
+                               </h4>
+                               <div className="flex items-center gap-2 mt-2 text-[10px] text-brand-dark/50 font-black uppercase tracking-[0.15em]">
+                                 <MapPin className="w-3.5 h-3.5 text-brand-gold-dark" />
+                                 <span>{getLocalized(event.location, lang)}</span>
+                               </div>
+                            </div>
+                         </div>
+                      </Link>
+                    );
+                  })}
+                </div>
               ) : (
-                <p className="text-sm text-muted-foreground italic py-8 text-center bg-muted/20 rounded-2xl">Aucun événement institutionnel programmé.</p>
+                <p className="text-sm text-muted-foreground italic py-12 text-center border-2 border-dashed border-border rounded-3xl">Aucun événement prioritaire à l'agenda.</p>
               )}
             </div>
           </div>
