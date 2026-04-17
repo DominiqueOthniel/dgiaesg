@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, Outlet, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Menu, X, ShieldCheck, User, LogOut, LayoutDashboard, Settings, ChevronRight, BookOpen, Play, Star, Calendar, Building2 } from "lucide-react";
+import { Menu, X, ShieldCheck, User, LogOut, LayoutDashboard, Settings, ChevronRight, BookOpen, Play, Star, Calendar, Building2, Headphones, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "./ui/Button";
@@ -9,9 +9,10 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const topNavItems = [
   { key: "nav.labels", href: "/labels", icon: ShieldCheck },
-  { key: "nav.directory", href: "/directory", icon: Building2 }, // Annuaire
-  { key: "nav.news", href: "/news", icon: BookOpen }, // Journal
-  { key: "nav.events", href: "/events", icon: Calendar },
+  { key: "nav.directory", href: "/directory", icon: Building2 },
+  { key: "nav.news", href: "/news", icon: BookOpen },
+  { key: "nav.kiosk", href: "/kiosk", icon: BookOpen },
+  { key: "nav.mediatique", href: "/mediatique", icon: Headphones },
 ];
 
 const sidebarItems = [
@@ -154,37 +155,36 @@ const SiteLayout = () => {
                 <Menu className="w-6 h-6 group-hover:scale-110 transition-transform" />
               </button>
 
-              <Link to="/" className="flex items-center gap-2.5 group">
-                <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg shadow-primary/20">
-                  <ShieldCheck className="w-6 h-6 text-primary-foreground" />
+              <Link to="/" className="flex items-center gap-3 group">
+                <div className="w-11 h-11 bg-primary rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg shadow-primary/20">
+                  <ShieldCheck className="w-7 h-7 text-brand-gold" />
                 </div>
                 <div className="hidden sm:flex flex-col">
-                  <span className="text-sm md:text-base font-black tracking-tight text-foreground leading-none italic italic">
+                  <span className="text-base font-black tracking-tight text-foreground uppercase leading-none">
                     Co-op Label
                   </span>
-                  <span className="text-[9px] font-bold text-muted-foreground tracking-widest uppercase mt-0.5">
-                    Excellence Certifiée
+                  <span className="text-[9px] font-black text-muted-foreground tracking-widest uppercase mt-1">
+                    Africa Certified
                   </span>
                 </div>
               </Link>
             </div>
 
             {/* Center: Simplified Desktop Nav (4 items) */}
-            <nav className="hidden lg:flex items-center gap-1">
-              {topNavItems.map((item) => (
-                <Link
-                  key={item.href}
-                  to={item.href}
-                  className={cn(
-                    "px-5 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-[0.15em] transition-all",
-                    location.pathname === item.href
-                      ? "bg-primary text-primary-foreground shadow-lg"
-                      : "text-muted-foreground hover:text-primary hover:bg-muted"
-                  )}
-                >
-                  {t(item.key)}
-                </Link>
-              ))}
+            <nav className="hidden lg:flex items-center gap-2">
+              {topNavItems.map((it) => {
+                const Icon = it.icon;
+                return (
+                  <Link
+                    key={it.key}
+                    to={it.href}
+                    className="group inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[11px] font-bold uppercase tracking-widest text-foreground bg-transparent border border-transparent hover:bg-brand-gold hover:border-brand-gold-dark/40 hover:shadow-md hover:shadow-brand-gold/30 hover:-translate-y-0.5 transition-all duration-200 active:scale-95"
+                  >
+                    <Icon className="w-3.5 h-3.5 text-foreground/70 group-hover:text-foreground transition-colors" />
+                    <span className="text-foreground">{t(it.key)}</span>
+                  </Link>
+                );
+              })}
             </nav>
 
             {/* Right: Actions */}
@@ -231,12 +231,15 @@ const SiteLayout = () => {
                   </AnimatePresence>
                 </div>
               ) : (
-                <div className="flex items-center gap-4">
-                  <Link to="/login" className="hidden sm:block text-sm font-semibold text-foreground hover:text-primary transition-colors">
+                <div className="flex items-center gap-6">
+                  <button className="p-2 text-foreground/70 hover:text-primary transition-colors">
+                    <Search className="w-5 h-5" />
+                  </button>
+                  <Link to="/login" className="hidden sm:block text-xs font-black uppercase tracking-widest text-foreground hover:text-primary transition-colors">
                     Se connecter
                   </Link>
-                  <Link to="/signup" className="px-6 py-2.5 bg-brand-gold text-brand-gold-foreground text-sm font-bold rounded-full hover:brightness-110 transition-all shadow-lg shadow-brand-gold/20 active:scale-95">
-                    Certification
+                  <Link to="/signup" className="px-6 py-2.5 bg-brand-gold text-brand-gold-foreground text-[10px] font-black uppercase tracking-[0.15em] rounded-full hover:brightness-110 transition-all shadow-lg shadow-brand-gold/20 active:scale-95">
+                    S'inscrire
                   </Link>
                 </div>
               )}

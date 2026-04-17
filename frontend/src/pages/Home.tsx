@@ -158,6 +158,16 @@ function Home() {
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
+  
+  const [featuredIdx, setFeaturedIdx] = useState(0);
+  useEffect(() => {
+    if (!news || news.length < 2) return;
+    const t = setInterval(
+      () => setFeaturedIdx((i) => (i + 1) % Math.min(news.length, 5)),
+      5000
+    );
+    return () => clearInterval(t);
+  }, [news?.length]);
 
   return (
     <div className="flex flex-col">
@@ -313,32 +323,41 @@ function Home() {
       </div>
 
       {/* ═══════════ 1. VISION & MISSION + CERTIFIED COMPANIES ═══════════ */}
-      <section className="py-16 md:py-20 bg-background border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-16 md:py-20 relative overflow-hidden border-b border-border bg-gradient-to-br from-surface-warm via-background to-primary/5">
+        {/* Decorative blurred blobs (emerald + gold) */}
+        <div className="pointer-events-none absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full bg-brand-emerald/15 blur-[120px]" />
+        <div className="pointer-events-none absolute -bottom-32 right-0 w-[480px] h-[480px] rounded-full bg-brand-gold/15 blur-[140px]" />
+        <div className="pointer-events-none absolute top-1/3 left-1/2 w-[300px] h-[300px] rounded-full bg-primary/10 blur-[100px] -translate-x-1/2" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
             {/* Mission */}
             <div className="lg:col-span-8">
               <div
                 ref={missionRef}
-                className="h-full bg-card border border-border rounded-2xl p-8 md:p-12 relative overflow-hidden group shadow-sm hover:shadow-lg transition-all duration-500"
+                className="h-full bg-card/80 backdrop-blur-sm border border-border rounded-2xl p-8 md:p-12 relative overflow-hidden group shadow-lg hover:shadow-2xl transition-all duration-500"
               >
-                <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 rounded-full blur-[100px] group-hover:bg-primary/10 transition-colors duration-1000" />
+                <div className="absolute top-0 right-0 w-80 h-80 bg-primary/10 rounded-full blur-[100px] group-hover:bg-primary/15 transition-colors duration-1000" />
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-brand-gold/10 rounded-full blur-[100px] group-hover:bg-brand-gold/20 transition-colors duration-1000" />
+
                 <div className="relative z-10">
                   <div className="flex items-center gap-3 mb-6">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={missionVisible ? { width: 40 } : { width: 0 }}
                       transition={{ duration: 1, ease: "circOut" }}
-                      className="h-[2px] bg-primary rounded-full"
+                      className="h-[2px] bg-gradient-to-r from-primary to-brand-emerald rounded-full"
                     />
                     <span className="text-[10px] font-black uppercase tracking-widest text-primary">
                       {t("home.mission.title")}
                     </span>
                   </div>
 
-                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-foreground tracking-tighter leading-[1.05] mb-6 max-w-2xl uppercase italic italic">
+                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-foreground tracking-tighter leading-[1.05] mb-6 max-w-2xl uppercase italic">
                     Le Portail Panafricain de l'Excellence{" "}
-                    <span className="text-primary italic">Certifiée.</span>
+                    <span className="bg-gradient-to-r from-primary via-brand-emerald to-brand-gold-dark bg-clip-text text-transparent italic">
+                      Certifiée.
+                    </span>
                   </h2>
 
                   <p className="text-base text-muted-foreground max-w-2xl leading-relaxed mb-8 font-medium">
@@ -347,16 +366,23 @@ function Home() {
 
                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                     {[
-                      { text: "Certification ESG Global Standard", icon: ShieldCheck },
-                      { text: "Architecture de Gouvernance ISO", icon: Building2 },
-                      { text: "Accès au Capital Institutionnel", icon: Globe },
-                    ].map((item, i) => (
-                      <li key={i} className="flex items-center gap-3">
-                        <div className="p-1 px-3 bg-primary/5 rounded-full border border-primary/10">
-                          <span className="text-[10px] font-black uppercase tracking-wider text-primary">{item.text}</span>
-                        </div>
-                      </li>
-                    ))}
+                      { text: "Certification ESG Global Standard", icon: ShieldCheck, tone: "primary" },
+                      { text: "Architecture de Gouvernance ISO", icon: Building2, tone: "emerald" },
+                      { text: "Accès au Capital Institutionnel", icon: Globe, tone: "gold" },
+                    ].map((item, i) => {
+                      const tones: Record<string, string> = {
+                        primary: "bg-primary/5 border-primary/20 text-primary",
+                        emerald: "bg-brand-emerald/10 border-brand-emerald/30 text-brand-emerald",
+                        gold: "bg-brand-gold/10 border-brand-gold/40 text-brand-gold-dark",
+                      };
+                      return (
+                        <li key={i} className="flex items-center gap-3">
+                          <div className={cn("p-1 px-3 rounded-full border", tones[item.tone])}>
+                            <span className="text-[10px] font-black uppercase tracking-wider">{item.text}</span>
+                          </div>
+                        </li>
+                      );
+                    })}
                   </ul>
 
                   <div
@@ -368,7 +394,7 @@ function Home() {
                   >
                     <Link
                       to="/labels"
-                      className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 active:scale-95"
+                      className="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-brand-emerald text-primary-foreground px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-xl shadow-primary/25 active:scale-95"
                     >
                       Nos Portails <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
@@ -377,13 +403,14 @@ function Home() {
               </div>
             </div>
 
-            {/* Certified Companies Sidebar */}
+            {/* Certified Companies Sidebar — white text, gold borders, elevated */}
             <div className="lg:col-span-4">
-              <div className="h-full bg-brand-dark rounded-2xl p-6 flex flex-col relative overflow-hidden shadow-2xl border border-white/5">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-[80px]" />
+              <div className="h-full bg-gradient-to-br from-brand-dark via-primary to-brand-forest rounded-2xl p-6 flex flex-col relative overflow-hidden shadow-2xl shadow-black/30 border border-brand-gold/30 ring-1 ring-brand-gold/20">
+                <div className="absolute top-0 right-0 w-40 h-40 bg-brand-gold/20 rounded-full blur-[80px]" />
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-brand-emerald/20 rounded-full blur-[80px]" />
 
                 <div className="flex items-center gap-3 mb-8 relative z-10">
-                  <div className="p-2 bg-white/10 rounded-xl">
+                  <div className="p-2 bg-brand-gold/20 rounded-xl border border-brand-gold/30">
                     <ShieldCheck className="w-5 h-5 text-brand-gold" />
                   </div>
                   <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white">
@@ -393,46 +420,46 @@ function Home() {
 
                 <div className="space-y-3 relative z-10 flex-1 overflow-hidden">
                   {companiesLoading ? (
-                        [1, 2, 3].map((i) => <div key={i} className="h-20 bg-white/5 animate-pulse rounded-xl" />)
-                      ) : companies.length > 0 ? (
-                        companies.slice(0, 3).map((company: any) => (
-                        <Link
-                          key={company._id}
-                          to={`/directory/${company._id}`}
-                          className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all group/item hover:border-brand-gold/20"
-                        >
-                          <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center p-1.5 shrink-0 shadow-lg">
-                            {company.logoUrl ? (
-                              <img
-                                src={resolveImageUrl(getLocalized(company.logoUrl, lang))}
-                                onError={handleImageError}
-                                className="w-full h-full object-contain"
-                                alt={getLocalized(company.name, lang)}
-                              />
-                            ) : (
-                              <Building2 className="w-5 h-5 text-primary" />
-                            )}
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h4 className="text-xs font-black text-white uppercase tracking-wider truncate group-hover/item:text-brand-gold transition-colors">
-                              {getLocalized(company.name, lang)}
-                            </h4>
-                            <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest">
-                              {getLocalized(company.sector, lang) || "Secteur"}
-                            </span>
-                          </div>
-                          <ArrowRight className="w-4 h-4 text-white/20 group-hover/item:text-brand-gold transition-colors" />
-                        </Link>
-                      ))
-                    ) : (
-                      <p className="text-xs text-white/20 italic text-center py-8">No records indexed.</p>
-                    )}
+                    [1, 2, 3].map((i) => <div key={i} className="h-20 bg-white/5 animate-pulse rounded-xl" />)
+                  ) : companies.length > 0 ? (
+                    companies.slice(0, 3).map((company: any) => (
+                      <Link
+                        key={company._id}
+                        to={`/directory/${company._id}`}
+                        className="flex items-center gap-4 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-brand-gold/40 shadow-lg shadow-black/30 hover:shadow-2xl hover:shadow-brand-gold/30 hover:bg-white/10 hover:border-brand-gold hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300 group/item"
+                      >
+                        <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center p-1.5 shrink-0 shadow-lg group-hover/item:rotate-3 transition-transform">
+                          {company.logoUrl ? (
+                            <img
+                              src={resolveImageUrl(getLocalized(company.logoUrl, lang))}
+                              onError={handleImageError}
+                              className="w-full h-full object-contain"
+                              alt={getLocalized(company.name, lang)}
+                            />
+                          ) : (
+                            <Building2 className="w-5 h-5 text-primary" />
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h4 className="text-xs font-black text-white uppercase tracking-wider truncate group-hover/item:text-brand-gold transition-colors">
+                            {getLocalized(company.name, lang)}
+                          </h4>
+                          <span className="text-[9px] font-bold text-white/60 uppercase tracking-widest">
+                            {getLocalized(company.sector, lang) || "Secteur"}
+                          </span>
+                        </div>
+                        <ArrowRight className="w-4 h-4 text-brand-gold/60 group-hover/item:text-brand-gold group-hover/item:translate-x-1 transition-all" />
+                      </Link>
+                    ))
+                  ) : (
+                    <p className="text-xs text-white/40 italic text-center py-8">No records indexed.</p>
+                  )}
                 </div>
 
                 <div className="mt-6 relative z-10">
                   <Link
                     to="/directory"
-                    className="flex items-center justify-between w-full p-4 bg-brand-gold text-brand-gold-foreground rounded-xl hover:brightness-110 transition-all shadow-xl shadow-brand-gold/20 group/btn"
+                    className="flex items-center justify-between w-full p-4 bg-brand-gold text-brand-gold-foreground rounded-xl hover:brightness-110 hover:shadow-2xl hover:shadow-brand-gold/40 transition-all shadow-xl shadow-brand-gold/30 group/btn"
                   >
                     <div>
                       <span className="text-[10px] font-black uppercase tracking-widest block leading-none">Registre Global</span>
@@ -446,91 +473,158 @@ function Home() {
         </div>
       </section>
 
-      {/* ═══════════ 2. INTELLIGENCE ÉDITORIALE (NEWS) ═══════════ */}
-      <section className="py-16 md:py-20 bg-muted/40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeader
-            icon={BookOpen}
-            title={t("home.news.title")}
-            subtitle={t("home.news.subtitle")}
-            action={t("home.news.view_all")}
-            actionHref="/news"
-          />
+      {/* ═══════════ 2. INTELLIGENCE ÉDITORIALE (NEWS) — REDESIGNED ═══════════ */}
+      <section className="relative py-16 md:py-24 overflow-hidden bg-[#0a2a1a]">
+        {/* Decorative blurs */}
+        <div className="pointer-events-none absolute top-0 left-0 w-[500px] h-[500px] rounded-full bg-brand-emerald/10 blur-[120px]" />
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+          {/* Custom Header matching Image 1 */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <BookOpen className="w-4 h-4 text-brand-gold" />
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-gold">
+                  Intelligence Éditoriale
+                </span>
+              </div>
+              <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-none uppercase">
+                L'actualité décryptée <br />
+                <span className="opacity-90">des leaders africains</span>
+              </h2>
+            </div>
+            <Link
+              to="/news"
+              className="inline-flex items-center gap-3 bg-brand-gold text-brand-dark px-8 py-4 rounded-full text-xs font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-xl shadow-brand-gold/20 shrink-0 self-start md:self-end"
+            >
+              Tous les articles <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
 
           {news.length === 0 ? (
-            <p className="text-center text-muted-foreground py-12">Aucun article pour le moment.</p>
+            <p className="text-center text-white/50 py-12">Aucun article pour le moment.</p>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              {/* Featured article */}
-              {news[0] && (
-                <div className="lg:col-span-8">
-                  <Link
-                    to={`/news/${news[0].slug || news[0]._id}`}
-                    className="group block bg-card border border-border rounded-2xl overflow-hidden hover-lift"
-                  >
-                    <div className="aspect-[16/9] bg-muted overflow-hidden">
-                      {news[0].imageUrl ? (
-                        <img
-                          src={resolveImageUrl(news[0].imageUrl)}
-                          alt={getLocalized(news[0].title, lang)}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          onError={handleImageError}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <BookOpen className="w-12 h-12 text-muted-foreground/20" />
-                        </div>
+            <>
+              {/* ── Featured carousel (auto-rotating) ───────────────────── */}
+              <div className="relative rounded-[2rem] overflow-hidden border border-white/5 shadow-3xl shadow-black/60 group/feat transition-all duration-700 mb-12 min-h-[400px] md:h-[520px]">
+                <AnimatePresence mode="wait">
+                  {news.slice(0, 5).map((article: any, idx: number) =>
+                    idx === featuredIdx ? (
+                      <motion.div
+                        key={article._id || idx}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 1 }}
+                        className="absolute inset-0"
+                      >
+                        <Link
+                          to={`/news/${article.slug || article._id}`}
+                          className="relative block w-full h-full group"
+                        >
+                          {/* Background Image */}
+                          <div className="absolute inset-0 z-0">
+                            {article.imageUrl ? (
+                              <img
+                                src={resolveImageUrl(article.imageUrl)}
+                                alt={getLocalized(article.title, lang)}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
+                                onError={handleImageError}
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-brand-dark" />
+                            )}
+                            {/* Gradient Overlay matching Image 1 depth */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90" />
+                          </div>
+
+                          {/* Content Overlay */}
+                          <div className="absolute bottom-0 left-0 w-full p-8 md:p-14 z-10">
+                            <div className="flex items-center gap-5 mb-6">
+                              {article.sector && (
+                                <span className="px-5 py-2 bg-brand-gold text-brand-dark text-[11px] font-black uppercase tracking-widest rounded-lg">
+                                  {article.sector}
+                                </span>
+                              )}
+                              {article.publishedAt && (
+                                <span className="text-[11px] font-black text-white uppercase tracking-[0.2em]">
+                                  {new Date(article.publishedAt).toLocaleDateString(lang || "fr", {
+                                    day: "2-digit",
+                                    month: "long",
+                                    year: "numeric",
+                                  })}
+                                </span>
+                              )}
+                            </div>
+
+                            <h3 className="text-3xl md:text-5xl lg:text-6xl font-black text-white uppercase tracking-tighter leading-[0.95] mb-6 max-w-5xl">
+                              {getLocalized(article.title, lang)}
+                            </h3>
+
+                            <p className="text-sm md:text-lg text-white/80 line-clamp-2 max-w-3xl font-medium leading-relaxed">
+                              {getLocalized(article.excerpt, lang)}
+                            </p>
+                          </div>
+                        </Link>
+                      </motion.div>
+                    ) : null
+                  )}
+                </AnimatePresence>
+
+                {/* Pagination bars (Top Right) matching Image 1 */}
+                <div className="absolute top-10 right-10 flex gap-2 z-20">
+                  {news.slice(0, 5).map((_: any, i: number) => (
+                    <button
+                      key={i}
+                      onClick={() => setFeaturedIdx(i)}
+                      aria-label={`Article ${i + 1}`}
+                      className={cn(
+                        "h-1.5 rounded-full transition-all duration-500",
+                        i === featuredIdx ? "w-10 bg-brand-gold" : "w-6 bg-white/20 hover:bg-white/40"
                       )}
-                    </div>
-                    <div className="p-6">
-                      {news[0].sector && (
-                        <span className="text-[10px] font-black uppercase tracking-widest text-primary mb-2 block">
-                          {news[0].sector}
-                        </span>
-                      )}
-                      <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors mb-2 line-clamp-2 uppercase tracking-tight">
-                        {getLocalized(news[0].title, lang)}
-                      </h3>
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {getLocalized(news[0].excerpt, lang)}
-                      </p>
-                    </div>
-                  </Link>
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* ── Secondary articles: horizontal scroll row ────────────── */}
+              {news.length > 1 && (
+                <div className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth -mx-4 px-4 [scrollbar-width:thin]">
+                  {news.slice(1).map((article: any) => (
+                    <Link
+                      key={article._id}
+                      to={`/news/${article.slug || article._id}`}
+                      className="snap-start shrink-0 w-[260px] sm:w-[300px] group/card bg-brand-dark/60 backdrop-blur-sm border border-brand-gold/30 ring-1 ring-brand-gold/10 rounded-xl overflow-hidden shadow-xl shadow-black/30 hover:-translate-y-2 hover:scale-[1.02] hover:ring-brand-gold/60 hover:shadow-2xl hover:shadow-brand-gold/30 hover:border-brand-gold transition-all duration-300"
+                    >
+                      <div className="aspect-[16/10] bg-white/5 overflow-hidden">
+                        {article.imageUrl ? (
+                          <img
+                            src={resolveImageUrl(article.imageUrl)}
+                            alt={getLocalized(article.title, lang)}
+                            className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-500"
+                            onError={handleImageError}
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <BookOpen className="w-10 h-10 text-white/20" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-4">
+                        {article.sector && (
+                          <span className="text-[9px] font-black uppercase tracking-widest text-brand-gold block mb-2">
+                            {article.sector}
+                          </span>
+                        )}
+                        <h4 className="text-sm font-bold text-white uppercase tracking-tight line-clamp-2 group-hover/card:text-brand-gold transition-colors">
+                          {getLocalized(article.title, lang)}
+                        </h4>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
               )}
-
-              {/* Secondary news */}
-              <div className="lg:col-span-4 space-y-4">
-                {news.slice(1, 5).map((article: any) => (
-                  <Link
-                    key={article._id}
-                    to={`/news/${article.slug || article._id}`}
-                    className="group flex gap-4 bg-card border border-border rounded-xl p-4 hover-lift"
-                  >
-                    <div className="w-20 h-16 bg-muted rounded-lg overflow-hidden shrink-0">
-                      {article.imageUrl ? (
-                        <img
-                          src={resolveImageUrl(article.imageUrl)}
-                          alt={getLocalized(article.title, lang)}
-                          className="w-full h-full object-cover"
-                          onError={handleImageError}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <BookOpen className="w-4 h-4 text-muted-foreground/30" />
-                        </div>
-                      )}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h4 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 uppercase tracking-tighter">
-                        {getLocalized(article.title, lang)}
-                      </h4>
-                      <span className="text-[9px] font-black text-muted-foreground mt-1 block uppercase tracking-widest">{article.sector}</span>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
+            </>
           )}
         </div>
       </section>
@@ -664,7 +758,7 @@ function Home() {
                       <Link
                         key={company._id}
                         to={`/directory/${company._id}`}
-                        className="group bg-card border border-border rounded-2xl p-7 hover-lift flex flex-col relative"
+                        className="group bg-card border border-border rounded-2xl p-7 flex flex-col relative hover:border-brand-gold/40 hover:shadow-2xl hover:shadow-brand-gold/10 hover:-translate-y-1 transition-all duration-300"
                       >
                         <div className="absolute top-0 right-6 w-9 h-10 bg-primary/5 rounded-b-xl flex items-center justify-center border-x border-b border-primary/10 group-hover:bg-primary group-hover:text-primary-foreground transition-all">
                           <Building2 className="w-4 h-4" />

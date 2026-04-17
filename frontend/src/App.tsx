@@ -75,6 +75,7 @@ function App() {
             <Route path="news/:slug" element={<NewsArticlePage />} />
             <Route path="news/sector/:sector" element={<SectorPage />} />
             <Route path="kiosk" element={<KioskPage />} />
+            <Route path="mediatique" element={<MultimediaPage />} />
             <Route path="multimedia" element={<MultimediaPage />} />
             <Route path="events" element={<Events />} />
             <Route path="events/:id" element={<EventDetail />} />
