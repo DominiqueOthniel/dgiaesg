@@ -64,6 +64,18 @@
     0% { transform: translateX(0%); }
     100% { transform: translateX(-50%); }
   }
+
+  @keyframes gradient-shift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  @keyframes wave-flow {
+    0%   { background-position: 0% 50%; transform: translate3d(0,0,0) scale(1); }
+    50%  { background-position: 100% 50%; transform: translate3d(0,-1.5%,0) scale(1.05); }
+    100% { background-position: 0% 50%; transform: translate3d(0,0,0) scale(1); }
+  }
 }
 
 @layer base {
@@ -174,6 +186,43 @@
     box-shadow: 0 12px 40px -12px hsl(var(--primary) / 0.15);
   }
 
+  /* Gold-glow article card — scales up on hover to focus attention */
+  .card-gold {
+    position: relative;
+    border: 2px solid hsl(var(--brand-gold) / 0.5);
+    background-color: hsl(var(--card));
+    box-shadow:
+      0 1px 0 hsl(var(--brand-gold) / 0.25) inset,
+      0 2px 4px hsl(220 40% 10% / 0.06),
+      0 8px 16px -4px hsl(220 40% 10% / 0.10),
+      0 24px 40px -16px hsl(var(--brand-gold) / 0.30),
+      0 32px 60px -24px hsl(220 40% 10% / 0.18);
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.35s ease;
+    transform: scale(1);
+    transform-origin: center;
+    will-change: transform;
+  }
+  .card-gold:hover {
+    border-color: hsl(var(--brand-gold));
+    transform: scale(1.04);
+    box-shadow:
+      0 1px 0 hsl(var(--brand-gold) / 0.4) inset,
+      0 8px 20px hsl(220 40% 10% / 0.10),
+      0 24px 50px -12px hsl(var(--brand-gold) / 0.40),
+      0 0 40px hsl(var(--brand-gold) / 0.20);
+  }
+
+  .news-bg {
+    background-color: hsl(var(--surface-warm));
+    background-image:
+      radial-gradient(at 12% 8%, hsl(var(--brand-gold) / 0.12) 0px, transparent 45%),
+      radial-gradient(at 88% 18%, hsl(var(--brand-emerald) / 0.10) 0px, transparent 45%),
+      radial-gradient(at 75% 92%, hsl(var(--brand-gold) / 0.10) 0px, transparent 50%),
+      radial-gradient(at 5% 95%, hsl(var(--brand-deep) / 0.08) 0px, transparent 45%);
+  }
+
   .editorial-container {
     @apply max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8;
   }
@@ -189,6 +238,173 @@
 
   .saas-card {
     @apply bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-brand-primary/20 transition-all duration-300 overflow-hidden;
+  }
+
+  /* Animated gradient background for the labels page hero */
+  .labels-page-bg {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--brand-dark)) 0%,
+      hsl(var(--brand-deep)) 25%,
+      hsl(var(--brand-forest)) 50%,
+      hsl(var(--brand-deep)) 75%,
+      hsl(var(--brand-dark)) 100%
+    );
+    background-size: 400% 400%;
+    animation: gradient-shift 18s ease infinite;
+  }
+
+  /* Animated wavy emerald/gold background for the content area */
+  .labels-content-bg {
+    position: relative;
+    background-color: hsl(var(--surface-warm));
+    overflow: hidden;
+  }
+  .labels-content-bg::before,
+  .labels-content-bg::after {
+    content: "";
+    position: absolute;
+    inset: -20% -10%;
+    pointer-events: none;
+    z-index: 0;
+    background-repeat: no-repeat;
+    filter: blur(50px);
+  }
+  .labels-content-bg::before {
+    background-image:
+      radial-gradient(45% 35% at 25% 30%, hsl(var(--brand-emerald) / 0.55), transparent 70%),
+      radial-gradient(40% 30% at 75% 60%, hsl(var(--brand-gold) / 0.55), transparent 70%),
+      radial-gradient(35% 30% at 60% 15%, hsl(var(--brand-emerald) / 0.4), transparent 70%);
+    background-size: 200% 200%;
+    animation: wave-flow 16s ease-in-out infinite;
+    opacity: 0.7;
+  }
+  .labels-content-bg::after {
+    background-image:
+      radial-gradient(45% 30% at 80% 25%, hsl(var(--brand-gold) / 0.5), transparent 70%),
+      radial-gradient(50% 35% at 20% 80%, hsl(var(--brand-emerald) / 0.5), transparent 70%),
+      radial-gradient(35% 30% at 65% 90%, hsl(var(--brand-gold) / 0.45), transparent 70%);
+    background-size: 220% 220%;
+    animation: wave-flow 22s ease-in-out infinite reverse;
+    opacity: 0.65;
+    mix-blend-mode: screen;
+  }
+  .labels-content-bg > * { position: relative; z-index: 1; }
+
+  /* Elevated light card with gold corners (text inside is dark) */
+  .label-card-elevated {
+    position: relative;
+    background: linear-gradient(145deg, hsl(var(--card)), hsl(var(--surface-warm)));
+    border: 1px solid hsl(var(--brand-gold) / 0.45);
+    border-radius: 1rem;
+    color: hsl(var(--foreground));
+    box-shadow:
+      0 1px 0 hsl(var(--brand-gold) / 0.3) inset,
+      0 10px 30px -10px hsl(160 40% 10% / 0.25),
+      0 25px 50px -20px hsl(var(--brand-gold) / 0.35),
+      0 0 0 1px hsl(var(--brand-gold) / 0.08);
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.4s ease,
+                border-color 0.4s ease;
+    overflow: hidden;
+  }
+  .label-card-elevated::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      120deg,
+      hsl(var(--brand-deep) / 0) 0%,
+      hsl(var(--brand-emerald) / 0.08) 35%,
+      hsl(var(--brand-gold) / 0.12) 65%,
+      hsl(var(--brand-deep) / 0) 100%
+    );
+    background-size: 200% 200%;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    animation: gradient-shift 6s ease infinite;
+    pointer-events: none;
+  }
+  .label-card-elevated:hover {
+    transform: translateY(-6px);
+    border-color: hsl(var(--brand-gold));
+    box-shadow:
+      0 1px 0 hsl(var(--brand-gold) / 0.5) inset,
+      0 18px 40px -10px hsl(160 40% 10% / 0.3),
+      0 30px 60px -15px hsl(var(--brand-gold) / 0.5),
+      0 0 30px hsl(var(--brand-gold) / 0.35);
+  }
+  .label-card-elevated:hover::before { opacity: 1; }
+
+  /* Gold corner accents */
+  .label-card-elevated .corner {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-color: hsl(var(--brand-gold));
+    transition: all 0.4s ease;
+    pointer-events: none;
+  }
+  .label-card-elevated:hover .corner {
+    width: 26px;
+    height: 26px;
+    box-shadow: 0 0 12px hsl(var(--brand-gold) / 0.6);
+  }
+
+  /* Search bar gold glow */
+  .search-gold-glow {
+    position: relative;
+    transition: box-shadow 0.3s ease;
+    box-shadow:
+      0 0 0 1px hsl(var(--brand-gold) / 0.4),
+      0 0 18px hsl(var(--brand-gold) / 0.25);
+  }
+  .search-gold-glow:focus-within {
+    box-shadow:
+      0 0 0 2px hsl(var(--brand-gold)),
+      0 0 28px hsl(var(--brand-gold) / 0.55);
+  }
+
+  /* List mode row: light surface with emerald-gold glow */
+  .list-row-glow {
+    background: linear-gradient(135deg, hsl(var(--card)), hsl(var(--surface-cool)));
+    border: 1px solid hsl(var(--brand-emerald) / 0.35);
+    box-shadow:
+      0 0 0 1px hsl(var(--brand-emerald) / 0.12),
+      0 0 24px hsl(var(--brand-emerald) / 0.14),
+      0 0 18px hsl(var(--brand-gold) / 0.12),
+      0 12px 30px -18px hsl(160 40% 10% / 0.18);
+    transition: all 0.35s ease;
+  }
+  .list-row-glow:hover {
+    border-color: hsl(var(--brand-gold) / 0.75);
+    box-shadow:
+      0 0 0 1px hsl(var(--brand-gold) / 0.28),
+      0 0 30px hsl(var(--brand-emerald) / 0.2),
+      0 0 28px hsl(var(--brand-gold) / 0.22),
+      0 18px 36px -18px hsl(160 40% 10% / 0.22);
+  }
+
+  /* Golden pagination */
+  .pagination-gold a,
+  .pagination-gold button {
+    color: hsl(var(--brand-gold));
+    border: 1px solid hsl(var(--brand-gold) / 0.4);
+    background: transparent;
+    transition: all 0.25s ease;
+  }
+  .pagination-gold a:hover,
+  .pagination-gold button:hover {
+    background: hsl(var(--brand-gold) / 0.15);
+    border-color: hsl(var(--brand-gold));
+    box-shadow: 0 0 14px hsl(var(--brand-gold) / 0.45);
+    color: hsl(var(--brand-gold));
+  }
+  .pagination-gold [aria-current="page"] {
+    background: linear-gradient(135deg, hsl(var(--brand-gold)), hsl(var(--brand-gold-dark)));
+    color: hsl(var(--brand-gold-foreground));
+    border-color: hsl(var(--brand-gold));
+    box-shadow: 0 0 18px hsl(var(--brand-gold) / 0.6);
   }
 }
 
@@ -207,4 +423,59 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  @keyframes slide-up-fade {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animate-slide-up { animation: slide-up-fade 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+  @keyframes shimmer-gold {
+    0%, 100% { box-shadow: 0 0 0 0 hsl(var(--brand-gold) / 0.4); }
+    50%      { box-shadow: 0 0 0 8px hsl(var(--brand-gold) / 0); }
+  }
+  .pulse-gold { animation: shimmer-gold 2.4s ease-in-out infinite; }
+
+  /* ============================================================
+     Scroll-triggered reveal system (used by <Reveal /> wrapper)
+     Direction-aware: animations replay when scrolling up/down.
+     ============================================================ */
+  .reveal-base {
+    opacity: 0;
+    will-change: transform, opacity, filter;
+    transition:
+      opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+      filter 0.8s ease;
+    filter: blur(6px);
+  }
+  .reveal-base.is-visible {
+    opacity: 1;
+    transform: none !important;
+    filter: blur(0);
+  }
+
+  .reveal-up    { transform: translate3d(0, 60px, 0); }
+  .reveal-down  { transform: translate3d(0, -60px, 0); }
+  .reveal-left  { transform: translate3d(-60px, 0, 0); }
+  .reveal-right { transform: translate3d(60px, 0, 0); }
+  .reveal-scale { transform: scale(0.85); }
+  .reveal-tilt  { transform: perspective(900px) rotateX(14deg) translate3d(0, 40px, 0); transform-origin: center top; }
+  .reveal-fade  { transform: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-base {
+      opacity: 1 !important;
+      transform: none !important;
+      filter: none !important;
+      transition: none !important;
+    }
+  }
+
+  /* Subtle floating shimmer for hero accents */
+  @keyframes float-soft {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-10px); }
+  }
+  .animate-float-soft { animation: float-soft 6s ease-in-out infinite; }
 }

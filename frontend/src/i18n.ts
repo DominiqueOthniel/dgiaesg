@@ -183,6 +183,23 @@ const resources = {
                 about_title: "NOTRE MISSION",
                 about_desc: "DGIA ESG est le portail panafricain de référence pour la certification et la transparence économique. Nous connectons les organisations d'excellence aux investisseurs et partenaires mondiaux par des protocoles d'audit rigoureux et des standards de gouvernance de haut niveau.",
                 digital_ecosystem: "Écosystème Digital"
+            },
+            labels: {
+                filters: {
+                    all_sectors: "Secteurs",
+                    all_categories: "Catégories",
+                    sector_placeholder: "Secteurs",
+                    category_placeholder: "Catégories"
+                },
+                certification_standards: "Standards de Certification",
+                hero_desc: "Explorez l'ensemble des référentiels de labellisation, leurs critères d'évaluation et les secteurs couverts par DGIA ESG.",
+                search_placeholder: "Rechercher un label, un standard..."
+            },
+            news: {
+                filters: {
+                    all_sectors: "Secteurs",
+                    all_categories: "Catégories"
+                }
             }
         }
     },
@@ -368,11 +385,21 @@ const resources = {
                 digital_ecosystem: "Digital Ecosystem"
             },
             labels: {
+                filters: {
+                    all_sectors: "Sectors",
+                    all_categories: "Categories",
+                    sector_placeholder: "Sectors",
+                    category_placeholder: "Categories"
+                },
                 certification_standards: "Certification Standards",
-                registry_title_prefix: "Architecture of",
-                registry_title_accent: "Cooperative Labels",
                 hero_desc: "Explore all labelling standards, their evaluation criteria and the sectors covered by DGIA ESG.",
                 search_placeholder: "Search a label, standard or framework..."
+            },
+            news: {
+                filters: {
+                    all_sectors: "Sectors",
+                    all_categories: "Categories"
+                }
             }
         }
     }
