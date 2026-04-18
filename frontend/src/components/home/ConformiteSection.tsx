@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -9,12 +10,14 @@ import {
   Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ViewportSection } from "./_shared";
+import { ViewportSection, FADE_UP } from "./_shared";
 
 /**
  * 6. CONFORMITÉ STRATÉGIQUE (Final CTA + Stats)
  */
 export function ConformiteSection() {
+  const { t } = useTranslation();
+
   const items = [
     {
       title: "Expertise Panafricaine",
@@ -43,64 +46,40 @@ export function ConformiteSection() {
   ];
 
   const stats = [
-    {
-      label: "ENTITÉS",
-      value: "2400+",
-      icon: TrendingUp,
-      border: "before:from-brand-emerald before:to-brand-gold",
-      iconBg: "bg-brand-emerald/15",
-      iconColor: "text-brand-emerald",
-    },
-    {
-      label: "PAYS",
-      value: "24",
-      icon: Globe,
-      border: "before:from-brand-gold before:to-primary",
-      iconBg: "bg-brand-gold/20",
-      iconColor: "text-brand-gold-dark",
-    },
-    {
-      label: "AUDITS",
-      value: "850",
-      icon: ShieldCheck,
-      border: "before:from-primary before:to-brand-emerald",
-      iconBg: "bg-primary/10",
-      iconColor: "text-primary",
-    },
-    {
-      label: "IMPACT",
-      value: "A+",
-      icon: Award,
-      border: "before:from-brand-gold-dark before:to-brand-gold",
-      iconBg: "bg-brand-gold/20",
-      iconColor: "text-brand-gold-dark",
-    },
+    { label: "ENTITÉS", value: "2400+", icon: TrendingUp },
+    { label: "PAYS", value: "24", icon: Globe },
+    { label: "AUDITS", value: "850", icon: ShieldCheck },
+    { label: "IMPACT", value: "A+", icon: Award },
   ];
 
   return (
     <ViewportSection
       id="conformite"
-      className="py-12 md:py-16 bg-gradient-to-br from-surface-warm via-background to-secondary/40"
+      variants={FADE_UP}
+      className="py-10 md:py-16 bg-[radial-gradient(ellipse_at_bottom,_color-mix(in_oklch,var(--brand-gold)_8%,var(--surface-warm)),var(--background))]"
     >
-      <div className="pointer-events-none absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full bg-brand-gold/25 blur-[110px] animate-aurora" />
-      <div className="pointer-events-none absolute -bottom-32 -right-20 w-[460px] h-[460px] rounded-full bg-brand-emerald/25 blur-[120px] animate-aurora-slow" />
-      <div className="pointer-events-none absolute top-1/3 left-1/2 w-[280px] h-[280px] -translate-x-1/2 rounded-full bg-primary/10 blur-[90px] animate-aurora" />
+      <div className="pointer-events-none absolute -top-24 -left-24 w-[360px] h-[360px] rounded-full bg-brand-gold/25 blur-[110px]" />
+      <div className="pointer-events-none absolute -bottom-32 -right-20 w-[400px] h-[400px] rounded-full bg-brand-emerald/25 blur-[120px]" />
+      <div className="pointer-events-none absolute top-1/3 left-1/2 w-[240px] h-[240px] -translate-x-1/2 rounded-full bg-primary/10 blur-[90px]" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-center">
           <div>
-            <span className="inline-flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-5 px-4 py-2 rounded-full bg-brand-gold/15 border border-brand-gold/40 shadow-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-gold animate-pulse" />
-              Conformité Stratégique
+            <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-primary mb-3 block">
+              {t("home.conformity.badge") || "Conformité Stratégique"}
             </span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-brand-dark tracking-tighter mb-6 leading-[1.1] italic text-balance uppercase">
-              Transformez votre vision en{" "}
-              <span className="bg-gradient-to-r from-brand-emerald via-primary to-brand-gold-dark bg-clip-text text-transparent">
-                certification
+            <h2 className="font-heading text-2xl md:text-4xl lg:text-5xl font-black text-foreground tracking-tighter leading-[1.05] uppercase italic mb-4">
+              Faites de la conformité{" "}
+              <span className="bg-gradient-to-r from-primary via-brand-emerald to-brand-gold-dark bg-clip-text text-transparent">
+                votre avantage compétitif.
               </span>
-              .
             </h2>
-            <ul className="space-y-3 mb-8">
+            <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-6 max-w-lg">
+              {t("home.conformity.desc") ||
+                "Notre méthodologie d'audit, alignée sur les normes ISO et les référentiels ESG, transforme l'exigence réglementaire en différenciation stratégique."}
+            </p>
+
+            <ul className="space-y-2.5 mb-6">
               {items.map((item, idx) => (
                 <motion.li
                   key={idx}
@@ -109,43 +88,45 @@ export function ConformiteSection() {
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 }}
                   className={cn(
-                    "group flex items-start gap-4 p-3.5 rounded-2xl bg-white/60 backdrop-blur-sm border border-white ring-1 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-gold/10",
+                    "group flex items-start gap-3 p-3 rounded-xl bg-white/60 backdrop-blur-sm border border-white ring-1 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-gold/10",
                     item.ring,
                   )}
                 >
                   <div
                     className={cn(
-                      "mt-1 w-12 h-12 flex items-center justify-center rounded-xl bg-gradient-to-br shadow-inner shrink-0",
+                      "mt-0.5 w-10 h-10 flex items-center justify-center rounded-lg bg-gradient-to-br shadow-inner shrink-0",
                       item.accent,
                     )}
                   >
-                    <item.icon className={cn("w-6 h-6", item.iconColor)} />
+                    <item.icon className={cn("w-4 h-4", item.iconColor)} />
                   </div>
                   <div>
-                    <p className="text-[13px] font-black text-brand-dark uppercase tracking-tight">
+                    <p className="text-xs md:text-sm font-black text-brand-dark uppercase tracking-tight">
                       {item.title}
                     </p>
-                    <p className="text-xs text-brand-dark/70 font-semibold mt-0.5">
+                    <p className="text-[11px] md:text-xs text-brand-dark/70 font-semibold mt-0.5">
                       {item.desc}
                     </p>
                   </div>
                 </motion.li>
               ))}
             </ul>
+
             <div className="flex flex-wrap gap-4">
               <Link
-                to="/signup"
-                className="group relative inline-flex items-center gap-2 overflow-hidden bg-gradient-to-r from-brand-emerald via-primary to-brand-emerald bg-[length:200%_100%] bg-left text-primary-foreground px-8 md:px-10 py-4 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all duration-500 hover:bg-right shadow-2xl shadow-primary/30 active:scale-95"
+                to="/"
+                className="group relative inline-flex items-center gap-2 overflow-hidden bg-gradient-to-r from-brand-emerald via-primary to-brand-emerald bg-[length:200%_100%] bg-left text-primary-foreground px-6 md:px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-500 hover:bg-right shadow-2xl shadow-primary/30 active:scale-95"
               >
-                <span className="absolute inset-0 -translate-x-full group-hover:animate-shine-sweep bg-gradient-to-r from-transparent via-white/40 to-transparent" />
                 <ShieldCheck className="w-4 h-4 relative z-10" />
-                <span className="relative z-10">Démarrer mon Audit</span>
+                <span className="relative z-10">
+                  {t("home.conformity.cta") || "Démarrer mon Audit"}
+                </span>
                 <ArrowRight className="w-4 h-4 ml-1 relative z-10 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 sm:gap-5">
+          <div className="grid grid-cols-2 gap-3 sm:gap-5">
             {stats.map((s, idx) => (
               <motion.div
                 key={idx}
@@ -153,25 +134,17 @@ export function ConformiteSection() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className={cn(
-                  "relative p-6 md:p-7 rounded-3xl flex flex-col items-center text-center group transition-all duration-300 hover:-translate-y-2 overflow-hidden",
-                  "bg-white/80 backdrop-blur-sm shadow-[0_15px_40px_-15px_rgba(13,77,51,0.1)] hover:shadow-2xl hover:shadow-brand-gold/20",
-                  "before:content-[''] before:absolute before:inset-0 before:rounded-3xl before:p-[2px] before:bg-gradient-to-br before:[mask:linear-gradient(#000,#000)_content-box,linear-gradient(#000,#000)] before:[mask-composite:exclude] before:opacity-40 group-hover:before:opacity-100 before:transition-opacity",
-                  s.border,
-                )}
+                whileHover={{ y: -6, rotate: -0.5 }}
+                className="relative p-5 md:p-6 rounded-2xl flex flex-col items-center text-center group transition-all duration-500 overflow-hidden bg-gradient-to-br from-[#1a2410] via-[#0f1a0a] to-[#0a1405] border border-brand-gold/40 ring-1 ring-brand-gold/20 shadow-[0_18px_40px_-12px_rgba(0,0,0,0.55),0_0_24px_-8px_color-mix(in_oklch,var(--brand-gold)_50%,transparent)] hover:shadow-[0_28px_60px_-12px_rgba(0,0,0,0.7),0_0_45px_-5px_color-mix(in_oklch,var(--brand-gold)_80%,transparent)] hover:border-brand-gold hover:ring-brand-gold/50"
               >
-                <div
-                  className={cn(
-                    "w-12 h-12 rounded-2xl flex items-center justify-center mb-3 relative z-10 transition-transform group-hover:scale-110 shadow-sm",
-                    s.iconBg,
-                  )}
-                >
-                  <s.icon className={cn("w-6 h-6", s.iconColor)} />
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_color-mix(in_oklch,var(--brand-gold)_20%,transparent)_0%,transparent_60%)] opacity-70 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center mb-2 relative z-10 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6 shadow-[0_0_18px_-2px_color-mix(in_oklch,var(--brand-gold)_70%,transparent)] bg-brand-gold/20 ring-1 ring-brand-gold/50">
+                  <s.icon className="w-5 h-5 md:w-6 md:h-6 text-brand-gold drop-shadow-[0_0_6px_color-mix(in_oklch,var(--brand-gold)_80%,transparent)]" />
                 </div>
-                <div className="text-3xl md:text-4xl lg:text-5xl font-black text-brand-dark leading-none mb-2 relative z-10 italic">
+                <div className="text-3xl md:text-4xl lg:text-5xl font-black leading-none mb-1.5 relative z-10 italic bg-gradient-to-br from-[#fff3c4] via-brand-gold to-[#c9991a] bg-clip-text text-transparent drop-shadow-[0_0_10px_color-mix(in_oklch,var(--brand-gold)_60%,transparent)]">
                   {s.value}
                 </div>
-                <p className="text-[10px] font-black text-brand-dark/40 uppercase tracking-[0.25em] relative z-10">
+                <p className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.25em] relative z-10 text-brand-gold/90">
                   {s.label}
                 </p>
               </motion.div>

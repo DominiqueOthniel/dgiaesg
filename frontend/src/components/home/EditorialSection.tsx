@@ -5,17 +5,19 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { resolveImageUrl } from "@/lib/image";
-import { getLocalized, handleImageError, ViewportSection } from "./_shared";
+import {
+  getLocalized,
+  handleImageError,
+  ViewportSection,
+  SLIDE_LEFT,
+} from "./_shared";
 
 /**
  * 2. INTELLIGENCE ÉDITORIALE
+ * Redesigned with compacted carousel and slide-left animations.
  */
-export function EditorialSection({
-  news,
-}: {
-  news: any[];
-}) {
-  const { i18n } = useTranslation();
+export function EditorialSection({ news }: { news: any[] }) {
+  const { t, i18n } = useTranslation();
   const lang = i18n.language;
 
   const [featuredIdx, setFeaturedIdx] = useState(0);
@@ -31,7 +33,8 @@ export function EditorialSection({
   return (
     <ViewportSection
       id="editorial"
-      className="py-6 sm:py-10 md:py-12 bg-[#0a2a1a]"
+      variants={SLIDE_LEFT}
+      className="py-5 sm:py-7 md:py-9 bg-gradient-to-b from-[#0a2a1a] via-[#0d3322] to-[#0a2a1a]"
     >
       <div className="pointer-events-none absolute top-0 left-0 w-[500px] h-[500px] rounded-full bg-brand-emerald/10 blur-[120px]" />
 
@@ -41,21 +44,19 @@ export function EditorialSection({
             <div className="flex items-center gap-2 mb-2">
               <BookOpen className="w-3 h-3 text-brand-gold shrink-0" />
               <span className="text-[9px] font-semibold uppercase tracking-[0.28em] text-brand-gold">
-                Intelligence Éditoriale
+                {t("home.editorial.subtitle") || "Intelligence Éditoriale"}
               </span>
             </div>
-            <h2 className="font-serif text-[1.15rem] leading-[1.15] sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-white tracking-tight text-balance">
+            <h2 className="font-serif text-base leading-[1.15] sm:text-xl md:text-2xl lg:text-3xl font-semibold text-white tracking-tight text-balance">
               L'actualité décryptée{" "}
-              <span className="italic text-white/70">
-                des leaders africains
-              </span>
+              <span className="italic text-white/70">des leaders africains</span>
             </h2>
           </div>
           <Link
             to="/news"
             className="inline-flex items-center gap-2 bg-brand-gold text-brand-dark px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-[10px] font-bold uppercase tracking-[0.18em] hover:brightness-110 transition-all shadow-lg shadow-brand-gold/20 shrink-0 self-start md:self-end"
           >
-            Tous les articles <ArrowRight className="w-3 h-3" />
+            {t("home.editorial.view_all") || "Tous les articles"} <ArrowRight className="w-3 h-3" />
           </Link>
         </div>
 
@@ -65,8 +66,7 @@ export function EditorialSection({
           </p>
         ) : (
           <>
-            {/* Featured carousel — viewport-aware height */}
-            <div className="relative rounded-xl sm:rounded-2xl overflow-hidden border border-white/5 shadow-2xl shadow-black/60 mb-4 sm:mb-6 h-[200px] sm:h-[280px] md:h-[340px] lg:h-[380px]">
+            <div className="relative rounded-xl sm:rounded-2xl overflow-hidden border border-white/5 shadow-2xl shadow-black/60 mb-3 sm:mb-4 h-[170px] sm:h-[230px] md:h-[280px] lg:h-[320px]">
               <AnimatePresence mode="wait">
                 {news.slice(0, 5).map((article: any, idx: number) =>
                   idx === featuredIdx ? (
@@ -91,7 +91,7 @@ export function EditorialSection({
                               onError={handleImageError}
                             />
                           ) : (
-                            <div className="w-full h-full bg-brand-dark" />
+                            <div className="w-full h-full bg-gradient-to-br from-brand-dark via-primary/40 to-brand-emerald/30" />
                           )}
                           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90" />
                         </div>
@@ -105,22 +105,23 @@ export function EditorialSection({
                             )}
                             {article.publishedAt && (
                               <span className="text-[9px] sm:text-[10px] font-semibold text-white/80 uppercase tracking-[0.18em]">
-                                {new Date(
-                                  article.publishedAt,
-                                ).toLocaleDateString(lang || "fr", {
-                                  day: "2-digit",
-                                  month: "long",
-                                  year: "numeric",
-                                })}
+                                {new Date(article.publishedAt).toLocaleDateString(
+                                  lang || "fr",
+                                  {
+                                    day: "2-digit",
+                                    month: "long",
+                                    year: "numeric",
+                                  },
+                                )}
                               </span>
                             )}
                           </div>
 
-                          <h3 className="font-serif text-lg sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-white leading-[1.15] tracking-tight mb-2 max-w-3xl text-balance group-hover:text-brand-gold transition-colors">
+                          <h3 className="font-serif text-sm sm:text-lg md:text-2xl lg:text-3xl font-semibold text-white leading-[1.15] tracking-tight mb-1.5 max-w-3xl text-balance group-hover:text-brand-gold transition-colors line-clamp-2">
                             {getLocalized(article.title, lang)}
                           </h3>
 
-                          <p className="hidden md:block text-xs md:text-sm text-white/75 line-clamp-2 max-w-2xl leading-relaxed">
+                          <p className="hidden md:block text-[11px] md:text-xs text-white/75 line-clamp-2 max-w-2xl leading-relaxed">
                             {getLocalized(article.excerpt, lang)}
                           </p>
                         </div>
@@ -147,13 +148,12 @@ export function EditorialSection({
               </div>
             </div>
 
-            {/* Secondary articles row — horizontal snap to save vertical space */}
-            <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scroll-smooth -mx-4 px-4 scrollbar-hide">
+            <div className="flex gap-2 sm:gap-2.5 overflow-x-auto pb-2 snap-x snap-mandatory scroll-smooth -mx-4 px-4 scrollbar-hide">
               {news.slice(1).map((article: any) => (
                 <Link
                   key={article._id}
                   to={`/news/${article.slug || article._id}`}
-                  className="snap-start shrink-0 w-[150px] sm:w-[200px] md:w-[220px] group/card bg-brand-dark/60 backdrop-blur-sm border border-brand-gold/25 ring-1 ring-brand-gold/10 rounded-lg overflow-hidden shadow-xl shadow-black/30 hover:-translate-y-1.5 hover:ring-brand-gold/60 hover:shadow-2xl hover:shadow-brand-gold/25 hover:border-brand-gold transition-all duration-300"
+                  className="snap-start shrink-0 w-[130px] sm:w-[160px] md:w-[180px] group/card bg-brand-dark/60 backdrop-blur-sm border border-brand-gold/25 ring-1 ring-brand-gold/10 rounded-lg overflow-hidden shadow-xl shadow-black/30 hover:-translate-y-1.5 hover:ring-brand-gold/60 hover:shadow-2xl hover:shadow-brand-gold/25 hover:border-brand-gold transition-all duration-300"
                 >
                   <div className="aspect-[16/10] bg-white/5 overflow-hidden">
                     {article.imageUrl ? (
@@ -164,18 +164,18 @@ export function EditorialSection({
                         onError={handleImageError}
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center">
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-brand-emerald/10">
                         <BookOpen className="w-8 h-8 text-white/20" />
                       </div>
                     )}
                   </div>
-                  <div className="p-2.5 sm:p-3">
+                  <div className="p-2 sm:p-2.5">
                     {article.sector && (
-                      <span className="text-[8px] font-semibold uppercase tracking-[0.18em] text-brand-gold block mb-1">
+                      <span className="text-[8px] font-semibold uppercase tracking-[0.18em] text-brand-gold block mb-0.5">
                         {article.sector}
                       </span>
                     )}
-                    <h4 className="font-serif text-[12px] sm:text-[13px] font-medium text-white leading-snug line-clamp-2 group-hover/card:text-brand-gold transition-colors">
+                    <h4 className="font-serif text-[11px] sm:text-[12px] font-medium text-white leading-snug line-clamp-2 group-hover/card:text-brand-gold transition-colors">
                       {getLocalized(article.title, lang)}
                     </h4>
                   </div>

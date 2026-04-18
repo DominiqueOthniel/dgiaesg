@@ -1,14 +1,3 @@
-/**
- * Refactored Home page (NkwesiDitrich/coop-label).
- *
- * This file is now a thin orchestrator that:
- *   1. Fetches all data via the existing hooks/queries.
- *   2. Renders 8 modular section components under src/components/home/.
- * 
- * Each section uses <ViewportSection> to ensure a premium full-screen
- * experience on desktop while maintaining responsive flow on mobile.
- */
-
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import api from "@/services/api";
