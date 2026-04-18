@@ -52,7 +52,7 @@ export const ReviewKiosk = () => {
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
+            viewport={{ once: false }}
             className="group"
         >
             <div className="bg-brand-secondary rounded-[2.5rem] p-8 overflow-hidden relative border border-white/5 shadow-2xl shadow-slate-200/50">

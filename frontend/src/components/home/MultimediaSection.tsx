@@ -64,7 +64,7 @@ export function MultimediaSection({
                 <motion.div
                   initial={{ opacity: 0, y: 16 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
+                  viewport={{ once: false }}
                   className="group relative rounded-xl overflow-hidden aspect-[21/9] bg-black cursor-pointer ring-1 ring-brand-gold/40 max-h-[320px] shadow-[0_18px_45px_-15px_rgba(0,0,0,0.7),0_0_30px_-10px_color-mix(in_oklch,var(--brand-gold)_55%,transparent)] hover:shadow-[0_22px_55px_-15px_rgba(0,0,0,0.8),0_0_45px_-5px_color-mix(in_oklch,var(--brand-gold)_75%,transparent)] hover:-translate-y-1 transition-all duration-500"
                   onClick={() => heroYtId && setPlayingHero(true)}
                 >
@@ -123,7 +123,7 @@ export function MultimediaSection({
                         key={v._id || i}
                         initial={{ opacity: 0, y: 12 }}
                         whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
+                        viewport={{ once: false }}
                         transition={{ delay: i * 0.1 }}
                       >
                         <Link to="/multimedia" className="group block">
@@ -199,7 +199,7 @@ export function MultimediaSection({
                       key={p._id || i}
                       initial={{ opacity: 0, x: 12 }}
                       whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
+                      viewport={{ once: false }}
                       transition={{ delay: i * 0.1 }}
                     >
                       <Link

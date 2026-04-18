@@ -131,7 +131,7 @@ export const ViewportSection = ({
     id={id}
     initial="hidden"
     whileInView="visible"
-    viewport={{ once: true, amount: 0.15 }}
+    viewport={{ once: false, amount: 0.15 }}
     variants={variants}
     className={cn(
       "relative w-full md:min-h-screen flex flex-col justify-center overflow-hidden",

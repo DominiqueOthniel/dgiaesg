@@ -145,21 +145,24 @@ export const SiteHeader = ({
                 </AnimatePresence>
               </div>
             ) : (
-              <>
+              <div className="flex items-center gap-2">
                 <Link
                   to="/login"
-                  className="hidden sm:block text-xs font-black uppercase tracking-widest text-foreground hover:text-primary transition-colors"
+                  className="flex items-center gap-3 pl-2 pr-4 py-2 bg-muted rounded-2xl hover:bg-muted/80 transition-all border border-border"
                 >
-                  Se connecter
+                  <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shadow-md">
+                    <User className="w-4 h-4" />
+                  </div>
+                  <div className="hidden sm:block text-left">
+                    <p className="text-[10px] font-black uppercase tracking-widest leading-none">
+                      {t("nav.login")}
+                    </p>
+                    <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest mt-1">
+                      Espace Pro
+                    </p>
+                  </div>
                 </Link>
-                <Link
-                  to="/signup"
-                  className="px-6 py-2.5 bg-brand-gold text-brand-gold-foreground text-[10px] font-black uppercase tracking-[0.15em] rounded-full hover:brightness-110 transition-all shadow-lg shadow-brand-gold/20 active:scale-95 inline-flex items-center gap-2"
-                >
-                  <User className="w-3.5 h-3.5" />
-                  S'inscrire
-                </Link>
-              </>
+              </div>
             )}
 
             {/* Sandwich moved here — behind the Profile/Action block */}

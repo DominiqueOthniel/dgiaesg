@@ -164,7 +164,7 @@ function DirectoryPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                   {paginated.map((company, idx) => (
                     <motion.div key={company._id} initial={{ opacity: 0, y: enterY }}
-                      whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.15 }}
+                      whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.15 }}
                       transition={{ duration: 0.6, delay: idx * 0.05 }}>
                       <TiltCard>
                         <Link to={`/directory/${company._id}`}
@@ -202,7 +202,7 @@ function DirectoryPage() {
                 <div className="space-y-4">
                   {paginated.map((company, idx) => (
                     <motion.div key={company._id} initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+                      whileInView={{ opacity: 1, x: 0 }} viewport={{ once: false }}
                       transition={{ duration: 0.5, delay: idx * 0.04 }}>
                       <Link to={`/directory/${company._id}`}
                         className="group emerald-glow flex items-center gap-4 bg-white rounded-xl p-4">

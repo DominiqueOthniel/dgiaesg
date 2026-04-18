@@ -85,7 +85,7 @@ export function ConformiteSection() {
                   key={idx}
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
+                  viewport={{ once: false }}
                   transition={{ delay: idx * 0.1 }}
                   className={cn(
                     "group flex items-start gap-3 p-3 rounded-xl bg-white/60 backdrop-blur-sm border border-white ring-1 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-gold/10",
@@ -132,7 +132,7 @@ export function ConformiteSection() {
                 key={idx}
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
+                viewport={{ once: false }}
                 transition={{ delay: idx * 0.1 }}
                 whileHover={{ y: -6, rotate: -0.5 }}
                 className="relative p-5 md:p-6 rounded-2xl flex flex-col items-center text-center group transition-all duration-500 overflow-hidden bg-gradient-to-br from-[#1a2410] via-[#0f1a0a] to-[#0a1405] border border-brand-gold/40 ring-1 ring-brand-gold/20 shadow-[0_18px_40px_-12px_rgba(0,0,0,0.55),0_0_24px_-8px_color-mix(in_oklch,var(--brand-gold)_50%,transparent)] hover:shadow-[0_28px_60px_-12px_rgba(0,0,0,0.7),0_0_45px_-5px_color-mix(in_oklch,var(--brand-gold)_80%,transparent)] hover:border-brand-gold hover:ring-brand-gold/50"
