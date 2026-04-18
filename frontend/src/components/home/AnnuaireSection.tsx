@@ -138,9 +138,9 @@ export function AnnuaireSection({
                   <Link
                     key={company._id}
                     to={`/directory/${company._id}`}
-                    className="group/dir relative block bg-card rounded-xl p-[1.5px] overflow-hidden transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-brand-gold/10 hover:-translate-y-1"
+                    className="group/dir relative block border-flow-gold-emerald rounded-[14px] p-[2.5px] overflow-hidden transition-all duration-300 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.15),0_0_15px_-5px_color-mix(in_oklch,var(--brand-gold)_40%,transparent)] hover:shadow-[0_22px_50px_-10px_rgba(0,0,0,0.25),0_0_25px_-5px_color-mix(in_oklch,var(--brand-emerald)_50%,transparent)] hover:-translate-y-1.5"
                   >
-                    <div className="flex items-stretch gap-3 sm:gap-5 bg-card rounded-[10px] p-3 sm:p-4 group-hover/dir:bg-card/95 transition-colors">
+                    <div className="flex items-stretch gap-3 sm:gap-5 bg-white rounded-[11px] p-3 sm:p-4 group-hover/dir:bg-white/95 transition-colors">
                       <div className="shrink-0 w-12 sm:w-16 flex flex-col items-center justify-center rounded-lg bg-gradient-to-br from-brand-emerald/15 to-brand-emerald/5 border border-brand-emerald/30 shadow-inner">
                         {company.logoUrl ? (
                           <img

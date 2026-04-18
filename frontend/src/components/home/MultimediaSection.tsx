@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import { ArrowRight, Headphones, Play } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Headphones, Play, Volume2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { resolveImageUrl } from "@/lib/image";
 import {
@@ -27,9 +27,16 @@ export function MultimediaSection({
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
   const [playingHero, setPlayingHero] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const heroVideo = videoItems[0];
   const heroYtId = extractYoutubeId(heroVideo?.embedUrl);
+
+  const scroll = (dir: "left" | "right") => {
+    if (!scrollRef.current) return;
+    const amount = scrollRef.current.offsetWidth * 0.7;
+    scrollRef.current.scrollBy({ left: dir === "left" ? -amount : amount, behavior: "smooth" });
+  };
 
   return (
     <ViewportSection
@@ -115,52 +122,50 @@ export function MultimediaSection({
                   )}
                 </motion.div>
 
-                <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                  {videoItems.slice(1, 4).map((v: any, i: number) => {
-                    const ytId = extractYoutubeId(v.embedUrl);
-                    return (
-                      <motion.div
-                        key={v._id || i}
-                        initial={{ opacity: 0, y: 12 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: false }}
-                        transition={{ delay: i * 0.1 }}
-                      >
-                        <Link to="/multimedia" className="group block">
-                          <div className="aspect-video rounded-lg overflow-hidden bg-white/5 border border-brand-gold/30 hover:border-brand-gold relative mb-1.5 shadow-[0_10px_25px_-10px_rgba(0,0,0,0.6),0_0_15px_-8px_color-mix(in_oklch,var(--brand-gold)_50%,transparent)] hover:shadow-[0_14px_32px_-10px_rgba(0,0,0,0.7),0_0_22px_-5px_color-mix(in_oklch,var(--brand-gold)_70%,transparent)] transition-all duration-300 group-hover:-translate-y-1">
-                            {v.coverImageUrl ? (
-                              <img
-                                src={resolveImageUrl(v.coverImageUrl)}
-                                alt={getLocalized(v.title, lang)}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                                onError={handleImageError}
-                              />
-                            ) : ytId ? (
-                              <img
-                                src={`https://img.youtube.com/vi/${ytId}/hqdefault.jpg`}
-                                alt={getLocalized(v.title, lang)}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                                onError={handleImageError}
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/30 to-brand-emerald/10">
-                                <Play className="w-5 h-5 text-white/30" />
-                              </div>
-                            )}
-                            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-brand-gold rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg ring-2 ring-white/20">
-                                <Play className="w-3 h-3 text-brand-dark fill-brand-dark ml-0.5" />
+                {/* Horizontally scrollable video thumbnails */}
+                <div className="relative group/scroll">
+                  <button onClick={() => scroll("left")} className="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-8 h-8 bg-brand-gold/90 rounded-full flex items-center justify-center text-brand-dark shadow-lg opacity-0 group-hover/scroll:opacity-100 transition-opacity hover:scale-110 -ml-3">
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button onClick={() => scroll("right")} className="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-8 h-8 bg-brand-gold/90 rounded-full flex items-center justify-center text-brand-dark shadow-lg opacity-0 group-hover/scroll:opacity-100 transition-opacity hover:scale-110 -mr-3">
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                  <div ref={scrollRef} className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 snap-x snap-mandatory">
+                    {videoItems.slice(1).map((v: any, i: number) => {
+                      const ytId = extractYoutubeId(v.embedUrl);
+                      return (
+                        <motion.div
+                          key={v._id || i}
+                          initial={{ opacity: 0, y: 12 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: false }}
+                          transition={{ delay: i * 0.06 }}
+                          className="min-w-[200px] sm:min-w-[220px] max-w-[260px] flex-shrink-0 snap-start"
+                        >
+                          <Link to="/multimedia" className="group block">
+                            <div className="aspect-video rounded-lg overflow-hidden bg-white/5 border border-brand-gold/30 hover:border-brand-gold relative mb-1.5 shadow-[0_10px_25px_-10px_rgba(0,0,0,0.6)] hover:shadow-[0_14px_32px_-10px_rgba(0,0,0,0.7)] transition-all duration-300 group-hover:-translate-y-1">
+                              {v.coverImageUrl ? (
+                                <img src={resolveImageUrl(v.coverImageUrl)} alt={getLocalized(v.title, lang)} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onError={handleImageError} />
+                              ) : ytId ? (
+                                <img src={`https://img.youtube.com/vi/${ytId}/hqdefault.jpg`} alt={getLocalized(v.title, lang)} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onError={handleImageError} />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/30 to-brand-emerald/10"><Play className="w-5 h-5 text-white/30" /></div>
+                              )}
+                              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-brand-gold rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg ring-2 ring-white/20">
+                                  <Play className="w-3 h-3 text-brand-dark fill-brand-dark ml-0.5" />
+                                </div>
                               </div>
                             </div>
-                          </div>
-                          <h4 className="text-[10px] sm:text-[11px] font-black text-white group-hover:text-brand-gold transition-colors line-clamp-2 uppercase tracking-tight italic">
-                            {getLocalized(v.title, lang)}
-                          </h4>
-                        </Link>
-                      </motion.div>
-                    );
-                  })}
+                            <h4 className="text-[10px] sm:text-[11px] font-black text-white group-hover:text-brand-gold transition-colors line-clamp-2 uppercase tracking-tight italic">
+                              {getLocalized(v.title, lang)}
+                            </h4>
+                          </Link>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
                 </div>
               </>
             ) : (
@@ -181,7 +186,7 @@ export function MultimediaSection({
                   <Headphones className="w-3.5 h-3.5 text-brand-gold" />
                 </div>
                 <h3 className="text-[9px] font-black uppercase tracking-[0.28em] text-white">
-                  {t("multimedia podcasts") || "Podcasts & Audios"}
+                  {t("home.multimedia.podcasts") || "Podcasts & Audios"}
                 </h3>
               </div>
 
@@ -189,16 +194,16 @@ export function MultimediaSection({
                 to="/multimedia"
                 className="mb-3 flex items-center justify-center gap-2 w-full py-2 bg-brand-gold text-brand-dark rounded-lg text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-lg shadow-brand-gold/30 relative z-10 active:scale-[0.98]"
               >
-                {t("home.multimedia.all_audios") || "Tous les audios"}
+                {t("home.multimedia.all_audios")}
               </Link>
 
-              <div className="space-y-2 flex-1 relative z-10">
+              <div className="space-y-2 flex-1 relative z-10 overflow-y-auto">
                 {podcastItems.length > 0 ? (
                   podcastItems.slice(0, 4).map((p: any, i: number) => (
                     <motion.div
                       key={p._id || i}
                       initial={{ opacity: 0, x: 12 }}
-                      whileInView={{ opacity: 1, y: 0 }}
+                      whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: false }}
                       transition={{ delay: i * 0.1 }}
                     >
@@ -219,9 +224,9 @@ export function MultimediaSection({
                               : "bg-white/10 group-hover:bg-brand-gold/30 ring-brand-gold/20",
                           )}
                         >
-                          <Play
+                          <Volume2
                             className={cn(
-                              "w-3 h-3 fill-current",
+                              "w-3 h-3",
                               i === 0 ? "text-brand-dark" : "text-white",
                             )}
                           />
@@ -239,7 +244,7 @@ export function MultimediaSection({
                   ))
                 ) : (
                   <p className="text-xs text-white italic text-center py-8">
-                    {t("home.multimedia.no_podcasts") || "Aucun podcast disponible."}
+                    {t("home.multimedia.no_podcasts")}
                   </p>
                 )}
               </div>

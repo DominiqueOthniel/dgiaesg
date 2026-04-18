@@ -558,4 +558,30 @@
     transition: transform 0.25s ease-out, box-shadow 0.3s ease;
     will-change: transform;
   }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  @keyframes flow-border {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .border-flow-gold-emerald {
+    background: linear-gradient(
+      90deg,
+      #FFBF00 0%,
+      #10b981 33%,
+      #FFBF00 66%,
+      #10b981 100%
+    );
+    background-size: 300% 100%;
+    animation: flow-border 6s linear infinite;
+  }
 }

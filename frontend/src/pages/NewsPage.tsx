@@ -395,7 +395,7 @@ function NewsPage() {
                   key={article._id}
                   initial={{ opacity: 0, y: 28 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-50px" }}
+                  viewport={{ once: false, margin: "-50px" }}
                   transition={{
                     delay: idx * 0.06,
                     duration: 0.6,
@@ -505,7 +505,7 @@ function NewsPage() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: false }}
           transition={{ duration: 0.6 }}
           className="mt-12 relative overflow-hidden rounded-2xl border-2 border-accent/40 shadow-xl"
           style={{
