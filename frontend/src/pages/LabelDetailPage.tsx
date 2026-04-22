@@ -31,6 +31,7 @@ function LabelDetailPage() {
 
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [logoError, setLogoError] = useState(false);
 
   useEffect(() => {
     if (user && label) {
@@ -117,14 +118,22 @@ function LabelDetailPage() {
               <h1 className="text-3xl md:text-6xl font-extrabold text-primary-foreground tracking-tight mb-6 leading-tight">
                 {getLocalized(label.name, lang)}
               </h1>
-              <p className="text-lg text-primary-foreground/70 leading-relaxed max-w-3xl">
+              <p className="text-base md:text-lg text-primary-foreground/75 leading-relaxed max-w-3xl line-clamp-6">
                 {getLocalized(label.description, lang)}
               </p>
             </div>
             <div className="w-full lg:w-72 shrink-0">
-              <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-10 rounded-3xl flex items-center justify-center shadow-2xl relative">
-                {label.logoUrl ? (
-                  <img src={resolveImageUrl(label.logoUrl)} alt="" className="w-full h-full object-contain relative z-10" />
+              <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-6 rounded-3xl flex items-center justify-center shadow-2xl relative min-h-[200px]">
+                {label.logoUrl && !logoError ? (
+                  <img
+                    src={resolveImageUrl(label.logoUrl)}
+                    alt={getLocalized(label.name, lang)}
+                    className="w-full max-w-[180px] h-auto object-contain relative z-10"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = IMAGE_FALLBACK;
+                      setLogoError(true);
+                    }}
+                  />
                 ) : (
                   <Award className="w-32 h-32 text-white/5" />
                 )}
@@ -275,7 +284,14 @@ function LabelDetailPage() {
               <Link key={item._id} to={`/labels/${item._id}`} className="group bg-card border border-border rounded-xl p-6 hover-lift">
                  <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mb-4 group-hover:bg-primary/5 transition-colors">
                    {item.logoUrl ? (
-                     <img src={resolveImageUrl(item.logoUrl)} alt="" className="w-full h-full object-contain p-2" />
+                     <img
+                       src={resolveImageUrl(item.logoUrl)}
+                       alt={getLocalized(item.name, lang)}
+                       className="w-full h-full object-contain p-2"
+                       onError={(e) => {
+                         (e.target as HTMLImageElement).src = IMAGE_FALLBACK;
+                       }}
+                     />
                    ) : (
                      <Award className="w-6 h-6 text-muted-foreground/30" />
                    )}

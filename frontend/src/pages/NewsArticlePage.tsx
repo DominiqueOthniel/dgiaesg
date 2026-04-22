@@ -33,6 +33,7 @@ function NewsArticlePage() {
   const { user, isAuthenticated, updateSavedArticles } = useAuth();
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [heroImageError, setHeroImageError] = useState(false);
 
   useEffect(() => {
     if (user && article) {
@@ -58,6 +59,21 @@ function NewsArticlePage() {
       toast.error("Une erreur est survenue.");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleShare = async () => {
+    const title = getLocalized(article?.title, lang);
+    const url = window.location.href;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, url });
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(url);
+      }
+      toast.success(t("news.share_success", "Lien copié avec succès"));
+    } catch {
+      toast.error(t("news.share_error", "Impossible de partager pour le moment"));
     }
   };
 
@@ -93,7 +109,10 @@ function NewsArticlePage() {
                <button onClick={handleToggleSave} disabled={isSaving} className={cn("w-10 h-10 rounded-xl flex items-center justify-center transition-all border", isSaved ? "bg-accent border-accent text-accent-foreground" : "bg-white/10 border-white/20 text-white hover:bg-white/20")}>
                  <Bookmark className={cn("w-5 h-5", isSaved && "fill-current")} />
                </button>
-               <button className="w-10 h-10 rounded-xl flex items-center justify-center border bg-white/10 border-white/20 text-white hover:bg-white/20">
+               <button
+                 onClick={handleShare}
+                 className="w-10 h-10 rounded-xl flex items-center justify-center border bg-white/10 border-white/20 text-white hover:bg-white/20"
+               >
                  <Share2 className="w-5 h-5" />
                </button>
             </div>
@@ -102,7 +121,7 @@ function NewsArticlePage() {
           <div className="space-y-6">
             <div className="flex items-center gap-3">
               <span className="bg-white/10 text-primary-foreground/80 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border border-white/10">
-                {article.sector?.toUpperCase() || "ACTUALITÉ"}
+                {(article.sector ? getLocalized(article.sector as any, lang) : "ACTUALITÉ").toUpperCase()}
               </span>
               <div className="flex items-center gap-1.5 text-[10px] font-bold text-accent uppercase tracking-widest">
                 <ShieldCheck className="w-4 h-4" /> Source Vérifiée
@@ -113,7 +132,7 @@ function NewsArticlePage() {
             </h1>
             <div className="flex flex-wrap items-center gap-6 pt-6 border-t border-white/10 text-primary-foreground/60 text-xs font-semibold uppercase tracking-widest">
                <div className="flex items-center gap-2"><User className="w-4 h-4 text-accent" /> {article.author}</div>
-               <div className="flex items-center gap-2"><Calendar className="w-4 h-4" /> {new Date(article.publishedAt || article.createdAt).toLocaleDateString("fr-FR")}</div>
+               <div className="flex items-center gap-2"><Calendar className="w-4 h-4" /> {new Date(article.publishedAt || article.createdAt).toLocaleDateString(lang === "fr" ? "fr-FR" : "en-US")}</div>
                <div className="flex items-center gap-2"><Clock className="w-4 h-4" /> {article.readingTime || "6 min"}</div>
             </div>
           </div>
@@ -123,7 +142,15 @@ function NewsArticlePage() {
       {/* Hero Image */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20">
         <div className="aspect-[21/9] rounded-3xl overflow-hidden shadow-2xl border-4 border-background bg-muted">
-          <img src={resolveImageUrl(article.imageUrl) || IMAGE_FALLBACK} alt="" className="w-full h-full object-cover" />
+          <img
+            src={!heroImageError ? (resolveImageUrl(article.imageUrl) || IMAGE_FALLBACK) : IMAGE_FALLBACK}
+            alt={getLocalized(article.title, lang)}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = IMAGE_FALLBACK;
+              setHeroImageError(true);
+            }}
+          />
         </div>
       </div>
 
@@ -168,7 +195,7 @@ function NewsArticlePage() {
                  <Button variant="outline" className="rounded-xl px-6 py-2.5 text-xs font-bold uppercase tracking-widest gap-2 bg-muted/50 border-none hover:bg-muted" onClick={handleToggleSave}>
                    <Bookmark className={cn("w-4 h-4", isSaved && "fill-primary text-primary")} /> {isSaved ? "Sauvegardé" : "Sauvegarder"}
                  </Button>
-                 <Button variant="outline" className="rounded-xl px-6 py-2.5 text-xs font-bold uppercase tracking-widest gap-2 bg-muted/50 border-none hover:bg-muted">
+                 <Button variant="outline" className="rounded-xl px-6 py-2.5 text-xs font-bold uppercase tracking-widest gap-2 bg-muted/50 border-none hover:bg-muted" onClick={handleShare}>
                    <Share2 className="w-4 h-4" /> Partager
                  </Button>
                </div>
@@ -189,13 +216,20 @@ function NewsArticlePage() {
               {relatedArticles.map((item) => (
                 <Link key={item._id} to={`/news/${item.slug}`} className="group bg-card border border-border rounded-2xl overflow-hidden hover-lift flex flex-col h-full">
                   <div className="aspect-video overflow-hidden">
-                    <img src={resolveImageUrl(item.imageUrl) || IMAGE_FALLBACK} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img
+                      src={resolveImageUrl(item.imageUrl) || IMAGE_FALLBACK}
+                      alt={getLocalized(item.title, lang)}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = IMAGE_FALLBACK;
+                      }}
+                    />
                   </div>
                   <div className="p-6 flex-1 flex flex-col">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-primary mb-2 block">{item.sector}</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-primary mb-2 block">{getLocalized(item.sector as any, lang)}</span>
                     <h3 className="text-base font-extrabold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug mb-4">{getLocalized(item.title, lang)}</h3>
                     <div className="mt-auto flex items-center gap-2 text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
-                       <Calendar className="w-3 h-3" /> {new Date(item.publishedAt || item.createdAt).toLocaleDateString("fr-FR")}
+                       <Calendar className="w-3 h-3" /> {new Date(item.publishedAt || item.createdAt).toLocaleDateString(lang === "fr" ? "fr-FR" : "en-US")}
                     </div>
                   </div>
                 </Link>

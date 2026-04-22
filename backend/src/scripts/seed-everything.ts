@@ -54,6 +54,31 @@ Toutefois, la route vers une certitude totale en matière de labellisation éthi
 Enfin, l'avenir de la prospérité africaine repose sur notre capacité à intégrer l'éthique au cœur de chaque décision d'investissement. En plaçant l'humain et la planète sur un pied d'égalité avec le profit, nous construisons un héritage stable pour les générations futures. C'est cet engagement profond pour une valeur partagée qui définit la mission de COOP_LOGIC au service des leaders de demain.
 `.trim();
 
+const VIDEO_EMBEDS = [
+    "https://www.youtube.com/embed/ysz5S6PUM-U",
+    "https://www.youtube.com/embed/jNQXAC9IVRw",
+    "https://www.youtube.com/embed/aqz-KE-bpKQ",
+    "https://www.youtube.com/embed/ScMzIvxBSi4",
+    "https://www.youtube.com/embed/TiMRwri1xJ8",
+];
+
+const AUDIO_EMBEDS = [
+    "https://open.spotify.com/embed/episode/7btSleJp305m3kFq8vUf2e",
+    "https://open.spotify.com/embed/episode/4rOoJ6Egrf8K2IrywzwOMk",
+    "https://open.spotify.com/embed/episode/2TpxZ7JUBn3uw46aR7qd6V",
+    "https://open.spotify.com/embed/episode/5XTzM8r9lR1qC7iY2jO7Jn",
+    "https://open.spotify.com/embed/episode/3k8Y7v7nqD8m9s2cP5t6Qw",
+];
+
+const MAGAZINE_COVERS = [
+    "https://images.unsplash.com/photo-1504711434969-e33886168f5a?auto=format&fit=crop&q=80&w=900",
+    "https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&q=80&w=900",
+    "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&q=80&w=900",
+    "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=900",
+    "https://images.unsplash.com/photo-1474366521946-c3d4b507abf2?auto=format&fit=crop&q=80&w=900",
+    "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&q=80&w=900",
+];
+
 const seedEverything = async () => {
     try {
         console.log("Connecting to MongoDB...");
@@ -127,7 +152,7 @@ const seedEverything = async () => {
             const isFeatured = i > 10;
             await MonthlyReview.create({
                 title: isFeatured ? `Édition Spéciale : Rapport Annuel ESG ${i}` : `Revue Mensuelle - Édition ${i}`,
-                coverImageUrl: isFeatured ? IMAGES.premium : IMAGES.kiosk,
+                coverImageUrl: isFeatured ? IMAGES.premium : MAGAZINE_COVERS[i % MAGAZINE_COVERS.length],
                 pdfUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
                 publishDate: new Date(Date.now() - (13 - i) * 30 * 24 * 60 * 60 * 1000),
                 featured: isFeatured,
@@ -141,11 +166,14 @@ const seedEverything = async () => {
         for (let i = 1; i <= 30; i++) {
             const isFeatured = i > 10;
             const sector = SECTORS[i % SECTORS.length];
+            const isVideo = i % 2 === 0;
             await Multimedia.create({
                 title: isFeatured ? `[EXCLUSIF] Masterclass Leadership ${i}` : `Interview Expert : Focus ${sector.toUpperCase()} ${i}`,
                 description: SEVEN_PARAGRAPHS.substring(0, 900),
-                type: i % 2 === 0 ? "video" : "audio",
-                embedUrl: i % 2 === 0 ? "https://www.youtube.com/embed/dQw4w9WgXcQ" : "https://open.spotify.com/embed/episode/7fK2YFzO1O2D8kGg8X3X1W",
+                type: isVideo ? "video" : "audio",
+                embedUrl: isVideo
+                    ? VIDEO_EMBEDS[i % VIDEO_EMBEDS.length]
+                    : AUDIO_EMBEDS[i % AUDIO_EMBEDS.length],
                 coverImageUrl: IMAGES[sector as keyof typeof IMAGES],
                 sector: sector,
                 featured: isFeatured,

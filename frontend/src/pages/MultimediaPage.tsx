@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import { Play, Headphones, Share2, Sparkles, X, LayoutGrid } from "lucide-react";
+import { Play, Headphones, Share2, Sparkles, X, LayoutGrid, Rows3, List } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/services/api";
 import type { IMultimedia, PaginatedResponse } from "@/types";
@@ -16,6 +16,7 @@ function MultimediaPage() {
   const lang = i18n.language;
   const [type, setType] = useState<"all" | "video" | "audio">("all");
   const [search, setSearch] = useState("");
+  const [viewMode, setViewMode] = useState<"grid" | "compact" | "list">("grid");
 
   const { data, isLoading } = useQuery<PaginatedResponse<IMultimedia>>({
     queryKey: ["multimedia", type],
@@ -116,7 +117,7 @@ function MultimediaPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap w-full lg:w-auto">
             {[
               { value: "all", label: t("common.all") || "Tous", icon: Sparkles },
               { value: "video", label: "Vidéos", icon: Play },
@@ -141,6 +142,48 @@ function MultimediaPage() {
                 </button>
               );
             })}
+
+            <div className="inline-flex items-center h-12 rounded-2xl bg-background/70 border border-border/60 p-1 w-full sm:w-auto overflow-x-auto">
+              <button
+                type="button"
+                onClick={() => setViewMode("grid")}
+                className={cn(
+                  "h-10 px-3 rounded-xl inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] transition-all whitespace-nowrap",
+                  viewMode === "grid"
+                    ? "bg-primary text-primary-foreground shadow"
+                    : "text-foreground/80 hover:text-primary"
+                )}
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Grille</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("compact")}
+                className={cn(
+                  "h-10 px-3 rounded-xl inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] transition-all whitespace-nowrap",
+                  viewMode === "compact"
+                    ? "bg-primary text-primary-foreground shadow"
+                    : "text-foreground/80 hover:text-primary"
+                )}
+              >
+                <Rows3 className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Compact</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("list")}
+                className={cn(
+                  "h-10 px-3 rounded-xl inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] transition-all whitespace-nowrap",
+                  viewMode === "list"
+                    ? "bg-primary text-primary-foreground shadow"
+                    : "text-foreground/80 hover:text-primary"
+                )}
+              >
+                <List className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Liste</span>
+              </button>
+            </div>
           </div>
         </ControlsBar>
       </div>
@@ -154,7 +197,14 @@ function MultimediaPage() {
             ))}
           </div>
         ) : items.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className={cn(
+            "grid gap-8",
+            viewMode === "grid"
+              ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+              : viewMode === "compact"
+                ? "grid-cols-1 lg:grid-cols-2"
+                : "grid-cols-1"
+          )}>
             {items.map((item, idx) => (
               <motion.div
                 key={item._id}
@@ -162,8 +212,18 @@ function MultimediaPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.03 }}
               >
-                <div className="group bg-card border border-border rounded-2xl overflow-hidden hover-lift h-full flex flex-col shadow-sm">
-                  <div className="aspect-video bg-black relative overflow-hidden flex items-center justify-center">
+                <div className={cn(
+                  "group bg-card border border-border rounded-2xl overflow-hidden hover-lift h-full shadow-sm",
+                  viewMode === "grid" ? "flex flex-col" : "flex"
+                )}>
+                  <div className={cn(
+                    "bg-black relative overflow-hidden flex items-center justify-center",
+                    viewMode === "grid"
+                      ? "aspect-video"
+                      : viewMode === "compact"
+                        ? "w-56 md:w-64 shrink-0"
+                        : "w-44 md:w-52 shrink-0"
+                  )}>
                     {item.type === "video" && item.embedUrl ? (
                       <iframe
                         src={item.embedUrl}
@@ -209,7 +269,7 @@ function MultimediaPage() {
                       </span>
                     </div>
                   </div>
-                  <div className="p-6 flex-1 flex flex-col">
+                  <div className={cn("p-6 flex-1 flex flex-col", viewMode !== "grid" && "py-4")}>
                     <h3 className="text-lg font-extrabold text-foreground group-hover:text-primary transition-colors line-clamp-2 mb-3 leading-tight">
                       {getLocalized(item.title, lang)}
                     </h3>

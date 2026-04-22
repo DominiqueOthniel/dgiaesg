@@ -62,6 +62,7 @@ function NewsPage() {
   const [page, setPage] = useState(1);
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   useEffect(() => {
     // Scroll to top of list when page changes
@@ -280,7 +281,7 @@ function NewsPage() {
               <div aria-hidden className="hidden lg:block h-8 w-px bg-gradient-to-b from-transparent via-border to-transparent mx-1" />
 
               {/* Compact pill controls */}
-              <div className="flex flex-wrap lg:flex-nowrap items-center gap-2">
+              <div className="flex flex-wrap lg:flex-nowrap items-stretch sm:items-center gap-2 w-full lg:w-auto">
                 {/* Category */}
                 <Select
                   value={category}
@@ -291,7 +292,7 @@ function NewsPage() {
                 >
                   <SelectTrigger
                     className={cn(
-                      "h-11 min-w-[140px] rounded-full border bg-white/70 dark:bg-white/5 px-4 text-xs font-semibold gap-2 shadow-sm hover:bg-white hover:shadow-md transition-all",
+                      "h-11 min-w-[118px] sm:min-w-[140px] w-full sm:w-auto rounded-full border bg-white/70 dark:bg-white/5 px-4 text-xs font-semibold gap-2 shadow-sm hover:bg-white hover:shadow-md transition-all",
                       category !== "all"
                         ? "border-[hsl(var(--brand-gold)/0.5)] bg-[hsl(var(--brand-gold)/0.08)] text-foreground"
                         : "border-white/60 dark:border-white/10"
@@ -319,7 +320,7 @@ function NewsPage() {
                 >
                   <SelectTrigger
                     className={cn(
-                      "h-11 min-w-[130px] rounded-full border bg-white/70 dark:bg-white/5 px-4 text-xs font-semibold gap-2 shadow-sm hover:bg-white hover:shadow-md transition-all",
+                      "h-11 min-w-[118px] sm:min-w-[130px] w-full sm:w-auto rounded-full border bg-white/70 dark:bg-white/5 px-4 text-xs font-semibold gap-2 shadow-sm hover:bg-white hover:shadow-md transition-all",
                       sector !== "all"
                         ? "border-[hsl(var(--brand-gold)/0.5)] bg-[hsl(var(--brand-gold)/0.08)] text-foreground"
                         : "border-white/60 dark:border-white/10"
@@ -342,7 +343,7 @@ function NewsPage() {
                   <PopoverTrigger asChild>
                     <button
                       className={cn(
-                        "h-11 rounded-full border px-4 text-xs font-semibold flex items-center gap-2 shadow-sm hover:bg-white hover:shadow-md transition-all",
+                        "h-11 rounded-full border px-4 text-xs font-semibold flex items-center gap-2 shadow-sm hover:bg-white hover:shadow-md transition-all w-full sm:w-auto",
                         dateFrom || dateTo
                           ? "border-[hsl(var(--brand-gold)/0.5)] bg-[hsl(var(--brand-gold)/0.08)] text-foreground"
                           : "border-white/60 dark:border-white/10 bg-white/70 dark:bg-white/5"
@@ -391,9 +392,9 @@ function NewsPage() {
                 </Popover>
 
                 {/* Sort — segmented pill (sort field + direction toggle) */}
-                <div className="flex items-center h-11 rounded-full border border-white/60 dark:border-white/10 bg-white/70 dark:bg-white/5 shadow-sm overflow-hidden hover:shadow-md transition-all">
+                <div className="flex items-center h-11 rounded-full border border-white/60 dark:border-white/10 bg-white/70 dark:bg-white/5 shadow-sm overflow-hidden hover:shadow-md transition-all w-full sm:w-auto">
                   <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger className="h-11 min-w-[130px] rounded-none border-0 bg-transparent px-4 text-xs font-semibold gap-2 shadow-none focus:ring-0">
+                    <SelectTrigger className="h-11 min-w-[110px] sm:min-w-[130px] rounded-none border-0 bg-transparent px-4 text-xs font-semibold gap-2 shadow-none focus:ring-0">
                       <ArrowUpDown className="w-3.5 h-3.5 text-muted-foreground" />
                       <SelectValue placeholder={t("news.filter.sort", "Trier")} />
                     </SelectTrigger>
@@ -516,6 +517,34 @@ function NewsPage() {
 
       {/* Articles Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {!isLoading && paginated.length > 0 && (
+          <div className="mb-6 flex items-center justify-end gap-2 flex-wrap">
+            <button
+              type="button"
+              onClick={() => setViewMode("grid")}
+              className={cn(
+                "h-9 px-3 rounded-lg text-[10px] font-black uppercase tracking-[0.16em] border transition-all flex-1 sm:flex-none",
+                viewMode === "grid"
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-card border-border text-muted-foreground hover:text-primary hover:border-primary/40"
+              )}
+            >
+              Grille
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("list")}
+              className={cn(
+                "h-9 px-3 rounded-lg text-[10px] font-black uppercase tracking-[0.16em] border transition-all flex-1 sm:flex-none",
+                viewMode === "list"
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-card border-border text-muted-foreground hover:text-primary hover:border-primary/40"
+              )}
+            >
+              Liste
+            </button>
+          </div>
+        )}
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -527,7 +556,10 @@ function NewsPage() {
           </div>
         ) : paginated.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className={cn(
+              "grid gap-8",
+              viewMode === "grid" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
+            )}>
               {paginated.map((article: any, idx: number) => (
                 <motion.div
                   key={article._id}
@@ -544,7 +576,7 @@ function NewsPage() {
                     to={`/news/${article.slug}`}
                     className="group card-gold block bg-card rounded-2xl overflow-hidden h-full flex flex-col"
                   >
-                    <div className="aspect-video bg-muted overflow-hidden">
+                    <div className={cn("bg-muted overflow-hidden", viewMode === "grid" ? "aspect-video" : "h-56")}>
                       <img
                         src={
                           resolveImageUrl(article.imageUrl) || IMAGE_FALLBACK
@@ -559,7 +591,7 @@ function NewsPage() {
                     <div className="p-6 flex-1 flex flex-col">
                       {article.sector && (
                         <span className="text-[9px] font-black uppercase tracking-widest text-primary group-hover:text-accent transition-colors mb-2 block">
-                          {article.sector}
+                          {getLocalized(article.sector as any, lang)}
                         </span>
                       )}
                       <h3 className="text-lg font-extrabold text-foreground group-hover:text-accent transition-colors line-clamp-2 mb-3 leading-snug">
@@ -670,7 +702,7 @@ function NewsPage() {
             </div>
             <form
               onSubmit={handleSubscribe}
-              className="flex flex-col sm:flex-row gap-2 w-full md:w-auto md:min-w-[420px]"
+              className="flex flex-col sm:flex-row gap-2 w-full md:w-auto md:min-w-0 lg:min-w-[420px]"
             >
               <input
                 type="email"

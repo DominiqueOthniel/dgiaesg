@@ -28,6 +28,31 @@ Dans un environnement en perpétuelle mutation, la gouvernance éthique et la re
 La digitalisation et l'innovation technologique redéfinissent les chaînes de valeur continentales, permettant une traçabilité sans précédent des impacts positifs. Grâce à nos outils d'analyse en temps réel, les décideurs peuvent désormais piloter leurs engagements avec une précision chirurgicale, assurant que chaque investissement contribue à la prospérité partagée des générations futures.
 `.trim();
 
+const VIDEO_EMBEDS = [
+  "https://www.youtube.com/embed/ysz5S6PUM-U",
+  "https://www.youtube.com/embed/jNQXAC9IVRw",
+  "https://www.youtube.com/embed/aqz-KE-bpKQ",
+  "https://www.youtube.com/embed/ScMzIvxBSi4",
+  "https://www.youtube.com/embed/TiMRwri1xJ8",
+];
+
+const AUDIO_EMBEDS = [
+  "https://open.spotify.com/embed/episode/7btSleJp305m3kFq8vUf2e",
+  "https://open.spotify.com/embed/episode/4rOoJ6Egrf8K2IrywzwOMk",
+  "https://open.spotify.com/embed/episode/2TpxZ7JUBn3uw46aR7qd6V",
+  "https://open.spotify.com/embed/episode/5XTzM8r9lR1qC7iY2jO7Jn",
+  "https://open.spotify.com/embed/episode/3k8Y7v7nqD8m9s2cP5t6Qw",
+];
+
+const MAGAZINE_COVERS = [
+  "https://images.unsplash.com/photo-1504711434969-e33886168f5a?auto=format&fit=crop&q=80&w=900",
+  "https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&q=80&w=900",
+  "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&q=80&w=900",
+  "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=900",
+  "https://images.unsplash.com/photo-1474366521946-c3d4b507abf2?auto=format&fit=crop&q=80&w=900",
+  "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&q=80&w=900",
+];
+
 const labels = Array.from({ length: 15 }).map((_, i) => {
   const sector = SECTORS[i % SECTORS.length];
   return {
@@ -96,6 +121,7 @@ const newsData = Array.from({ length: 15 }).map((_, i) => {
 
 const multimediaData = Array.from({ length: 15 }).map((_, i) => {
   const sector = SECTORS[i % SECTORS.length];
+  const isVideo = i % 2 === 0;
   const mediaImages = [
     "https://images.unsplash.com/photo-1516035069371-29a1b244cc32",
     "https://images.unsplash.com/photo-1557804506-669a67965ba0",
@@ -106,8 +132,10 @@ const multimediaData = Array.from({ length: 15 }).map((_, i) => {
   return {
     title: `Insights Audio-Visuels - ${sector.toUpperCase()} #${i + 1}`,
     description: "Explorer les frontières de l'excellence à travers des témoignages et analyses d'experts.",
-    type: i % 2 === 0 ? "video" as const : "audio" as const,
-    embedUrl: i % 2 === 0 ? "https://www.youtube.com/embed/dQw4w9WgXcQ" : "https://open.spotify.com/embed/episode/7btSleJp305m3kFq8vUf2e",
+    type: isVideo ? "video" as const : "audio" as const,
+    embedUrl: isVideo
+      ? VIDEO_EMBEDS[i % VIDEO_EMBEDS.length]
+      : AUDIO_EMBEDS[i % AUDIO_EMBEDS.length],
     coverImageUrl: mediaImages[i % mediaImages.length] + "?auto=format&fit=crop&q=80&w=800",
     sector: sector,
     featured: i < 5,
@@ -199,7 +227,7 @@ const adsData = Array.from({ length: 15 }).map((_, i) => {
 const monthlyReviewData = Array.from({ length: 15 }).map((_, i) => {
   return {
     title: `Revue Intelligence Mensuelle - Vol. ${i + 1}`,
-    coverImageUrl: `https://images.unsplash.com/photo-${1544640805 + (i * 50)}?auto=format&fit=crop&q=80&w=600`,
+    coverImageUrl: MAGAZINE_COVERS[i % MAGAZINE_COVERS.length],
     pdfUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
     publishDate: new Date(Date.now() - (i * 30 * 24 * 60 * 60 * 1000)),
     featured: i === 0,

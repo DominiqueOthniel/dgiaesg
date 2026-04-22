@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, Outlet, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Menu, X, ShieldCheck, User, LogOut, LayoutDashboard, Settings, ChevronRight, BookOpen, Play, Star, Calendar, Building2, Headphones, Search } from "lucide-react";
+import { Menu, X, ShieldCheck, User, LogOut, LayoutDashboard, Settings, ChevronRight, BookOpen, Play, Star, Calendar, Building2, Headphones, Search, Newspaper } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "./ui/Button";
@@ -14,6 +14,7 @@ const sidebarItems = [
   { midhead: "Plateforme Logicielle" },
   { key: "nav.labels", href: "/labels", icon: ShieldCheck },
   { key: "nav.directory", href: "/directory", icon: Building2 },
+  { key: "nav.news", href: "/news", icon: Newspaper },
   { midhead: "Espace Media" },
   { key: "nav.kiosk", href: "/kiosk", icon: BookOpen },
   { key: "nav.multimedia", href: "/multimedia", icon: Play },

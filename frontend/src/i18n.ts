@@ -228,6 +228,60 @@ const resources = {
                     all_sectors: "Secteurs",
                     all_categories: "Catégories"
                 }
+            },
+            chatbot: {
+                title: "Co-op Assistant",
+                online: "En ligne",
+                open: "Ouvrir le chat",
+                close: "Fermer le chat",
+                reset: "Réinitialiser la conversation",
+                send: "Envoyer",
+                placeholder: "Écrire un message...",
+                greeting: "Bonjour ! Je peux vous aider à trouver un label, une entreprise, une actualité ou vous orienter vers la bonne page.",
+                typing: "Assistant en train d'écrire...",
+                cooldown: "Un instant, j'analyse encore votre dernière demande.",
+                error: "Désolé, je n'ai pas pu traiter la demande. Réessayez dans quelques secondes.",
+                fallback: "Je peux vous aider à chercher du contenu ou vous rediriger vers une section du site. Que souhaitez-vous explorer ?",
+                search_results: "Voici les résultats les plus pertinents que j'ai trouvés.",
+                no_results: "Aucun résultat trouvé pour \"{{query}}\". Vous pouvez essayer une requête plus courte ou un autre mot-clé.",
+                navigate_message: "Parfait, je peux vous guider vers {{target}}.",
+                pricing_message: "Pour les offres et avantages premium, consultez la page pricing. Je peux aussi vous montrer du contenu premium.",
+                contact_message: "Je peux vous orienter vers les rubriques les plus utiles. Pour un support approfondi, commencez par News, Events ou Pricing.",
+                open_page: "Ouvrir la page",
+                kinds: {
+                    label: "Label",
+                    company: "Entreprise",
+                    news: "Actualité",
+                    multimedia: "Multimédia"
+                },
+                nav_targets: {
+                    labels: "les labels",
+                    directory: "l'annuaire",
+                    news: "les actualités",
+                    kiosk: "le kiosque",
+                    multimedia: "la médiathèque",
+                    pricing: "les offres premium",
+                    events: "les événements"
+                },
+                quick: {
+                    retry: "Réessayer",
+                    find_labels: "Trouver des labels",
+                    find_labels_prompt: "Je cherche des labels actifs dans votre registre",
+                    latest_news: "Voir les actus",
+                    latest_news_prompt: "Montre-moi les actualités récentes",
+                    show_pricing: "Voir pricing",
+                    show_all_labels: "Voir tous les labels",
+                    show_all_news: "Voir toutes les actualités",
+                    refine_search: "Affiner ma recherche",
+                    refine_search_prompt: "Aide-moi à affiner ma recherche",
+                    open_multimedia: "Ouvrir multimédia",
+                    search_in_page: "Rechercher dans cette section",
+                    search_in_page_prompt: "Montre-moi les contenus de {{target}}",
+                    find_premium_news: "Contenu premium",
+                    find_premium_news_prompt: "Montre-moi du contenu premium",
+                    go_news: "Aller vers News",
+                    go_events: "Aller vers Events"
+                }
             }
         }
     },
@@ -455,6 +509,60 @@ const resources = {
                 filters: {
                     all_sectors: "Sectors",
                     all_categories: "Categories"
+                }
+            },
+            chatbot: {
+                title: "Co-op Assistant",
+                online: "Online",
+                open: "Open chat",
+                close: "Close chat",
+                reset: "Reset conversation",
+                send: "Send",
+                placeholder: "Write a message...",
+                greeting: "Hi! I can help you find a label, company, article, or guide you to the right page.",
+                typing: "Assistant is typing...",
+                cooldown: "Just a moment, I am still processing your previous request.",
+                error: "Sorry, I could not process that request. Please try again in a few seconds.",
+                fallback: "I can help you search content or navigate to a section. What would you like to explore?",
+                search_results: "Here are the most relevant results I found.",
+                no_results: "No results found for \"{{query}}\". Try a shorter query or another keyword.",
+                navigate_message: "Great, I can take you to {{target}}.",
+                pricing_message: "For plans and premium benefits, check the pricing page. I can also show premium content.",
+                contact_message: "I can guide you to useful sections. For deeper support, start with News, Events, or Pricing.",
+                open_page: "Open page",
+                kinds: {
+                    label: "Label",
+                    company: "Company",
+                    news: "News",
+                    multimedia: "Multimedia"
+                },
+                nav_targets: {
+                    labels: "labels",
+                    directory: "directory",
+                    news: "news",
+                    kiosk: "kiosk",
+                    multimedia: "media hub",
+                    pricing: "premium plans",
+                    events: "events"
+                },
+                quick: {
+                    retry: "Retry",
+                    find_labels: "Find labels",
+                    find_labels_prompt: "I am looking for active labels in your registry",
+                    latest_news: "Latest news",
+                    latest_news_prompt: "Show me recent news",
+                    show_pricing: "Open pricing",
+                    show_all_labels: "Browse all labels",
+                    show_all_news: "Browse all news",
+                    refine_search: "Refine search",
+                    refine_search_prompt: "Help me refine my search",
+                    open_multimedia: "Open multimedia",
+                    search_in_page: "Search in this section",
+                    search_in_page_prompt: "Show me content from {{target}}",
+                    find_premium_news: "Premium content",
+                    find_premium_news_prompt: "Show me premium content",
+                    go_news: "Go to News",
+                    go_events: "Go to Events"
                 }
             }
         }

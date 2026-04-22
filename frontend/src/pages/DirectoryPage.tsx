@@ -4,10 +4,9 @@ import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import {
   Search, Building2, MapPin, ChevronRight, ChevronLeft,
-  LayoutGrid, List, Award, ArrowUpDown, Filter,
+  LayoutGrid, List, Award, ArrowUpDown, Filter, RotateCcw,
 } from "lucide-react";
 import { useCompanies } from "@/hooks/useCompanies";
-import { useLabels } from "@/hooks/useLabels";
 import { cn, getLocalized } from "@/lib/utils";
 import { resolveImageUrl } from "@/lib/image";
 
@@ -56,7 +55,6 @@ function DirectoryPage() {
   useEffect(() => { window.scrollTo({ top: 0, behavior: "smooth" }); }, [page]);
 
   const { data: companiesData, isLoading } = useCompanies({});
-  useLabels();
   const companies = companiesData?.data || [];
 
   const categories = useMemo(() => {
@@ -83,6 +81,14 @@ function DirectoryPage() {
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
   const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  const hasActiveFilters = searchTerm.trim() || category !== "all" || sort !== "newest";
+
+  const resetFilters = () => {
+    setSearchTerm("");
+    setCategory("all");
+    setSort("newest");
+    setPage(1);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -128,30 +134,30 @@ function DirectoryPage() {
             <div className="relative flex-1">
               <div className="golden-ring rounded-xl bg-white flex items-center">
                 <Search className="ml-3 w-4 h-4 text-brand-gold-dark" />
-                <input type="text" placeholder={t("labels.search_placeholder", "Rechercher...")}
+                <input type="text" placeholder={t("registry.search_placeholder", "Rechercher une entité certifiée...")}
                   value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
                   className="w-full bg-transparent px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none" />
               </div>
             </div>
-            <div className="golden-ring rounded-xl bg-white flex items-center px-3">
+            <div className="golden-ring rounded-xl bg-white flex items-center px-3 w-full sm:w-auto">
               <Filter className="w-4 h-4 text-brand-gold-dark mr-2 shrink-0" />
               <select value={category} onChange={(e) => { setCategory(e.target.value); setPage(1); }}
-                className="bg-transparent py-2.5 text-sm text-foreground focus:outline-none pr-2">
+                className="bg-transparent py-2.5 text-sm text-foreground focus:outline-none pr-2 w-full sm:w-auto">
                 <option value="all">{t("labels.filters.all_categories", "Catégories")}</option>
                 {categories.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
-            <div className="golden-ring rounded-xl bg-white flex items-center px-3">
+            <div className="golden-ring rounded-xl bg-white flex items-center px-3 w-full sm:w-auto">
               <ArrowUpDown className="w-4 h-4 text-brand-gold-dark mr-2 shrink-0" />
               <select value={sort} onChange={(e) => setSort(e.target.value as SortKey)}
-                className="bg-transparent py-2.5 text-sm text-foreground focus:outline-none pr-2">
+                className="bg-transparent py-2.5 text-sm text-foreground focus:outline-none pr-2 w-full sm:w-auto">
                 <option value="newest">{t("registry.sort.newest", "Plus récent")}</option>
                 <option value="oldest">{t("registry.sort.oldest", "Plus ancien")}</option>
                 <option value="az">A → Z</option>
                 <option value="za">Z → A</option>
               </select>
             </div>
-            <div className="golden-ring rounded-xl bg-white flex items-center gap-1 p-1 shrink-0">
+            <div className="golden-ring rounded-xl bg-white flex items-center justify-center gap-1 p-1 shrink-0 w-full sm:w-auto">
               <button onClick={() => setView("grid")} aria-label="Grid"
                 className={cn("p-2 rounded-lg transition-all", view === "grid" ? "bg-brand-gold text-white shadow-lg" : "text-muted-foreground hover:bg-brand-gold/10")}>
                 <LayoutGrid className="w-4 h-4" />
@@ -161,6 +167,30 @@ function DirectoryPage() {
                 <List className="w-4 h-4" />
               </button>
             </div>
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-brand-gold/40 text-brand-gold-dark bg-white hover:bg-brand-gold/10 transition-all w-full sm:w-auto"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                Réinitialiser
+              </button>
+            )}
+          </div>
+
+          <div className="relative mt-3 pt-3 border-t border-border/40 flex items-center justify-between gap-3 flex-wrap text-xs">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center justify-center min-w-[1.75rem] h-6 px-2 rounded-full bg-primary/10 text-primary text-[11px] font-black">
+                {filtered.length}
+              </span>
+              <span className="font-semibold text-muted-foreground">
+                entité{filtered.length > 1 ? "s" : ""} trouvée{filtered.length > 1 ? "s" : ""}
+              </span>
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground w-full sm:w-auto">
+              affichage : {view === "grid" ? "grille" : "liste"}
+            </span>
           </div>
         </div>
       </div>
@@ -188,7 +218,7 @@ function DirectoryPage() {
                           <div className="flex items-start gap-4 mb-4">
                             <div className="w-14 h-14 shrink-0 rounded-xl bg-slate-50 border border-brand-gold/20 flex items-center justify-center overflow-hidden p-2">
                               {company.logoUrl ? (
-                                <img src={resolveImageUrl(company.logoUrl)} alt="" className="w-full h-full object-contain"
+                                <img src={resolveImageUrl(company.logoUrl)} alt={getLocalized(company.name, lang)} className="w-full h-full object-contain"
                                   onError={(e) => { (e.target as HTMLImageElement).src = IMAGE_FALLBACK; }} />
                               ) : <Building2 className="w-6 h-6 text-brand-gold-dark/40" />}
                             </div>
@@ -224,7 +254,7 @@ function DirectoryPage() {
                         className="group emerald-glow flex items-center gap-4 bg-white rounded-xl p-4">
                         <div className="w-12 h-12 shrink-0 rounded-lg bg-slate-50 border border-brand-emerald/20 flex items-center justify-center overflow-hidden p-1.5">
                           {company.logoUrl ? (
-                            <img src={resolveImageUrl(company.logoUrl)} alt="" className="w-full h-full object-contain"
+                            <img src={resolveImageUrl(company.logoUrl)} alt={getLocalized(company.name, lang)} className="w-full h-full object-contain"
                               onError={(e) => { (e.target as HTMLImageElement).src = IMAGE_FALLBACK; }} />
                           ) : <Building2 className="w-5 h-5 text-brand-emerald/40" />}
                         </div>
@@ -235,6 +265,9 @@ function DirectoryPage() {
                           <span className="text-xs text-muted-foreground">
                             {getLocalized(company.sector, lang)} · {getLocalized(company.region, lang)}
                           </span>
+                          <p className="text-[11px] text-muted-foreground/85 mt-1 line-clamp-1">
+                            {getLocalized(company.description, lang)}
+                          </p>
                         </div>
                         <ChevronRight className="w-4 h-4 text-brand-emerald group-hover:translate-x-1 transition-transform" />
                       </Link>

@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import { BookOpen, Search, Download, Calendar, Sparkles, ArrowUpDown, X } from "lucide-react";
+import { BookOpen, Search, Download, Calendar, Sparkles, ArrowUpDown, X, Grid3X3, Rows3, List } from "lucide-react";
 import { useMagazines, type MonthlyReview } from "@/hooks/useMagazines";
 import { getLocalized, cn } from "@/lib/utils";
 import { resolveImageUrl } from "@/lib/image";
@@ -16,9 +16,10 @@ function KioskPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [featuredOnly, setFeaturedOnly] = useState(false);
   const [sortBy, setSortBy] = useState<"latest" | "oldest" | "az">("latest");
+  const [viewMode, setViewMode] = useState<"grid" | "compact" | "list">("grid");
   const searchPlaceholder = t("magazines.search_placeholder", { defaultValue: "Rechercher une publication..." });
 
-  const { data: reviews = [], isLoading, isError } = useMagazines();
+  const { data: reviews = [], isLoading } = useMagazines();
 
   const filtered = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -119,7 +120,7 @@ function KioskPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap w-full lg:w-auto">
             <button
               type="button"
               onClick={() => setFeaturedOnly((prev) => !prev)}
@@ -148,6 +149,48 @@ function KioskPage() {
               </select>
               <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-[10px]">▾</span>
             </div>
+
+            <div className="inline-flex items-center h-12 rounded-2xl bg-background/70 border border-border/60 p-1 w-full sm:w-auto overflow-x-auto">
+              <button
+                type="button"
+                onClick={() => setViewMode("grid")}
+                className={cn(
+                  "h-10 px-3 rounded-xl inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] transition-all whitespace-nowrap",
+                  viewMode === "grid"
+                    ? "bg-primary text-primary-foreground shadow"
+                    : "text-foreground/80 hover:text-primary"
+                )}
+              >
+                <Grid3X3 className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Grille</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("compact")}
+                className={cn(
+                  "h-10 px-3 rounded-xl inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] transition-all whitespace-nowrap",
+                  viewMode === "compact"
+                    ? "bg-primary text-primary-foreground shadow"
+                    : "text-foreground/80 hover:text-primary"
+                )}
+              >
+                <Rows3 className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Compact</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("list")}
+                className={cn(
+                  "h-10 px-3 rounded-xl inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] transition-all whitespace-nowrap",
+                  viewMode === "list"
+                    ? "bg-primary text-primary-foreground shadow"
+                    : "text-foreground/80 hover:text-primary"
+                )}
+              >
+                <List className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Liste</span>
+              </button>
+            </div>
           </div>
         </ControlsBar>
       </div>
@@ -161,11 +204,30 @@ function KioskPage() {
             ))}
           </div>
         ) : filtered.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8">
+          <div className={cn(
+            "grid gap-8",
+            viewMode === "grid"
+              ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-5"
+              : viewMode === "compact"
+                ? "grid-cols-1 md:grid-cols-2"
+                : "grid-cols-1"
+          )}>
             {filtered.map((mag: MonthlyReview, idx: number) => (
               <motion.div key={mag._id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.03 }}>
-                <div className="group flex flex-col h-full translate-y-0 hover:-translate-y-2 transition-transform duration-300">
-                  <div className="aspect-[3/4] bg-muted rounded-2xl overflow-hidden border border-border shadow-md group-hover:shadow-2xl transition-all relative">
+                <div className={cn(
+                  "group h-full translate-y-0 hover:-translate-y-2 transition-transform duration-300",
+                  viewMode === "grid"
+                    ? "flex flex-col"
+                    : "flex gap-4 items-start rounded-2xl border border-border bg-card/60 p-3"
+                )}>
+                  <div className={cn(
+                    "bg-muted rounded-2xl overflow-hidden border border-border shadow-md group-hover:shadow-2xl transition-all relative",
+                    viewMode === "grid"
+                      ? "aspect-[3/4]"
+                      : viewMode === "compact"
+                        ? "w-32 sm:w-36 aspect-[3/4] shrink-0"
+                        : "w-24 sm:w-28 aspect-[3/4] shrink-0"
+                  )}>
                     {mag.coverImageUrl ? (
                       <img
                         src={resolveImageUrl(mag.coverImageUrl)}
@@ -217,7 +279,7 @@ function KioskPage() {
                     )}
                   </div>
                   
-                  <div className="mt-5 space-y-1.5 flex-1">
+                  <div className={cn("space-y-1.5 flex-1", viewMode === "grid" ? "mt-5" : "pt-1", viewMode === "list" && "flex flex-col justify-center")}>
                     <h4 className="text-sm font-extrabold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
                        {getLocalized(mag.title, lang)}
                     </h4>
