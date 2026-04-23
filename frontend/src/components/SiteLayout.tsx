@@ -11,13 +11,13 @@ import { ChatbotWidget } from "./ChatbotWidget";
 import { SiteHeader, topNavItems } from "./coop/SiteHeader";
 
 const sidebarItems = [
+  { midhead: "Espace Media" },
+  { key: "nav.news", href: "/news", icon: Newspaper },
+  { key: "nav.kiosk", href: "/kiosk", icon: BookOpen },
+  { key: "nav.multimedia", href: "/multimedia", icon: Play },
   { midhead: "Plateforme Logicielle" },
   { key: "nav.labels", href: "/labels", icon: ShieldCheck },
   { key: "nav.directory", href: "/directory", icon: Building2 },
-  { key: "nav.news", href: "/news", icon: Newspaper },
-  { midhead: "Espace Media" },
-  { key: "nav.kiosk", href: "/kiosk", icon: BookOpen },
-  { key: "nav.multimedia", href: "/multimedia", icon: Play },
   { midhead: "Services & Accès" },
   { key: "nav.pricing", href: "/pricing", icon: Star },
 ];
@@ -152,10 +152,10 @@ const SiteLayout = () => {
                 </div>
                 <div>
                   <span className="text-xl md:text-2xl font-black italic block text-white uppercase tracking-tight">
-                    Co-op Label
+                    DGIA ESG
                   </span>
                   <span className="text-[10px] font-bold text-brand-gold uppercase tracking-[0.3em]">
-                    Infrastructure d'Excellence
+                    REVIEW
                   </span>
                 </div>
               </div>
@@ -167,7 +167,7 @@ const SiteLayout = () => {
 
             <div className="md:col-span-4 lg:col-span-2 lg:ml-auto">
               <h4 className="text-[11px] font-black mb-8 uppercase tracking-[0.2em] text-brand-gold">
-                Plateforme
+                Raccourcis
               </h4>
               <div className="flex flex-col gap-4">
                 {topNavItems.map((item) => (
@@ -215,7 +215,7 @@ const SiteLayout = () => {
               >
                 <input
                   type="email"
-                  placeholder="EMAIL_ID@RESEAU"
+                  placeholder="EMAIL@DOMAIN.COM"
                   className="w-full bg-white/10 border border-white/25 rounded-xl px-4 py-3 text-xs text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-brand-gold focus:border-brand-gold transition-all font-bold"
                 />
                 <button
@@ -230,8 +230,7 @@ const SiteLayout = () => {
 
           <div className="mt-20 pt-10 border-t border-white/15 flex flex-col md:flex-row justify-between items-center gap-6">
             <p className="text-[10px] font-bold text-white/60 uppercase tracking-[0.3em]">
-              © {new Date().getFullYear()} Co-op Label — Infrastructure
-              d'Excellence.
+              © {new Date().getFullYear()} DGIA ESG Review. Tous Droits Reservés. - L'excellence coopérative au service de l'Afrique
             </p>
           </div>
         </div>
