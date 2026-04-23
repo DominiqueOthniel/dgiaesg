@@ -189,7 +189,7 @@ export default function PricingPage() {
 
             <p className="text-base md:text-lg text-primary-foreground/75 max-w-2xl mx-auto leading-relaxed">
               Choisissez la formule qui correspond à votre ambition. Accédez à
-              l'intelligence stratégique COOP-LABEL pour piloter votre impact
+              l'intelligence stratégique DGIAESG pour piloter votre impact
               ESG en Afrique.
             </p>
 

@@ -185,7 +185,7 @@ const EditorialHeader = () => {
                             </div>
                             <div className="flex flex-col">
                                 <span className="font-serif text-3xl md:text-5xl font-black uppercase tracking-tighter text-brand-secondary">
-                                    Coop<span className="text-brand-primary">Label</span>
+                                    DGIA<span className="text-brand-primary">ESG</span>
                                 </span>
                                 <span className="text-[8px] md:text-[10px] font-bold text-text-muted uppercase tracking-[0.4em] mt-1 italic">L'Expertise Africaine</span>
                             </div>
@@ -312,7 +312,7 @@ const EditorialHeader = () => {
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsMenuOpen(false)} className="fixed inset-0 bg-brand-secondary/70 backdrop-blur-sm z-[200]" />
                         <motion.div initial={{ x: "-100%" }} animate={{ x: 0 }} exit={{ x: "-100%" }} className="fixed inset-y-0 left-0 w-80 bg-white shadow-2xl z-[210] flex flex-col">
                             <div className="p-6 border-b border-surface-muted flex items-center justify-between">
-                                <span className="font-serif text-xl font-bold tracking-tight text-brand-secondary">Coop<span className="text-brand-primary">Label</span></span>
+                                <span className="font-serif text-xl font-bold tracking-tight text-brand-secondary">DGIA<span className="text-brand-primary">ESG</span></span>
                                 <button onClick={() => setIsMenuOpen(false)}><X className="w-5 h-5" /></button>
                             </div>
                             <div className="flex-1 overflow-y-auto p-6 space-y-8">

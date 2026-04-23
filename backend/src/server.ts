@@ -43,7 +43,7 @@ setupSwagger(app);
 app.use("/api", apiRoutes);
 
 app.get("/", (_req: Request, res: Response) => {
-  res.json({ message: "Cooperative Labeling Platform API" });
+  res.json({ message: "DGIAESG Platform API" });
 });
 
 app.use(notFound);

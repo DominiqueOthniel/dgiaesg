@@ -6,9 +6,9 @@ const options: swaggerJsdoc.Options = {
     definition: {
         openapi: '3.0.0',
         info: {
-            title: 'Cooperative Labeling Platform API',
+            title: 'DGIAESG Platform API',
             version: '1.0.0',
-            description: 'API documentation for the Cooperative Labeling Platform',
+            description: 'API documentation for the DGIAESG platform',
         },
         servers: [
             {

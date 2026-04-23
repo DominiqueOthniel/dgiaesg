@@ -77,7 +77,7 @@ function SignupPage() {
             <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-primary-foreground">
               <ShieldCheck className="w-6 h-6" />
             </div>
-            <span className="font-extrabold text-xl tracking-tight">Co-op Label</span>
+            <span className="font-extrabold text-xl tracking-tight">DGIAESG</span>
           </div>
 
           <div className="mb-10">

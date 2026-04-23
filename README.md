@@ -1,4 +1,4 @@
-# Cooperative Labeling Platform
+# DGIAESG
 
 A reference platform for the certification and directory of cooperatives committed to excellence.
 
@@ -55,7 +55,7 @@ A reference platform for the certification and directory of cooperatives committ
 3. Create a `.env` file based on the following template:
    ```env
    PORT=5000
-   MONGODB_URI=mongodb://localhost:27017/coop-label
+   MONGODB_URI=mongodb://localhost:27017/dgiaesg
    JWT_SECRET=your_very_long_and_secure_secret
    NODE_ENV=development
    ```

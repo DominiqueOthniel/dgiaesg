@@ -152,7 +152,7 @@ const SiteLayout = () => {
                 </div>
                 <div>
                   <span className="text-xl md:text-2xl font-black italic block text-white uppercase tracking-tight">
-                    Co-op Label
+                    DGIAESG
                   </span>
                   <span className="text-[10px] font-bold text-brand-gold uppercase tracking-[0.3em]">
                     Infrastructure d'Excellence
@@ -230,7 +230,7 @@ const SiteLayout = () => {
 
           <div className="mt-20 pt-10 border-t border-white/15 flex flex-col md:flex-row justify-between items-center gap-6">
             <p className="text-[10px] font-bold text-white/60 uppercase tracking-[0.3em]">
-              © {new Date().getFullYear()} Co-op Label — Infrastructure
+              © {new Date().getFullYear()} DGIAESG — Infrastructure
               d'Excellence.
             </p>
           </div>

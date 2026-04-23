@@ -1,7 +1,7 @@
 {
-  "name": "coop-label-backend",
+  "name": "dgiaesg-backend",
   "version": "1.0.0",
-  "description": "Backend API for Cooperative Labeling Platform",
+  "description": "Backend API for DGIAESG platform",
   "main": "dist/server.js",
   "scripts": {
     "dev": "nodemon --exec ts-node src/server.ts",
