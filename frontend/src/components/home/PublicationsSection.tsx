@@ -56,8 +56,10 @@ export function PublicationsSection({
               </span>
             </div>
             <h2 className="font-serif text-base leading-[1.15] sm:text-xl md:text-2xl lg:text-3xl font-semibold text-foreground tracking-tight text-balance">
-              Publications & Revues{" "}
-              <span className="italic text-primary">Mensuelles</span>
+              {t("home.kiosk.headline_main")}{" "}
+              <span className="italic text-primary">
+                {t("home.kiosk.headline_accent")}
+              </span>
             </h2>
             <p className="mt-1.5 text-[11px] sm:text-xs text-muted-foreground leading-relaxed max-w-xl">
               {t("home.kiosk.subtitle")}
@@ -112,7 +114,7 @@ export function PublicationsSection({
                   {getLocalized(magazines[0].title, lang)}
                 </h3>
                 <span className="inline-flex items-center gap-1 text-[8px] font-bold uppercase tracking-[0.18em] text-white group-hover:text-brand-gold transition-colors">
-                  Lire l'édition
+                  {t("home.kiosk.read_edition")}
                   <ArrowRight className="w-2.5 h-2.5 group-hover:translate-x-1 transition-transform" />
                 </span>
               </div>

@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
@@ -18,39 +19,45 @@ import { ViewportSection, FADE_UP } from "./_shared";
 export function ConformiteSection() {
   const { t } = useTranslation();
 
-  const items = [
-    {
-      title: "Expertise Panafricaine",
-      desc: "Réseau d'influence institutionnel.",
-      icon: Globe,
-      accent: "from-brand-emerald/15 to-brand-emerald/5",
-      ring: "ring-brand-emerald/30",
-      iconColor: "text-brand-emerald",
-    },
-    {
-      title: "Protocoles Rigoureux",
-      desc: "Audit étape par étape.",
-      icon: ShieldCheck,
-      accent: "from-brand-gold/20 to-brand-gold/5",
-      ring: "ring-brand-gold/40",
-      iconColor: "text-brand-gold-dark",
-    },
-    {
-      title: "Visibilité Accrue",
-      desc: "Indexation au Registre prioritaires.",
-      icon: Zap,
-      accent: "from-primary/15 to-primary/5",
-      ring: "ring-primary/30",
-      iconColor: "text-primary",
-    },
-  ];
+  const items = useMemo(
+    () => [
+      {
+        title: t("home.conformity.feature_pan_title"),
+        desc: t("home.conformity.feature_pan_desc"),
+        icon: Globe,
+        accent: "from-brand-emerald/15 to-brand-emerald/5",
+        ring: "ring-brand-emerald/30",
+        iconColor: "text-brand-emerald",
+      },
+      {
+        title: t("home.conformity.feature_proto_title"),
+        desc: t("home.conformity.feature_proto_desc"),
+        icon: ShieldCheck,
+        accent: "from-brand-gold/20 to-brand-gold/5",
+        ring: "ring-brand-gold/40",
+        iconColor: "text-brand-gold-dark",
+      },
+      {
+        title: t("home.conformity.feature_vis_title"),
+        desc: t("home.conformity.feature_vis_desc"),
+        icon: Zap,
+        accent: "from-primary/15 to-primary/5",
+        ring: "ring-primary/30",
+        iconColor: "text-primary",
+      },
+    ],
+    [t],
+  );
 
-  const stats = [
-    { label: "ENTITÉS", value: "2400+", icon: TrendingUp },
-    { label: "PAYS", value: "24", icon: Globe },
-    { label: "AUDITS", value: "850", icon: ShieldCheck },
-    { label: "IMPACT", value: "A+", icon: Award },
-  ];
+  const stats = useMemo(
+    () => [
+      { label: t("home.conformity.stat_entities"), value: "2400+", icon: TrendingUp },
+      { label: t("home.conformity.stat_countries"), value: "24", icon: Globe },
+      { label: t("home.conformity.stat_audits"), value: "850", icon: ShieldCheck },
+      { label: t("home.conformity.stat_impact"), value: "A+", icon: Award },
+    ],
+    [t],
+  );
 
   return (
     <ViewportSection
@@ -66,17 +73,16 @@ export function ConformiteSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-center">
           <div>
             <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-primary mb-3 block">
-              {t("home.conformity.badge") || "Conformité Stratégique"}
+              {t("home.conformity.badge")}
             </span>
             <h2 className="font-heading text-2xl md:text-4xl lg:text-5xl font-black text-foreground tracking-tighter leading-[1.05] uppercase italic mb-4">
-              Faites de la conformité{" "}
+              {t("home.conformity.headline_line1")}{" "}
               <span className="bg-gradient-to-r from-primary via-brand-emerald to-brand-gold-dark bg-clip-text text-transparent">
-                votre avantage compétitif.
+                {t("home.conformity.headline_line2")}
               </span>
             </h2>
             <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-6 max-w-lg">
-              {t("home.conformity.desc") ||
-                "Notre méthodologie d'audit, alignée sur les normes ISO et les référentiels ESG, transforme l'exigence réglementaire en différenciation stratégique."}
+              {t("home.conformity.desc")}
             </p>
 
             <ul className="space-y-2.5 mb-6">
@@ -118,9 +124,7 @@ export function ConformiteSection() {
                 className="group relative inline-flex items-center gap-2 overflow-hidden bg-gradient-to-r from-brand-emerald via-primary to-brand-emerald bg-[length:200%_100%] bg-left text-primary-foreground px-6 md:px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-500 hover:bg-right shadow-2xl shadow-primary/30 active:scale-95"
               >
                 <ShieldCheck className="w-4 h-4 relative z-10" />
-                <span className="relative z-10">
-                  {t("home.conformity.cta") || "Démarrer mon Audit"}
-                </span>
+                <span className="relative z-10">{t("home.conformity.cta")}</span>
                 <ArrowRight className="w-4 h-4 ml-1 relative z-10 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>

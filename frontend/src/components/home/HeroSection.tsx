@@ -1,30 +1,52 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ShieldCheck, ChevronDown } from "lucide-react";
-import { handleImageError, slides, getLocalized } from "./_shared";
+import { useTranslation } from "react-i18next";
+import { handleImageError, getLocalized } from "./_shared";
+
+const SLIDE_IMAGES = ["/img/hero_image.jpg", "/img/hero_image2.jpg"];
+
+type SlideContent = {
+  badge: string;
+  title: string;
+  highlight: string;
+  subtitle: string;
+  image: string;
+};
 
 /**
  * 0. HERO SECTION (Includes News Ticker)
  * This combines the Hero slideshow and the ticker strip to count as one section.
  */
-export function HeroSection({ news, lang }: { news: any[], lang: string }) {
+export function HeroSection({ news, lang }: { news: any[]; lang: string }) {
+  const { t } = useTranslation();
   const [activeSlide, setActiveSlide] = useState(0);
 
+  const slides = useMemo((): SlideContent[] => {
+    const raw = t("home.hero.slides", { returnObjects: true });
+    if (!Array.isArray(raw) || raw.length === 0) return [];
+    return (raw as Omit<SlideContent, "image">[]).map((s, i) => ({
+      ...s,
+      image: SLIDE_IMAGES[i] ?? SLIDE_IMAGES[0],
+    }));
+  }, [t, lang]);
+
   useEffect(() => {
+    if (slides.length === 0) return;
     const timer = setInterval(
       () => setActiveSlide((p) => (p + 1) % slides.length),
       6000,
     );
     return () => clearInterval(timer);
-  }, []);
+  }, [slides.length]);
 
-  const slide = slides[activeSlide];
+  const slide = slides[activeSlide] ?? slides[0];
+  if (!slide) return null;
 
   return (
     <>
       <section className="relative w-full min-h-[90vh] md:min-h-screen flex items-center justify-center overflow-hidden bg-brand-dark">
-        {/* Sliding Background Images */}
         <AnimatePresence mode="wait">
           <motion.div
             key={`bg-${activeSlide}`}
@@ -43,11 +65,9 @@ export function HeroSection({ news, lang }: { news: any[], lang: string }) {
           </motion.div>
         </AnimatePresence>
 
-        {/* Overlays */}
         <div className="absolute inset-0 bg-gradient-to-br from-brand-dark via-brand-dark/95 to-primary/40 opacity-90 z-[1]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_40%,rgba(255,255,255,0.04),transparent)] z-[1]" />
 
-        {/* Subtle grid pattern */}
         <div
           className="absolute inset-0 opacity-[0.03] z-[1]"
           style={{
@@ -58,7 +78,6 @@ export function HeroSection({ news, lang }: { news: any[], lang: string }) {
         />
 
         <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-          {/* Badge */}
           <AnimatePresence mode="wait">
             <motion.div
               key={`badge-${activeSlide}`}
@@ -75,7 +94,6 @@ export function HeroSection({ news, lang }: { news: any[], lang: string }) {
             </motion.div>
           </AnimatePresence>
 
-          {/* Title */}
           <AnimatePresence mode="wait">
             <motion.div
               key={`title-${activeSlide}`}
@@ -92,7 +110,6 @@ export function HeroSection({ news, lang }: { news: any[], lang: string }) {
             </motion.div>
           </AnimatePresence>
 
-          {/* Subtitle */}
           <AnimatePresence mode="wait">
             <motion.p
               key={`sub-${activeSlide}`}
@@ -106,13 +123,12 @@ export function HeroSection({ news, lang }: { news: any[], lang: string }) {
             </motion.p>
           </AnimatePresence>
 
-          {/* CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               to="/labels"
               className="inline-flex items-center gap-2.5 bg-brand-gold text-brand-gold-foreground px-8 py-4 rounded-xl font-black uppercase tracking-widest text-xs hover:brightness-110 transition-all shadow-xl shadow-brand-gold/20 hover:shadow-2xl active:scale-[0.98]"
             >
-              Découvrir nos Labels
+              {t("home.hero.cta_labels")}
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
@@ -120,28 +136,27 @@ export function HeroSection({ news, lang }: { news: any[], lang: string }) {
               className="inline-flex items-center gap-2.5 border border-primary-foreground/25 text-primary-foreground px-8 py-4 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-primary-foreground/10 transition-all backdrop-blur-sm shadow-xl"
             >
               <ShieldCheck className="w-4 h-4" />
-              Consulter le Registre
+              {t("home.hero.cta_directory")}
             </Link>
           </div>
 
-          {/* Slide indicators */}
           <div className="flex justify-center gap-3 mt-10 md:mt-14">
             {slides.map((_, i) => (
               <button
                 key={i}
+                type="button"
                 onClick={() => setActiveSlide(i)}
                 className={`h-1 rounded-full transition-all duration-500 ${
                   activeSlide === i
                     ? "w-10 bg-brand-gold"
                     : "w-4 bg-primary-foreground/20 hover:bg-primary-foreground/40"
                 }`}
-                aria-label={`Slide ${i + 1}`}
+                aria-label={t("home.hero.slide_indicator", { n: i + 1 })}
               />
             ))}
           </div>
         </div>
 
-        {/* Scroll indicator */}
         <motion.div
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
@@ -151,7 +166,6 @@ export function HeroSection({ news, lang }: { news: any[], lang: string }) {
         </motion.div>
       </section>
 
-      {/* REAL-TIME NEWS TICKER (Part of HeroSection for 8-section layout) */}
       <div className="bg-primary py-2.5 overflow-hidden relative z-30">
         <div className="flex items-center gap-8 whitespace-nowrap animate-marquee">
           {[...Array(3)].map((_, idx) => (
@@ -174,7 +188,7 @@ export function HeroSection({ news, lang }: { news: any[], lang: string }) {
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-3.5 h-3.5 text-accent" />
                 <span className="text-[10px] font-black text-accent uppercase tracking-[0.2em]">
-                  DIRECTIVE ESG 2024 ACTIVÉE
+                  {t("home.hero.ticker_badge")}
                 </span>
               </div>
             </div>

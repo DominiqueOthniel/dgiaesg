@@ -48,8 +48,10 @@ export function EditorialSection({ news }: { news: any[] }) {
               </span>
             </div>
             <h2 className="font-serif text-base leading-[1.15] sm:text-xl md:text-2xl lg:text-3xl font-semibold text-white tracking-tight text-balance">
-              L'actualité décryptée{" "}
-              <span className="italic text-white/70">des leaders africains</span>
+              {t("home.editorial.headline_lead")}{" "}
+              <span className="italic text-white/70">
+                {t("home.editorial.headline_em")}
+              </span>
             </h2>
           </div>
           <Link
@@ -62,7 +64,7 @@ export function EditorialSection({ news }: { news: any[] }) {
 
         {news.length === 0 ? (
           <p className="text-center text-white/50 py-12">
-            Aucun article pour le moment.
+            {t("home.editorial.empty")}
           </p>
         ) : (
           <>

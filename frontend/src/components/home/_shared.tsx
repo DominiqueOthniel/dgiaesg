@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { motion, type Variants } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { getLocalized as getLocalizedFromUtils } from "@/lib/utils";
 import type { LocalizedString } from "@/types";
 
 /**
@@ -53,9 +54,7 @@ export function getLocalized(
   val: LocalizedString | undefined | null,
   lang: string,
 ): string {
-  if (!val) return "";
-  if (typeof val === "string") return val;
-  return val[lang] || val["fr"] || val["en"] || "";
+  return getLocalizedFromUtils(val, lang);
 }
 
 export function handleImageError(e: React.SyntheticEvent<HTMLImageElement>) {
@@ -142,21 +141,3 @@ export const ViewportSection = ({
   </motion.section>
 );
 
-export const slides = [
-  {
-    badge: "Standard d'Excellence Africain",
-    title: "L'Excellence Africaine,",
-    highlight: "Certifiée.",
-    subtitle:
-      "Propulsez votre impact ESG grâce à notre plateforme de certification panafricaine de classe mondiale.",
-    image: "/img/hero_image.jpg",
-  },
-  {
-    badge: "Gouvernance & Transparence",
-    title: "Bâtir la confiance,",
-    highlight: "Ensemble.",
-    subtitle:
-      "Des protocoles d'audit rigoureux et des normes ISO pour connecter les organisations d'excellence aux investisseurs mondiaux.",
-    image: "/img/hero_image2.jpg",
-  },
-];

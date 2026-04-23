@@ -73,9 +73,9 @@ export function MissionSection({
                 </div>
 
                 <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-foreground tracking-tighter leading-[1.05] mb-5 max-w-2xl uppercase italic">
-                  Le Portail Panafricain de l'Excellence{" "}
+                  {t("home.mission.headline")}{" "}
                   <span className="bg-gradient-to-r from-primary via-brand-emerald to-brand-gold-dark bg-clip-text text-transparent italic">
-                    Certifiée.
+                    {t("home.mission.headline_accent")}
                   </span>
                 </h2>
 
@@ -86,17 +86,17 @@ export function MissionSection({
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
                   {[
                     {
-                      text: "Certification ESG Global Standard",
+                      text: t("home.mission.bullet_esg"),
                       icon: ShieldCheck,
                       tone: "primary",
                     },
                     {
-                      text: "Architecture de Gouvernance ISO",
+                      text: t("home.mission.bullet_iso"),
                       icon: Building2,
                       tone: "emerald",
                     },
                     {
-                      text: "Accès au Capital Institutionnel",
+                      text: t("home.mission.bullet_capital"),
                       icon: Globe,
                       tone: "gold",
                     },
@@ -137,7 +137,8 @@ export function MissionSection({
                     to="/labels"
                     className="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-brand-emerald text-primary-foreground px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-xl shadow-primary/25 active:scale-95"
                   >
-                    Nos Portails <ArrowRight className="w-3.5 h-3.5" />
+                    {t("home.mission.cta_portals")}{" "}
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
               </div>
@@ -193,7 +194,8 @@ export function MissionSection({
                           {getLocalized(company.name, lang)}
                         </h4>
                         <span className="text-[9px] font-bold text-white/60 uppercase tracking-widest">
-                          {getLocalized(company.sector, lang) || "Secteur"}
+                          {getLocalized(company.sector, lang) ||
+                            t("home.mission.sector_fallback")}
                         </span>
                       </div>
                       <ArrowRight className="w-4 h-4 text-brand-gold/60 group-hover/item:text-brand-gold group-hover/item:translate-x-1 transition-all" />
@@ -201,7 +203,7 @@ export function MissionSection({
                   ))
                 ) : (
                   <p className="text-xs text-white/40 italic text-center py-8">
-                    No records indexed.
+                    {t("home.mission.no_companies")}
                   </p>
                 )}
               </div>
@@ -213,7 +215,7 @@ export function MissionSection({
                 >
                   <div>
                     <span className="text-[10px] font-black uppercase tracking-widest block leading-none">
-                      Registre Global
+                      {t("home.mission.registry_global")}
                     </span>
                   </div>
                   <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useLocation, Outlet, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Menu, X, ShieldCheck, User, LogOut, LayoutDashboard, Settings, ChevronRight, BookOpen, Play, Star, Calendar, Building2, Headphones, Search, Newspaper } from "lucide-react";
@@ -10,22 +10,23 @@ import { ChatbotWidget } from "./ChatbotWidget";
 
 import { SiteHeader, topNavItems } from "./coop/SiteHeader";
 
-const sidebarItems = [
-  { midhead: "Plateforme Logicielle" },
-  { key: "nav.labels", href: "/labels", icon: ShieldCheck },
-  { key: "nav.directory", href: "/directory", icon: Building2 },
-  { key: "nav.news", href: "/news", icon: Newspaper },
-  { midhead: "Espace Media" },
-  { key: "nav.kiosk", href: "/kiosk", icon: BookOpen },
-  { key: "nav.multimedia", href: "/multimedia", icon: Play },
-  { midhead: "Services & Accès" },
-  { key: "nav.pricing", href: "/pricing", icon: Star },
-];
-
-
-
 const SiteLayout = () => {
   const { t, i18n } = useTranslation();
+
+  const sidebarItems = useMemo(
+    () => [
+      { midhead: t("footer.sidebar_mid_platform") },
+      { key: "nav.labels", href: "/labels", icon: ShieldCheck },
+      { key: "nav.directory", href: "/directory", icon: Building2 },
+      { key: "nav.news", href: "/news", icon: Newspaper },
+      { midhead: t("footer.sidebar_mid_media") },
+      { key: "nav.kiosk", href: "/kiosk", icon: BookOpen },
+      { key: "nav.multimedia", href: "/multimedia", icon: Play },
+      { midhead: t("footer.sidebar_mid_services") },
+      { key: "nav.pricing", href: "/pricing", icon: Star },
+    ],
+    [t, i18n.language],
+  );
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
@@ -78,7 +79,9 @@ const SiteLayout = () => {
                    <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                       <ShieldCheck className="w-4 h-4 text-primary-foreground" />
                    </div>
-                   <span className="font-black text-sm uppercase tracking-tighter italic italic">System Menu</span>
+                   <span className="font-black text-sm uppercase tracking-tighter italic italic">
+                     {t("footer.sidebar_system_menu")}
+                   </span>
                 </div>
                 <button onClick={() => setSidebarOpen(false)} className="p-2 hover:bg-muted rounded-lg transition-colors">
                   <X className="w-5 h-5" />
@@ -113,16 +116,16 @@ const SiteLayout = () => {
               {/* Sidebar Auth State */}
               <div className="p-4 border-t border-border mt-auto">
                 <button onClick={toggleLanguage} className="w-full flex items-center justify-between px-4 py-3 bg-muted rounded-xl text-[10px] font-black uppercase mb-3">
-                    <span>Langue Système</span>
+                    <span>{t("footer.sidebar_lang")}</span>
                     <span className="text-primary">{i18n.language.toUpperCase()}</span>
                 </button>
                 {!isAuthenticated ? (
                   <Link to="/login" className="flex items-center justify-center w-full py-4 bg-primary text-primary-foreground rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-primary/20">
-                    S'Authentifier
+                    {t("footer.sidebar_sign_in")}
                   </Link>
                 ) : (
                    <button onClick={handleLogout} className="flex items-center justify-center gap-2 w-full py-4 bg-destructive/10 text-destructive rounded-xl text-xs font-black uppercase tracking-widest">
-                     <LogOut className="w-4 h-4" /> Déconnexion
+                     <LogOut className="w-4 h-4" /> {t("footer.sidebar_sign_out")}
                    </button>
                 )}
               </div>
@@ -155,19 +158,18 @@ const SiteLayout = () => {
                     DGIAESG
                   </span>
                   <span className="text-[10px] font-bold text-brand-gold uppercase tracking-[0.3em]">
-                    Infrastructure d'Excellence
+                    {t("footer.tagline_short")}
                   </span>
                 </div>
               </div>
               <p className="text-base text-white/85 max-w-sm leading-relaxed font-medium">
-                La référence panafricaine pour la certification et
-                l'accompagnement des structures à fort impact.
+                {t("footer.tagline_body")}
               </p>
             </div>
 
             <div className="md:col-span-4 lg:col-span-2 lg:ml-auto">
               <h4 className="text-[11px] font-black mb-8 uppercase tracking-[0.2em] text-brand-gold">
-                Plateforme
+                {t("footer.column_platform")}
               </h4>
               <div className="flex flex-col gap-4">
                 {topNavItems.map((item) => (
@@ -184,7 +186,7 @@ const SiteLayout = () => {
 
             <div className="md:col-span-4 lg:col-span-2">
               <h4 className="text-[11px] font-black mb-8 uppercase tracking-[0.2em] text-brand-gold">
-                Media
+                {t("footer.column_media")}
               </h4>
               <div className="flex flex-col gap-4">
                 <Link to="/kiosk" className="text-sm font-bold text-white/80 hover:text-brand-gold transition-colors">
@@ -194,17 +196,17 @@ const SiteLayout = () => {
                   {t("nav.multimedia")}
                 </Link>
                 <Link to="/pricing" className="text-sm font-bold text-white/80 hover:text-brand-gold transition-colors">
-                  Premium
+                  {t("nav.pricing")}
                 </Link>
               </div>
             </div>
 
             <div className="md:col-span-4 lg:col-span-3">
               <h4 className="text-[11px] font-black mb-8 uppercase tracking-[0.2em] text-brand-gold">
-                Newsletter
+                {t("footer.column_newsletter")}
               </h4>
               <p className="text-xs text-white/75 font-bold mb-6">
-                Analyses stratégiques mensuelles anonymisées.
+                {t("footer.newsletter_desc")}
               </p>
               <form 
                 onSubmit={(e) => {
@@ -215,14 +217,14 @@ const SiteLayout = () => {
               >
                 <input
                   type="email"
-                  placeholder="EMAIL_ID@RESEAU"
+                  placeholder={t("footer.email_placeholder")}
                   className="w-full bg-white/10 border border-white/25 rounded-xl px-4 py-3 text-xs text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-brand-gold focus:border-brand-gold transition-all font-bold"
                 />
                 <button
                   type="submit"
                   className="absolute right-1 top-1 bottom-1 px-4 bg-brand-gold text-brand-dark rounded-lg text-[10px] font-black uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-brand-gold/30"
                 >
-                  S'inscrire
+                  {t("footer.subscribe")}
                 </button>
               </form>
             </div>
@@ -230,8 +232,7 @@ const SiteLayout = () => {
 
           <div className="mt-20 pt-10 border-t border-white/15 flex flex-col md:flex-row justify-between items-center gap-6">
             <p className="text-[10px] font-bold text-white/60 uppercase tracking-[0.3em]">
-              © {new Date().getFullYear()} DGIAESG — Infrastructure
-              d'Excellence.
+              © {new Date().getFullYear()} DGIAESG — {t("footer.copyright_suffix")}
             </p>
           </div>
         </div>
