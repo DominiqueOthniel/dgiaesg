@@ -180,8 +180,27 @@ function LabelsPage() {
       <div className="labels-content-bg pb-12">
       {/* Filters bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 relative z-20">
-        <Reveal variant="down" className="bg-white border border-brand-gold/30 rounded-2xl p-4 md:p-5 shadow-xl">
-          <div className="flex flex-col lg:flex-row gap-3 lg:items-center">
+        <Reveal
+          variant="down"
+          className="relative rounded-3xl bg-card/85 backdrop-blur-xl border border-white/40 p-4 md:p-5 shadow-[0_20px_60px_-20px_rgba(13,77,51,0.35),0_8px_24px_-12px_rgba(0,0,0,0.15)] overflow-hidden"
+        >
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 animate-gradient-pan"
+            style={{
+              background:
+                "radial-gradient(ellipse at top left, hsl(var(--primary) / 0.10), transparent 60%), radial-gradient(ellipse at center, hsl(var(--brand-gold) / 0.22), transparent 55%), radial-gradient(ellipse at bottom right, hsl(var(--brand-gold-dark) / 0.18), transparent 60%)",
+            }}
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 top-0 h-px animate-hairline"
+            style={{
+              background:
+                "linear-gradient(90deg, transparent 0%, hsl(var(--brand-gold) / 0.15) 25%, hsl(var(--brand-gold) / 0.8) 50%, hsl(var(--brand-gold) / 0.15) 75%, transparent 100%)",
+            }}
+          />
+          <div className="relative flex flex-col lg:flex-row gap-3 lg:items-center">
             {/* Search with golden glow */}
             <div className="relative flex-1 search-gold-glow rounded-xl bg-white">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-gold-dark" />

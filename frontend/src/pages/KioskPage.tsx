@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import { BookOpen, Search, Download, ExternalLink, Calendar } from "lucide-react";
-import { useMagazines } from "@/hooks/useMagazines";
+import { BookOpen, Search, Download, Calendar, Sparkles, ArrowUpDown, X, Grid3X3, Rows3, List } from "lucide-react";
+import { useMagazines, type MonthlyReview } from "@/hooks/useMagazines";
 import { getLocalized, cn } from "@/lib/utils";
 import { resolveImageUrl } from "@/lib/image";
+import { ControlsBar } from "@/components/ui/ControlsBar";
 
 const IMAGE_FALLBACK = "https://placehold.co/300x400/2a3347/94a3b8?text=Magazine";
 
@@ -13,12 +14,37 @@ function KioskPage() {
   const { i18n, t } = useTranslation();
   const lang = i18n.language;
   const [searchQuery, setSearchQuery] = useState("");
+  const [featuredOnly, setFeaturedOnly] = useState(false);
+  const [sortBy, setSortBy] = useState<"latest" | "oldest" | "az">("latest");
+  const [viewMode, setViewMode] = useState<"grid" | "compact" | "list">("grid");
+  const searchPlaceholder = t("magazines.search_placeholder", { defaultValue: "Rechercher une publication..." });
 
   const { data: reviews = [], isLoading } = useMagazines();
 
-  const filtered = reviews.filter((r: any) =>
-    getLocalized(r.title, lang).toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filtered = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+
+    const list = reviews
+      .filter((review: MonthlyReview) => {
+        const localizedTitle = getLocalized(review.title, lang).toLowerCase();
+        const matchesSearch = localizedTitle.includes(query);
+        const matchesFeatured = featuredOnly ? review.featured : true;
+        return matchesSearch && matchesFeatured;
+      })
+      .sort((a: MonthlyReview, b: MonthlyReview) => {
+        if (sortBy === "az") {
+          return getLocalized(a.title, lang).localeCompare(getLocalized(b.title, lang));
+        }
+
+        const dateA = a.publishDate ? new Date(a.publishDate).getTime() : 0;
+        const dateB = b.publishDate ? new Date(b.publishDate).getTime() : 0;
+        return sortBy === "latest" ? dateB - dateA : dateA - dateB;
+      });
+
+    return list;
+  }, [reviews, searchQuery, featuredOnly, sortBy, lang]);
+
+  const mockCovers = Array.from({ length: 10 });
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -41,20 +67,132 @@ function KioskPage() {
         </div>
       </section>
 
-      {/* Search Bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-20">
-        <div className="bg-card border border-border rounded-2xl p-4 shadow-lg">
-          <div className="relative max-w-md group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-            <input
-              type="text"
-              placeholder={t("magazines.search_placeholder") || "Rechercher une publication..."}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-all"
-            />
+      {/* Controls */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-20">
+        <ControlsBar
+          footer={
+            <>
+              <div className="flex items-center gap-2 text-xs">
+                <span className="inline-flex items-center justify-center min-w-[1.75rem] h-6 px-2 rounded-full bg-primary/10 text-primary text-[11px] font-black">
+                  {filtered.length}
+                </span>
+                <span className="font-semibold text-muted-foreground">
+                  publication{filtered.length > 1 ? "s" : ""} trouvée{filtered.length > 1 ? "s" : ""}
+                </span>
+              </div>
+              {(featuredOnly || searchQuery) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFeaturedOnly(false);
+                    setSearchQuery("");
+                  }}
+                  className="inline-flex items-center gap-1.5 text-[10px] text-primary font-black uppercase tracking-[0.18em] hover:underline"
+                >
+                  <X className="w-3 h-3" />
+                  Réinitialiser
+                </button>
+              )}
+            </>
+          }
+        >
+          <div className="relative flex-1 group">
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary/15 via-transparent to-accent/15 opacity-0 group-focus-within:opacity-100 blur-md transition-opacity" />
+            <div className="relative flex items-center gap-3 px-4 h-12 rounded-2xl bg-background/70 border border-border/60 focus-within:border-primary/50 focus-within:bg-background transition-all">
+              <Search className="w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+              <input
+                type="text"
+                placeholder={searchPlaceholder}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="p-1 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label="Effacer la recherche"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
           </div>
-        </div>
+
+          <div className="flex items-center gap-2 flex-wrap w-full lg:w-auto">
+            <button
+              type="button"
+              onClick={() => setFeaturedOnly((prev) => !prev)}
+              className={cn(
+                "group inline-flex items-center gap-2 h-12 px-4 rounded-2xl text-[11px] font-bold uppercase tracking-[0.16em] transition-all",
+                featuredOnly
+                  ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-lg shadow-primary/25"
+                  : "bg-background/70 border border-border/60 text-foreground hover:border-primary/40 hover:text-primary"
+              )}
+              aria-pressed={featuredOnly}
+            >
+              <Sparkles className={cn("w-3.5 h-3.5 transition-transform", featuredOnly && "fill-current")} />
+              Premium
+            </button>
+
+            <div className="relative">
+              <ArrowUpDown className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as "latest" | "oldest" | "az")}
+                className="appearance-none h-12 pl-9 pr-9 rounded-2xl bg-background/70 border border-border/60 text-[11px] font-bold uppercase tracking-[0.16em] text-foreground hover:border-primary/40 focus:outline-none focus:border-primary/50 cursor-pointer transition-colors"
+              >
+                <option value="latest">Plus récents</option>
+                <option value="oldest">Plus anciens</option>
+                <option value="az">A - Z</option>
+              </select>
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-[10px]">▾</span>
+            </div>
+
+            <div className="inline-flex items-center h-12 rounded-2xl bg-background/70 border border-border/60 p-1 w-full sm:w-auto overflow-x-auto">
+              <button
+                type="button"
+                onClick={() => setViewMode("grid")}
+                className={cn(
+                  "h-10 px-3 rounded-xl inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] transition-all whitespace-nowrap",
+                  viewMode === "grid"
+                    ? "bg-primary text-primary-foreground shadow"
+                    : "text-foreground/80 hover:text-primary"
+                )}
+              >
+                <Grid3X3 className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Grille</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("compact")}
+                className={cn(
+                  "h-10 px-3 rounded-xl inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] transition-all whitespace-nowrap",
+                  viewMode === "compact"
+                    ? "bg-primary text-primary-foreground shadow"
+                    : "text-foreground/80 hover:text-primary"
+                )}
+              >
+                <Rows3 className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Compact</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("list")}
+                className={cn(
+                  "h-10 px-3 rounded-xl inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] transition-all whitespace-nowrap",
+                  viewMode === "list"
+                    ? "bg-primary text-primary-foreground shadow"
+                    : "text-foreground/80 hover:text-primary"
+                )}
+              >
+                <List className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Liste</span>
+              </button>
+            </div>
+          </div>
+        </ControlsBar>
       </div>
 
       {/* Magazine Grid */}
@@ -66,11 +204,30 @@ function KioskPage() {
             ))}
           </div>
         ) : filtered.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8">
-            {filtered.map((mag: any, idx: number) => (
+          <div className={cn(
+            "grid gap-8",
+            viewMode === "grid"
+              ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-5"
+              : viewMode === "compact"
+                ? "grid-cols-1 md:grid-cols-2"
+                : "grid-cols-1"
+          )}>
+            {filtered.map((mag: MonthlyReview, idx: number) => (
               <motion.div key={mag._id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.03 }}>
-                <div className="group flex flex-col h-full translate-y-0 hover:-translate-y-2 transition-transform duration-300">
-                  <div className="aspect-[3/4] bg-muted rounded-2xl overflow-hidden border border-border shadow-md group-hover:shadow-2xl transition-all relative">
+                <div className={cn(
+                  "group h-full translate-y-0 hover:-translate-y-2 transition-transform duration-300",
+                  viewMode === "grid"
+                    ? "flex flex-col"
+                    : "flex gap-4 items-start rounded-2xl border border-border bg-card/60 p-3"
+                )}>
+                  <div className={cn(
+                    "bg-muted rounded-2xl overflow-hidden border border-border shadow-md group-hover:shadow-2xl transition-all relative",
+                    viewMode === "grid"
+                      ? "aspect-[3/4]"
+                      : viewMode === "compact"
+                        ? "w-32 sm:w-36 aspect-[3/4] shrink-0"
+                        : "w-24 sm:w-28 aspect-[3/4] shrink-0"
+                  )}>
                     {mag.coverImageUrl ? (
                       <img
                         src={resolveImageUrl(mag.coverImageUrl)}
@@ -99,9 +256,20 @@ function KioskPage() {
                       ) : (
                         <p className="text-white text-xs font-bold uppercase tracking-widest">Abonnement Requis</p>
                       )}
-                      <button className="w-full bg-white/10 border border-white/20 text-white px-4 py-3 rounded-lg text-xs font-black uppercase tracking-widest hover:bg-white/20 transition-all">
-                        Consulter Aperçu
-                      </button>
+                      <a
+                        href={mag.coverImageUrl ? resolveImageUrl(mag.coverImageUrl) : "#"}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={cn(
+                          "w-full px-4 py-3 rounded-lg text-xs font-black uppercase tracking-widest transition-all",
+                          mag.coverImageUrl
+                            ? "bg-white/10 border border-white/20 text-white hover:bg-white/20"
+                            : "bg-white/5 border border-white/10 text-white/60 cursor-not-allowed pointer-events-none"
+                        )}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Consulter couverture
+                      </a>
                     </div>
 
                     {mag.featured && (
@@ -111,7 +279,7 @@ function KioskPage() {
                     )}
                   </div>
                   
-                  <div className="mt-5 space-y-1.5 flex-1">
+                  <div className={cn("space-y-1.5 flex-1", viewMode === "grid" ? "mt-5" : "pt-1", viewMode === "list" && "flex flex-col justify-center")}>
                     <h4 className="text-sm font-extrabold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
                        {getLocalized(mag.title, lang)}
                     </h4>
@@ -127,10 +295,38 @@ function KioskPage() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-24 bg-muted/20 rounded-3xl border border-dashed border-border">
-            <BookOpen className="w-16 h-16 text-muted-foreground/20 mx-auto mb-6" />
-            <h2 className="text-xl font-bold text-muted-foreground">Aucune revue disponible</h2>
-            <p className="text-sm text-muted-foreground/60 mt-2">Notre kiosque sera bientôt mis à jour avec de nouvelles éditions.</p>
+          <div className="space-y-8">
+            <motion.div
+              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: {},
+                visible: { transition: { staggerChildren: 0.06, delayChildren: 0.05 } },
+              }}
+            >
+              {mockCovers.map((_, idx) => (
+                <motion.div
+                  key={`mock-${idx}`}
+                  className="group hover-lift-soft"
+                  variants={{
+                    hidden: { opacity: 0, y: 18 },
+                    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
+                  }}
+                >
+                  <div className="aspect-[3/4] rounded-2xl overflow-hidden border border-border shadow-md bg-gradient-to-br from-primary/20 via-primary/10 to-accent/15 relative">
+                    <div className="absolute inset-0 opacity-35 [background:repeating-linear-gradient(135deg,rgba(255,255,255,.45)_0_2px,transparent_2px_14px)]" />
+                    <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/55 to-transparent">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-white/90">Edition {String(idx + 1).padStart(2, "0")}</span>
+                    </div>
+                  </div>
+                  <div className="mt-3 space-y-2">
+                    <div className="h-3 rounded-full bg-muted" />
+                    <div className="h-3 rounded-full bg-muted/70 w-4/5" />
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
           </div>
         )}
 

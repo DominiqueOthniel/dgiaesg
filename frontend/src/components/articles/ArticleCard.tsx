@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { resolveImageUrl } from "@/lib/image";
 
+const IMAGE_FALLBACK = "https://placehold.co/800x450/e2e8f0/94a3b8?text=Article";
+
 export type ArticleCardVariant = "hero" | "list" | "compact";
 
 export interface ArticleCardProps {
@@ -69,6 +71,9 @@ export function ArticleCard({
             src={resolvedImg}
             alt={title}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = IMAGE_FALLBACK;
+            }}
           />
         </div>
       )}

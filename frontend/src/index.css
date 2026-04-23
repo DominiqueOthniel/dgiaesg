@@ -436,6 +436,57 @@
   }
   .pulse-gold { animation: shimmer-gold 2.4s ease-in-out infinite; }
 
+  /* Subtle sweep animation for the golden hairline in ControlsBar & hero */
+  @keyframes hairline-shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  .animate-hairline {
+    background-size: 200% 100%;
+    animation: hairline-shimmer 8s linear infinite;
+  }
+
+  /* Slow gradient pan, useful on rich radial-gradient overlays */
+  @keyframes gradient-pan {
+    0%   { transform: translate3d(0, 0, 0) scale(1); }
+    50%  { transform: translate3d(1.5%, -1%, 0) scale(1.03); }
+    100% { transform: translate3d(0, 0, 0) scale(1); }
+  }
+  .animate-gradient-pan { animation: gradient-pan 18s ease-in-out infinite; }
+
+  /* Soft breathing scale + gold glow for Pro/primary cards */
+  @keyframes breathe-gold {
+    0%, 100% {
+      box-shadow:
+        0 30px 80px -30px hsl(var(--brand-gold) / 0.35),
+        0 10px 30px -15px rgba(0, 0, 0, 0.18);
+    }
+    50% {
+      box-shadow:
+        0 34px 90px -28px hsl(var(--brand-gold) / 0.55),
+        0 14px 34px -14px rgba(0, 0, 0, 0.22);
+    }
+  }
+  .breathe-gold { animation: breathe-gold 5s ease-in-out infinite; }
+
+  /* Soft lift used on mock cards & magazine covers */
+  .hover-lift-soft {
+    transition:
+      transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .hover-lift-soft:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 22px 50px -22px hsl(var(--primary) / 0.25);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-hairline,
+    .animate-gradient-pan,
+    .breathe-gold,
+    .pulse-gold { animation: none !important; }
+  }
+
   /* ============================================================
      Scroll-triggered reveal system (used by <Reveal /> wrapper)
      Direction-aware: animations replay when scrolling up/down.

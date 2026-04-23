@@ -52,8 +52,7 @@ function SectorPage() {
 
     useEffect(() => {
         setPage(1);
-        refetch();
-    }, [sector, refetch]);
+    }, [sector]);
 
     const hasNoNews = !isLoading && news.length === 0;
 
@@ -62,7 +61,7 @@ function SectorPage() {
             title={meta.title}
             subtitle={meta.desc}
             headerMeta={`Hub sectoriel : ${sector.toUpperCase()}`}
-            className={cn("bg-white min-h-screen")}
+            className={cn("bg-background min-h-screen")}
             children={{
                 main: isLoading ? (
                     <div className="space-y-4">
@@ -116,6 +115,12 @@ function SectorPage() {
                             <p className="text-xs text-slate-500 leading-relaxed">
                                 Suivez les dernières tendances et analyses décryptées par nos experts du secteur {sector}.
                             </p>
+                            <button
+                                onClick={() => refetch()}
+                                className="mt-4 w-full h-9 rounded-lg bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-[0.16em] hover:brightness-110 transition-all"
+                            >
+                                Actualiser
+                            </button>
                         </div>
                     </SidebarStack>
                 ),
