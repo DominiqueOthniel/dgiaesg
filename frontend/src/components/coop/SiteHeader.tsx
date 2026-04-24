@@ -4,6 +4,7 @@ import {
   Menu,
   ShieldCheck,
   Building2,
+  MapPin,
   BookOpen,
   Headphones,
   Crown,
@@ -21,6 +22,7 @@ import { useState } from "react";
 export const topNavItems = [
   { key: "nav.labels", href: "/labels", icon: ShieldCheck },
   { key: "nav.directory", href: "/directory", icon: Building2 },
+  { key: "nav.countries", href: "/pays", icon: MapPin },
   { key: "nav.news", href: "/news", icon: BookOpen },
   { key: "nav.kiosk", href: "/kiosk", icon: BookOpen },
   { key: "nav.mediatique", href: "/mediatique", icon: Headphones },

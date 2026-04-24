@@ -17,6 +17,8 @@ const CompanyDetailPage = lazy(() => import("./pages/CompanyDetailPage"));
 const NewsPage = lazy(() => import("./pages/NewsPage"));
 const NewsArticlePage = lazy(() => import("./pages/NewsArticlePage"));
 const SectorPage = lazy(() => import("./pages/SectorPage"));
+const CountriesPage = lazy(() => import("./pages/CountriesPage"));
+const CountryRegionPage = lazy(() => import("./pages/CountryRegionPage"));
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 const SignupPage = lazy(() => import("./pages/SignupPage"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
@@ -73,6 +75,8 @@ function App() {
             <Route path="news" element={<NewsPage />} />
             <Route path="news/:slug" element={<NewsArticlePage />} />
             <Route path="news/sector/:sector" element={<SectorPage />} />
+            <Route path="pays" element={<CountriesPage />} />
+            <Route path="pays/:region" element={<CountryRegionPage />} />
             <Route path="kiosk" element={<KioskPage />} />
             <Route path="mediatique" element={<MultimediaPage />} />
             <Route path="multimedia" element={<MultimediaPage />} />

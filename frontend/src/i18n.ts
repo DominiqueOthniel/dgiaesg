@@ -9,6 +9,7 @@ const resources = {
                 home: "Accueil",
                 labels: "Portails Label",
                 directory: "Registre de Transparence",
+                countries: "Pays",
                 news: "Journal",
                 kiosk: "Kiosque",
                 mediatique: "Médiatique",
@@ -429,6 +430,20 @@ const resources = {
                     view_grid: "Grille",
                     view_list: "Liste",
                 },
+                countries: {
+                    hub_kicker: "Couverture par pays",
+                    hub_title: "54 pays, une seule ambition : un continent durable.",
+                    hub_subtitle:
+                        "Naviguez par région pour accéder aux profils ESG pays, aux actualités locales, aux entreprises à suivre et aux indicateurs clés.",
+                    region_countries: "{{count}} pays",
+                    explore_region: "Explorer la région",
+                    back_regions: "Retour aux régions",
+                    region_subtitle:
+                        "Profil ESG pays, actualités locales, entreprises à suivre et indicateurs clés.",
+                    section_news: "Actualités",
+                    section_companies: "Entreprises à suivre",
+                    section_indicators: "Indicateurs clés",
+                },
                 pricing: {
                     badge: "Formules DGIAESG",
                     hero_title_1: "Libérez le potentiel",
@@ -603,6 +618,7 @@ const resources = {
                 home: "Home",
                 labels: "Label Hubs",
                 directory: "Transparency Registry",
+                countries: "Countries",
                 news: "Journal",
                 kiosk: "Kiosk",
                 mediatique: "Media Hub",
@@ -1022,6 +1038,20 @@ const resources = {
                     article_other: "{{count}} articles",
                     view_grid: "Grid",
                     view_list: "List",
+                },
+                countries: {
+                    hub_kicker: "Country coverage",
+                    hub_title: "54 countries, one ambition: a sustainable continent.",
+                    hub_subtitle:
+                        "Browse by region to access country ESG profiles, local headlines, companies to watch, and key indicators.",
+                    region_countries: "{{count}} countries",
+                    explore_region: "Explore region",
+                    back_regions: "Back to regions",
+                    region_subtitle:
+                        "Country ESG profile, local headlines, companies to watch, and key indicators.",
+                    section_news: "Headlines",
+                    section_companies: "Companies to watch",
+                    section_indicators: "Key indicators",
                 },
                 pricing: {
                     badge: "DGIAESG plans",
