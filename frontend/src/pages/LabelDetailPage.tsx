@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { 
   Award, ArrowLeft, ShieldCheck, ChevronRight, Bookmark, 
-  BarChart3, Scale, Zap, Info, Target, Users, CheckCircle2 
+  BarChart3, Zap, Info, Users, CheckCircle2 
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 
@@ -19,12 +19,12 @@ import { resolveImageUrl } from "@/lib/image";
 const IMAGE_FALLBACK = "https://placehold.co/400x400/e2e8f0/94a3b8?text=Logo";
 
 function LabelDetailPage() {
-  const { i18n, t } = useTranslation();
+  const { i18n } = useTranslation();
   const lang = i18n.language;
   const { id } = useParams<{ id: string }>();
   
   const { data: label, isLoading: labelLoading } = useLabel(id);
-  const { data: labelsData, isLoading: labelsLoading } = useLabels();
+  const { data: labelsData } = useLabels();
   const { data: criteria, isLoading: criteriaLoading } = useCriteria(id);
   const { data: companiesData, isLoading: companiesLoading } = useCompanies({ labelId: id, limit: 6 });
   const { user, isAuthenticated, updateSavedLabels } = useAuth();
@@ -180,10 +180,10 @@ function LabelDetailPage() {
                         <div className="flex-1 space-y-3">
                           <div className="flex items-center gap-3">
                             <span className="text-xs font-bold text-primary px-2 py-0.5 bg-primary/5 rounded border border-primary/10">
-                              {item.category || "Critère"}
+                              {(item as any).category || "Critère"}
                             </span>
                             <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
-                              {getLocalized(item.title as any, lang)}
+                              {getLocalized((item as any).title, lang)}
                             </h3>
                           </div>
                           <p className="text-sm text-muted-foreground leading-relaxed">

@@ -2,7 +2,6 @@ import { Routes, Route, Navigate, Link } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import SiteLayout from "./components/SiteLayout";
 import { ScrollToTop } from "./components/ScrollToTop";
-import { Loader2 } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 
 import AdminRoute from "./components/AdminRoute";

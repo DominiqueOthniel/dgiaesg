@@ -50,7 +50,7 @@ export function MultimediaSection({
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-4 sm:mb-5 pb-3 border-b border-brand-gold/20">
           <div>
             <span className="text-[9px] font-black uppercase tracking-[0.28em] text-brand-gold mb-1 block">
-              DGIA TV & EXCELLENCE
+              {t("home.multimedia.brand_kicker")}
             </span>
             <h2 className="font-heading text-lg sm:text-2xl md:text-3xl font-black text-white tracking-tight uppercase">
               {t("home.multimedia.title")} Hub
@@ -236,7 +236,10 @@ export function MultimediaSection({
                             {getLocalized(p.title, lang)}
                           </p>
                           <p className="text-[8px] font-semibold uppercase tracking-widest text-white/80 mt-0.5">
-                            {32 + i * 4} min · Audio
+                            {t("home.multimedia.duration_line", {
+                              mins: 32 + i * 4,
+                              kind: t("home.multimedia.audio_kind"),
+                            })}
                           </p>
                         </div>
                       </Link>

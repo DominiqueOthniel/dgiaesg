@@ -1,10 +1,9 @@
 import { useParams, Link } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { motion } from "framer-motion";
 import { 
   ArrowLeft, Calendar, User, Share2, Bookmark, 
-  MessageSquare, Clock, Zap, ShieldCheck, ChevronRight 
+  Clock, Zap, ShieldCheck, ChevronRight 
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 
@@ -24,7 +23,7 @@ function NewsArticlePage() {
   const { slug } = useParams<{ slug: string }>();
   
   const { data: article, isLoading } = useNewsArticle(slug);
-  const { data: relatedNewsData, isLoading: relatedLoading } = useNews({
+  const { data: relatedNewsData } = useNews({
     sector: article?.sector,
     limit: 6,
     published: true,

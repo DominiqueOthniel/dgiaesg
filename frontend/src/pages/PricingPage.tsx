@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Check,
@@ -13,6 +13,8 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import { cn } from "@/lib/utils";
 
@@ -34,111 +36,90 @@ interface Plan {
   popular?: boolean;
 }
 
-const PLANS: Plan[] = [
-  {
-    id: "free",
-    name: "Lecteur Libre",
-    tagline: "L'essentiel ESG",
-    description:
-      "Restez informé des grandes tendances de la certification africaine.",
-    monthlyPrice: 0,
-    yearlyPrice: 0,
-    currency: "FCFA",
-    icon: Globe,
-    features: [
-      "Accès aux actualités publiques",
-      "Consultation de l'annuaire de base",
-      "Newsletter hebdomadaire",
-      "Sauvegarde jusqu'à 5 articles",
-      "Flux multimédia standard",
-    ],
-    ctaLabel: "Créer un compte",
-    ctaHref: "/signup",
-  },
-  {
-    id: "pro",
-    name: "Réseau PRO",
-    tagline: "Intelligence stratégique",
-    description:
-      "La puissance analytique pour les décideurs et les experts ESG.",
-    monthlyPrice: 15000,
-    yearlyPrice: 150000,
-    currency: "FCFA",
-    icon: Crown,
-    features: [
-      "Analyses Premium illimitées",
-      "Rapports d'impact détaillés",
-      "Accès prioritaire aux enquêtes",
-      "Sauvegarde illimitée",
-      "Kiosque revue mensuelle (PDF)",
-      "Support expert dédié",
-    ],
-    highlight: "Le plus choisi",
-    ctaLabel: "Passer Premium",
-    ctaHref: "/signup",
-    popular: true,
-  },
-  {
-    id: "enterprise",
-    name: "Entreprise",
-    tagline: "Équipe & API",
-    description:
-      "Solution complète pour les organisations et les labels certifiés.",
-    monthlyPrice: "custom",
-    yearlyPrice: "custom",
-    currency: "FCFA",
-    icon: Building2,
-    features: [
-      "Accès multi-utilisateurs",
-      "Dashboard d'impact corporate",
-      "Visibilité accrue dans l'annuaire",
-      "Publication de communiqués",
-      "API access & intégrations",
-      "Audit & conseil ESG dédié",
-    ],
-    ctaLabel: "Contacter les ventes",
-    ctaHref: "/contact",
-  },
-];
+function buildPlans(t: TFunction): Plan[] {
+  const features = (id: PlanTier) =>
+    t(`pages.pricing.plans.${id}.features`, { returnObjects: true }) as string[];
 
-const GUARANTEES = [
-  { icon: Shield, label: "Paiement sécurisé" },
-  { icon: Zap, label: "Activation immédiate" },
-  { icon: Star, label: "Sans engagement" },
-];
+  return [
+    {
+      id: "free",
+      name: t("pages.pricing.plans.free.name"),
+      tagline: t("pages.pricing.plans.free.tagline"),
+      description: t("pages.pricing.plans.free.description"),
+      monthlyPrice: 0,
+      yearlyPrice: 0,
+      currency: "FCFA",
+      icon: Globe,
+      features: features("free"),
+      ctaLabel: t("pages.pricing.plans.free.cta"),
+      ctaHref: "/signup",
+    },
+    {
+      id: "pro",
+      name: t("pages.pricing.plans.pro.name"),
+      tagline: t("pages.pricing.plans.pro.tagline"),
+      description: t("pages.pricing.plans.pro.description"),
+      monthlyPrice: 15000,
+      yearlyPrice: 150000,
+      currency: "FCFA",
+      icon: Crown,
+      features: features("pro"),
+      highlight: t("pages.pricing.plans.pro.highlight"),
+      ctaLabel: t("pages.pricing.plans.pro.cta"),
+      ctaHref: "/signup",
+      popular: true,
+    },
+    {
+      id: "enterprise",
+      name: t("pages.pricing.plans.enterprise.name"),
+      tagline: t("pages.pricing.plans.enterprise.tagline"),
+      description: t("pages.pricing.plans.enterprise.description"),
+      monthlyPrice: "custom",
+      yearlyPrice: "custom",
+      currency: "FCFA",
+      icon: Building2,
+      features: features("enterprise"),
+      ctaLabel: t("pages.pricing.plans.enterprise.cta"),
+      ctaHref: "/contact",
+    },
+  ];
+}
 
-const FAQ = [
-  {
-    q: "Puis-je changer de formule à tout moment ?",
-    a: "Oui, vous pouvez passer d'une formule à une autre à tout moment. La facturation est ajustée au prorata.",
-  },
-  {
-    q: "Quels modes de paiement sont acceptés ?",
-    a: "Carte bancaire, mobile money (Orange Money, Wave, MTN Mobile Money) et virement pour les abonnements Entreprise.",
-  },
-  {
-    q: "L'abonnement Entreprise inclut-il une démo ?",
-    a: "Oui. Un expert vous accompagne sur la mise en place, la formation de vos équipes et l'intégration API si besoin.",
-  },
-  {
-    q: "Puis-je résilier mon abonnement ?",
-    a: "Sans engagement : vous pouvez résilier à tout moment depuis votre espace personnel, sans frais.",
-  },
-];
-
-function formatPrice(value: number | "custom") {
-  if (value === "custom") return "Sur devis";
-  if (value === 0) return "Gratuit";
-  return new Intl.NumberFormat("fr-FR").format(value);
+function formatPrice(
+  value: number | "custom",
+  t: TFunction,
+  locale: string
+) {
+  if (value === "custom") return t("pages.pricing.price_custom");
+  if (value === 0) return t("pages.pricing.price_free");
+  return new Intl.NumberFormat(locale).format(value);
 }
 
 export default function PricingPage() {
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
+  const locale = i18n.language?.startsWith("en") ? "en-US" : "fr-FR";
+
+  const plans = useMemo(() => buildPlans(t), [t, i18n.language]);
+
+  const guarantees = useMemo(
+    () =>
+      [
+        { icon: Shield, label: t("pages.pricing.guarantee_secure") },
+        { icon: Zap, label: t("pages.pricing.guarantee_fast") },
+        { icon: Star, label: t("pages.pricing.guarantee_flex") },
+      ] as const,
+    [t, i18n.language]
+  );
+
+  const faqItems = useMemo(() => {
+    const raw = t("pages.pricing.faq", { returnObjects: true });
+    return Array.isArray(raw) ? (raw as { q: string; a: string }[]) : [];
+  }, [t, i18n.language]);
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary to-[hsl(var(--brand-deep)_/_0.95)]">
         <div
           aria-hidden
@@ -175,25 +156,22 @@ export default function PricingPage() {
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[hsl(var(--brand-gold)/0.4)] bg-[hsl(var(--brand-gold)/0.08)] backdrop-blur-sm">
               <Sparkles className="w-3.5 h-3.5 text-[hsl(var(--brand-gold))]" />
               <span className="text-[10px] font-black uppercase tracking-[0.22em] text-[hsl(var(--brand-gold))]">
-                Formules DGIA ESG
+                {t("pages.pricing.badge")}
               </span>
             </div>
 
             <h1 className="text-4xl md:text-6xl font-black tracking-tight text-primary-foreground leading-[1.05]">
-              Libérez le potentiel
+              {t("pages.pricing.hero_title_1")}
               <br />
               <span className="bg-gradient-to-r from-[hsl(var(--brand-gold))] via-[hsl(var(--brand-gold-dark))] to-[hsl(var(--brand-gold))] bg-clip-text text-transparent italic">
-                analytique.
+                {t("pages.pricing.hero_title_2")}
               </span>
             </h1>
 
             <p className="text-base md:text-lg text-primary-foreground/75 max-w-2xl mx-auto leading-relaxed">
-              Choisissez la formule qui correspond à votre ambition. Accédez à
-              l'intelligence stratégique DGIAESG pour piloter votre impact
-              ESG en Afrique.
+              {t("pages.pricing.hero_subtitle")}
             </p>
 
-            {/* Billing toggle */}
             <div className="inline-flex items-center gap-1 p-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-md shadow-inner">
               {(["monthly", "yearly"] as const).map((b) => {
                 const active = billing === b;
@@ -209,10 +187,12 @@ export default function PricingPage() {
                         : "text-primary-foreground/70 hover:text-primary-foreground"
                     )}
                   >
-                    {b === "monthly" ? "Mensuel" : "Annuel"}
+                    {b === "monthly"
+                      ? t("pages.pricing.billing_monthly")
+                      : t("pages.pricing.billing_yearly")}
                     {b === "yearly" && (
                       <span className="absolute -top-2 -right-2 text-[9px] font-black px-1.5 py-0.5 rounded-full bg-accent text-accent-foreground shadow">
-                        -17%
+                        {t("pages.pricing.billing_discount")}
                       </span>
                     )}
                   </button>
@@ -221,7 +201,7 @@ export default function PricingPage() {
             </div>
 
             <div className="flex flex-wrap items-center justify-center gap-6 pt-3 text-primary-foreground/70">
-              {GUARANTEES.map((g) => (
+              {guarantees.map((g) => (
                 <span key={g.label} className="inline-flex items-center gap-2 text-[11px] font-semibold">
                   <g.icon className="w-3.5 h-3.5 text-[hsl(var(--brand-gold))]" />
                   {g.label}
@@ -231,15 +211,13 @@ export default function PricingPage() {
           </motion.div>
         </div>
 
-        {/* Bottom fade */}
         <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-background" />
       </section>
 
-      {/* Pricing cards */}
       <section className="-mt-24 relative z-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
-            {PLANS.map((plan, idx) => {
+            {plans.map((plan, idx) => {
               const price = billing === "monthly" ? plan.monthlyPrice : plan.yearlyPrice;
               const isCurrent = user?.isPro && plan.id === "pro";
 
@@ -308,14 +286,17 @@ export default function PricingPage() {
 
                         <div className="flex items-baseline gap-2 flex-wrap">
                           <span className="text-5xl font-black text-foreground tracking-tight">
-                            {formatPrice(price)}
+                            {formatPrice(price, t, locale)}
                           </span>
                           {price !== "custom" && price !== 0 && (
                             <span className="text-sm font-bold text-muted-foreground">
                               {plan.currency}
                               <span className="text-muted-foreground/80">
                                 {" "}
-                                / {billing === "monthly" ? "mois" : "an"}
+                                /{" "}
+                                {billing === "monthly"
+                                  ? t("pages.pricing.per_month")
+                                  : t("pages.pricing.per_year")}
                               </span>
                             </span>
                           )}
@@ -325,9 +306,12 @@ export default function PricingPage() {
                           typeof price === "number" &&
                           price > 0 && (
                             <p className="mt-2 text-[11px] font-semibold text-primary">
-                              Soit {new Intl.NumberFormat("fr-FR").format(Math.round(price / 12))} FCFA / mois — économie de {new Intl.NumberFormat("fr-FR").format(
-                                (plan.monthlyPrice as number) * 12 - (plan.yearlyPrice as number)
-                              )} FCFA
+                              {t("pages.pricing.yearly_equiv", {
+                                equiv: new Intl.NumberFormat(locale).format(Math.round(price / 12)),
+                                saved: new Intl.NumberFormat(locale).format(
+                                  (plan.monthlyPrice as number) * 12 - (plan.yearlyPrice as number)
+                                ),
+                              })}
                             </p>
                           )}
 
@@ -371,7 +355,7 @@ export default function PricingPage() {
                                   : "bg-background border border-border text-foreground hover:border-primary/40 hover:text-primary active:scale-[0.98]"
                           )}
                         >
-                          {isCurrent ? "Plan actuel" : plan.ctaLabel}
+                          {isCurrent ? t("pages.pricing.current_plan") : plan.ctaLabel}
                           {!isCurrent && (
                             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                           )}
@@ -385,16 +369,15 @@ export default function PricingPage() {
           </div>
 
           <p className="mt-8 text-center text-xs text-muted-foreground">
-            Tous les prix sont affichés HT. Vous pouvez changer ou résilier à tout moment.
+            {t("pages.pricing.disclaimer")}
           </p>
         </div>
       </section>
 
-      {/* Trust badges / partners */}
       <section className="py-20 mt-10 border-t border-border/70">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <p className="text-center text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground mb-10">
-            Ils nous font confiance
+            {t("pages.pricing.trust_title")}
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {["UNECA", "AUDA-NEPAD", "BAD", "PNUD"].map((p) => (
@@ -409,26 +392,25 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* FAQ */}
       <section className="py-24 bg-gradient-to-b from-muted/30 to-background">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-6">
               <HelpCircle className="w-3.5 h-3.5 text-primary" />
               <span className="text-[10px] font-black uppercase tracking-[0.22em] text-primary">
-                Questions fréquentes
+                {t("pages.pricing.faq_kicker")}
               </span>
             </div>
             <h2 className="text-3xl md:text-4xl font-black tracking-tight text-foreground">
-              On vous explique tout.
+              {t("pages.pricing.faq_title")}
             </h2>
             <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
-              Tout ce qu'il faut savoir avant de choisir votre formule.
+              {t("pages.pricing.faq_subtitle")}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {FAQ.map((item, idx) => (
+            {faqItems.map((item, idx) => (
               <motion.details
                 key={item.q}
                 initial={{ opacity: 0, y: 16 }}
@@ -452,7 +434,6 @@ export default function PricingPage() {
             ))}
           </div>
 
-          {/* CTA */}
           <div className="mt-16 relative rounded-[2rem] overflow-hidden bg-gradient-to-br from-primary via-primary to-[hsl(var(--brand-deep))] p-10 md:p-14 text-center shadow-2xl">
             <div
               aria-hidden
@@ -472,15 +453,14 @@ export default function PricingPage() {
             />
             <div className="relative">
               <h3 className="text-2xl md:text-3xl font-black text-primary-foreground tracking-tight">
-                Une question sur l'offre Entreprise ?
+                {t("pages.pricing.cta_enterprise_title")}
               </h3>
               <p className="mt-3 text-primary-foreground/75 max-w-xl mx-auto">
-                Nos experts vous accompagnent dans le choix et le déploiement
-                de votre solution.
+                {t("pages.pricing.cta_enterprise_body")}
               </p>
               <Link to="/contact">
                 <button className="mt-8 inline-flex items-center gap-2 px-8 h-14 rounded-2xl bg-[hsl(var(--brand-gold))] text-[hsl(var(--brand-gold-foreground))] text-[11px] font-black uppercase tracking-[0.2em] shadow-lg shadow-[hsl(var(--brand-gold)/0.3)] hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all">
-                  Discuter avec un conseiller
+                  {t("pages.pricing.cta_enterprise_button")}
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </Link>

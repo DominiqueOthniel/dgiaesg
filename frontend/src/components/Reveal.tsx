@@ -17,7 +17,7 @@ export function Reveal({
   className,
   repeat = true,
 }: RevealProps) {
-  const { elementRef, isVisible, direction } = useScrollReveal();
+  const { elementRef, isVisible } = useScrollReveal();
   const [hasRevealed, setHasRevealed] = React.useState(false);
 
   React.useEffect(() => {

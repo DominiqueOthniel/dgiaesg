@@ -51,14 +51,14 @@ function MultimediaPage() {
             <div className="flex items-center gap-2 mb-4">
               <Play className="w-5 h-5 text-accent fill-accent" />
               <span className="text-xs font-bold uppercase tracking-widest text-primary-foreground/70">
-                Médiathèque Institutionnelle
+                {t("pages.multimedia.hero_kicker")}
               </span>
             </div>
             <h1 className="text-3xl md:text-5xl font-extrabold text-primary-foreground tracking-tight mb-4">
-              Multimédia & Insights
+              {t("pages.multimedia.hero_title")}
             </h1>
             <p className="text-lg text-primary-foreground/70 max-w-xl">
-              Vidéos, podcasts et contenus audiovisuels de l'économie africaine certifiée.
+              {t("pages.multimedia.hero_subtitle")}
             </p>
           </motion.div>
         </div>
@@ -74,7 +74,7 @@ function MultimediaPage() {
                   {items.length}
                 </span>
                 <span className="font-semibold text-muted-foreground">
-                  contenu{items.length > 1 ? "s" : ""} trouvé{items.length > 1 ? "s" : ""}
+                  {t("pages.multimedia.contents", { count: items.length })}
                 </span>
               </div>
               {(search || type !== "all") && (
@@ -87,7 +87,7 @@ function MultimediaPage() {
                   className="inline-flex items-center gap-1.5 text-[10px] text-primary font-black uppercase tracking-[0.18em] hover:underline"
                 >
                   <X className="w-3 h-3" />
-                  Réinitialiser
+                  {t("common.reset_filters")}
                 </button>
               )}
             </>
@@ -99,7 +99,7 @@ function MultimediaPage() {
               <LayoutGrid className="w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
               <input
                 type="text"
-                placeholder="Rechercher une vidéo ou un podcast..."
+                placeholder={t("pages.multimedia.search_placeholder")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none"
@@ -109,7 +109,7 @@ function MultimediaPage() {
                   type="button"
                   onClick={() => setSearch("")}
                   className="p-1 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-                  aria-label="Effacer la recherche"
+                  aria-label={t("common.clear_search")}
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -119,9 +119,9 @@ function MultimediaPage() {
 
           <div className="flex items-center gap-2 flex-wrap w-full lg:w-auto">
             {[
-              { value: "all", label: t("common.all") || "Tous", icon: Sparkles },
-              { value: "video", label: "Vidéos", icon: Play },
-              { value: "audio", label: "Podcasts", icon: Headphones },
+              { value: "all", label: t("common.all"), icon: Sparkles },
+              { value: "video", label: t("pages.multimedia.filter_videos"), icon: Play },
+              { value: "audio", label: t("pages.multimedia.filter_podcasts"), icon: Headphones },
             ].map((f) => {
               const active = type === (f.value as typeof type);
               return (
@@ -155,7 +155,7 @@ function MultimediaPage() {
                 )}
               >
                 <LayoutGrid className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Grille</span>
+                <span className="hidden sm:inline">{t("common.view_grid")}</span>
               </button>
               <button
                 type="button"
@@ -168,7 +168,7 @@ function MultimediaPage() {
                 )}
               >
                 <Rows3 className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Compact</span>
+                <span className="hidden sm:inline">{t("common.view_compact")}</span>
               </button>
               <button
                 type="button"
@@ -181,7 +181,7 @@ function MultimediaPage() {
                 )}
               >
                 <List className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Liste</span>
+                <span className="hidden sm:inline">{t("common.view_list")}</span>
               </button>
             </div>
           </div>
@@ -265,7 +265,9 @@ function MultimediaPage() {
                     )}
                     <div className="absolute top-4 right-4 z-30">
                       <span className="px-3 py-1 bg-black/60 backdrop-blur-md text-white text-[9px] font-black uppercase tracking-widest rounded-lg border border-white/10">
-                        {item.type}
+                        {item.type === "video"
+                          ? t("pages.multimedia.filter_videos")
+                          : t("pages.multimedia.filter_podcasts")}
                       </span>
                     </div>
                   </div>
@@ -278,7 +280,7 @@ function MultimediaPage() {
                     </p>
                     <div className="flex items-center justify-between pt-4 border-t border-border">
                       <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                        Publié récemment
+                        {t("pages.multimedia.published_recently")}
                       </span>
                       <Share2 className="w-4 h-4 text-muted-foreground hover:text-primary cursor-pointer transition-colors" />
                     </div>
@@ -320,7 +322,8 @@ function MultimediaPage() {
                   </div>
                   <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/55 to-transparent">
                     <span className="text-[10px] font-black uppercase tracking-wider text-white/90">
-                      {idx % 2 === 0 ? "Vidéo" : "Podcast"} · Épisode {String(idx + 1).padStart(2, "0")}
+                      {idx % 2 === 0 ? t("pages.multimedia.mock_video") : t("pages.multimedia.mock_podcast")} ·{" "}
+                      {t("pages.multimedia.mock_episode")} {String(idx + 1).padStart(2, "0")}
                     </span>
                   </div>
                 </div>

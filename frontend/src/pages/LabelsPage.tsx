@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
@@ -51,57 +51,62 @@ function LabelsPage() {
   const { data: labels, isLoading } = useLabels();
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeSector, setActiveSector] = useState("Tous");
+  const [activeSector, setActiveSector] = useState("all");
   const [activeSubSector, setActiveSubSector] = useState("all");
   const [sortKey, setSortKey] = useState<SortKey>("newest");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [page, setPage] = useState(1);
 
-  React.useEffect(() => {
-    // Scroll to top of list when page changes
+  useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [page]);
 
-  const sectors = [
-    { value: "Tous", label: t("labels.filters.all_sectors", "Secteurs") },
-    { value: "finance", label: t("sectors.finance") || "Finance" },
-    { value: "tech", label: t("sectors.tech") || "Technologie" },
-    { value: "energy", label: t("sectors.energy") || "Énergie" },
-    { value: "governance", label: t("sectors.governance") || "Gouvernance" },
-    { value: "leadership", label: t("sectors.leadership") || "Leadership" },
-  ];
+  const sectors = useMemo(
+    () => [
+      { value: "all", label: t("labels.filters.all_sectors") },
+      { value: "finance", label: t("sectors.finance") },
+      { value: "tech", label: t("sectors.tech") },
+      { value: "energy", label: t("sectors.energy") },
+      { value: "governance", label: t("sectors.governance") },
+      { value: "leadership", label: t("sectors.leadership") },
+    ],
+    [t, i18n.language],
+  );
 
-  const subSectors: Record<string, { value: string; label: string }[]> = {
-    Tous: [{ value: "all", label: t("labels.filters.category_placeholder", "Catégories") }],
-    finance: [
-      { value: "all", label: t("labels.filters.category_placeholder", "Catégories") },
-      { value: "banking", label: "Banque" },
-      { value: "insurance", label: "Assurance" },
-      { value: "microfinance", label: "Microfinance" },
-    ],
-    tech: [
-      { value: "all", label: t("labels.filters.category_placeholder", "Catégories") },
-      { value: "software", label: "Logiciel" },
-      { value: "infra", label: "Infrastructure" },
-      { value: "ai", label: "IA & Data" },
-    ],
-    energy: [
-      { value: "all", label: t("labels.filters.category_placeholder", "Catégories") },
-      { value: "solar", label: "Solaire" },
-      { value: "hydro", label: "Hydro" },
-      { value: "wind", label: "Éolien" },
-    ],
-    governance: [
-      { value: "all", label: t("labels.filters.category_placeholder", "Catégories") },
-      { value: "public", label: "Public" },
-      { value: "ngo", label: "ONG" },
-    ],
-    leadership: [
-      { value: "all", label: t("labels.filters.category_placeholder", "Catégories") },
-      { value: "executive", label: "Dirigeants" },
-      { value: "youth", label: "Jeunesse" },
-    ],
-  };
+  const subSectors = useMemo(
+    (): Record<string, { value: string; label: string }[]> => ({
+      all: [{ value: "all", label: t("labels.filters.category_placeholder") }],
+      finance: [
+        { value: "all", label: t("labels.filters.category_placeholder") },
+        { value: "banking", label: t("labels.sub.banking") },
+        { value: "insurance", label: t("labels.sub.insurance") },
+        { value: "microfinance", label: t("labels.sub.microfinance") },
+      ],
+      tech: [
+        { value: "all", label: t("labels.filters.category_placeholder") },
+        { value: "software", label: t("labels.sub.software") },
+        { value: "infra", label: t("labels.sub.infra") },
+        { value: "ai", label: t("labels.sub.ai") },
+      ],
+      energy: [
+        { value: "all", label: t("labels.filters.category_placeholder") },
+        { value: "solar", label: t("labels.sub.solar") },
+        { value: "hydro", label: t("labels.sub.hydro") },
+        { value: "wind", label: t("labels.sub.wind") },
+      ],
+      governance: [
+        { value: "all", label: t("labels.filters.category_placeholder") },
+        { value: "public", label: t("labels.sub.public") },
+        { value: "ngo", label: t("labels.sub.ngo") },
+      ],
+      leadership: [
+        { value: "all", label: t("labels.filters.category_placeholder") },
+        { value: "executive", label: t("labels.sub.executive") },
+        { value: "youth", label: t("labels.sub.youth") },
+      ],
+    }),
+    [t, i18n.language],
+  );
 
   const filteredLabels = useMemo(() => {
     const list = (labels ?? []).filter((label: any) => {
@@ -110,7 +115,7 @@ function LabelsPage() {
       const matchesSearch =
         name.includes(searchTerm.toLowerCase()) ||
         desc.includes(searchTerm.toLowerCase());
-      const matchesSector = activeSector === "Tous" || label.sector === activeSector;
+      const matchesSector = activeSector === "all" || label.sector === activeSector;
       return matchesSearch && matchesSector;
     });
 
@@ -163,14 +168,14 @@ function LabelsPage() {
             <div className="flex items-center gap-2 mb-4">
               <Award className="w-5 h-5 text-brand-gold" />
               <span className="text-xs font-bold uppercase tracking-widest text-white">
-                Portails de Certification
+                {t("labels.page.hero_kicker")}
               </span>
             </div>
             <h1 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight mb-4">
-              Labels & Certifications
+              {t("labels.page.hero_title")}
             </h1>
             <p className="text-lg text-brand-gold/90 max-w-xl">
-              Découvrez les standards d'excellence qui structurent l'économie africaine certifiée.
+              {t("labels.page.hero_subtitle")}
             </p>
           </motion.div>
         </div>
@@ -206,7 +211,7 @@ function LabelsPage() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-gold-dark" />
               <input
                 type="text"
-                placeholder={t("labels.filters.search_placeholder", "Rechercher...")}
+                placeholder={t("labels.search_placeholder")}
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
@@ -227,14 +232,14 @@ function LabelsPage() {
                 }}
               >
                 <SelectTrigger className="w-[170px] border-brand-gold/40 focus:ring-brand-gold/60 bg-white rounded-xl">
-                  <SelectValue placeholder="Trier par" />
+                  <SelectValue placeholder={t("labels.page.sort_placeholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="newest">Plus récents</SelectItem>
-                  <SelectItem value="oldest">Plus anciens</SelectItem>
-                  <SelectItem value="alpha-asc">A → Z</SelectItem>
-                  <SelectItem value="alpha-desc">Z → A</SelectItem>
-                  <SelectItem value="popular">Plus populaires</SelectItem>
+                  <SelectItem value="newest">{t("labels.page.sort_newest")}</SelectItem>
+                  <SelectItem value="oldest">{t("labels.page.sort_oldest")}</SelectItem>
+                  <SelectItem value="alpha-asc">{t("labels.page.sort_alpha_asc")}</SelectItem>
+                  <SelectItem value="alpha-desc">{t("labels.page.sort_alpha_desc")}</SelectItem>
+                  <SelectItem value="popular">{t("labels.page.sort_popular")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -270,7 +275,7 @@ function LabelsPage() {
                   <SelectValue placeholder={t("labels.filters.category_placeholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  {(subSectors[activeSector] ?? subSectors.Tous).map((s) => (
+                  {(subSectors[activeSector] ?? subSectors.all).map((s) => (
                     <SelectItem key={s.value} value={s.value}>
                       {s.label}
                     </SelectItem>
@@ -283,7 +288,7 @@ function LabelsPage() {
             <div
               className="inline-flex rounded-xl p-1 border border-brand-gold/40 bg-white"
               role="tablist"
-              aria-label="Mode d'affichage"
+              aria-label={t("labels.page.aria_view_mode")}
             >
               <button
                 onClick={() => setViewMode("grid")}
@@ -295,7 +300,7 @@ function LabelsPage() {
                     : "text-muted-foreground hover:text-brand-gold",
                 )}
               >
-                <LayoutGrid className="w-3.5 h-3.5" /> Cartes
+                <LayoutGrid className="w-3.5 h-3.5" /> {t("labels.page.view_cards")}
               </button>
               <button
                 onClick={() => setViewMode("list")}
@@ -307,7 +312,7 @@ function LabelsPage() {
                     : "text-muted-foreground hover:text-brand-emerald",
                 )}
               >
-                <List className="w-3.5 h-3.5" /> Liste
+                <List className="w-3.5 h-3.5" /> {t("labels.page.view_list")}
               </button>
             </div>
 
@@ -316,16 +321,16 @@ function LabelsPage() {
               type="button"
               onClick={() => {
                 setSearchTerm("");
-                setActiveSector("Tous");
+                setActiveSector("all");
                 setActiveSubSector("all");
                 setSortKey("newest");
                 setPage(1);
               }}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-brand-gold/40 text-brand-gold-dark bg-white hover:bg-brand-gold/10 hover:border-brand-gold transition-all shadow-[0_0_10px_hsl(var(--brand-gold)/0.15)]"
-              aria-label="Réinitialiser les filtres"
+              aria-label={t("labels.page.aria_reset_filters")}
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              Réinitialiser
+              {t("common.reset_filters")}
             </button>
           </div>
         </Reveal>
@@ -392,7 +397,7 @@ function LabelsPage() {
                         <div className="flex items-center gap-1.5 mt-2">
                           <ShieldCheck className="w-3 h-3 text-brand-emerald" />
                           <span className="text-xs font-medium text-brand-emerald">
-                            {t("home.labels.verified") || "Vérifié"}
+                            {t("home.labels.verified")}
                           </span>
                           {label.sector && (
                             <span className="text-xs text-muted-foreground ml-1">
@@ -405,11 +410,11 @@ function LabelsPage() {
 
                     <p className="relative z-10 text-sm text-foreground/75 leading-relaxed line-clamp-3 flex-1 mb-4">
                       {getLocalized(label.description, lang) ||
-                        "Protocole de conformité certifié pour l'excellence institutionnelle."}
+                        t("labels.page.default_description")}
                     </p>
 
                     <span className="relative z-10 inline-flex items-center gap-1 text-xs font-semibold text-foreground group-hover:text-brand-gold-dark group-hover:gap-2 transition-all mt-auto">
-                      {t("home.labels.explore") || "Explorer le label"}{" "}
+                      {t("home.labels.explore")}{" "}
                       <ChevronRight className="w-3.5 h-3.5" />
                     </span>
                   </Link>
@@ -452,7 +457,7 @@ function LabelsPage() {
                       <div className="flex items-center gap-2 mt-1.5">
                         <ShieldCheck className="w-3 h-3 text-brand-emerald" />
                         <span className="text-[10px] font-semibold uppercase tracking-wider text-brand-emerald">
-                          Vérifié
+                          {t("home.labels.verified")}
                         </span>
                         {labelBy.sector && (
                           <span className="text-[10px] text-brand-gold-dark/80">
@@ -470,7 +475,7 @@ function LabelsPage() {
         ) : (
           <div className="text-center py-20">
             <Globe className="w-12 h-12 text-brand-gold/30 mx-auto mb-4" />
-            <p className="text-white/70">{t("common.no_results") || "Aucun résultat"}</p>
+            <p className="text-white/70">{t("common.no_results")}</p>
           </div>
         )}
 

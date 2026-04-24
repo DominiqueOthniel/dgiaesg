@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -20,14 +20,6 @@ import {
   ViewportSection,
 } from "./_shared";
 
-const SECTORS = [
-  { name: "ESG & FINANCE", count: 124, icon: TrendingUp, key: "Finance" },
-  { name: "CSR & GOVERNANCE", count: 86, icon: ShieldCheck, key: "Gouvernance" },
-  { name: "TECH & SUSTAINABLE", count: 54, icon: Globe, key: "Tech" },
-  { name: "ENERGY & BIO", count: 42, icon: Zap, key: "Énergie" },
-  { name: "LEADERSHIP & IMPACT", count: 31, icon: Award, key: "Leadership" },
-];
-
 /**
  * 4. CERTIFIED ENTERPRISES (ANNUAIRE)
  */
@@ -38,9 +30,20 @@ export function AnnuaireSection({
   companies: any[];
   companiesLoading: boolean;
 }) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const lang = i18n.language;
-  const [activeSector, setActiveSector] = useState("Finance");
+  const [activeSector, setActiveSector] = useState("finance");
+
+  const sectors = useMemo(
+    () => [
+      { id: "finance", count: 124, icon: TrendingUp, label: t("sectors.finance") },
+      { id: "governance", count: 86, icon: ShieldCheck, label: t("sectors.governance") },
+      { id: "tech", count: 54, icon: Globe, label: t("sectors.tech") },
+      { id: "energy", count: 42, icon: Zap, label: t("sectors.energy") },
+      { id: "leadership", count: 31, icon: Award, label: t("sectors.leadership") },
+    ],
+    [t, lang],
+  );
 
   return (
     <ViewportSection
@@ -49,7 +52,6 @@ export function AnnuaireSection({
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-          {/* Sector Sidebar */}
           <div className="lg:col-span-3 lg:sticky lg:top-24 space-y-5">
             <div className="p-5 border border-border rounded-2xl bg-muted/30 backdrop-blur-sm shadow-sm">
               <div className="flex items-center gap-3 mb-3">
@@ -57,32 +59,33 @@ export function AnnuaireSection({
                   <BookOpen className="w-5 h-5 text-primary" />
                 </div>
                 <h4 className="text-[10px] font-black uppercase tracking-widest text-foreground">
-                  Accès DATA Direct
+                  {t("home.annuaire.data_card_title")}
                 </h4>
               </div>
               <p className="text-[11px] text-muted-foreground leading-relaxed mb-4 font-bold">
-                Accédez à l'index exhaustif de l'économie africaine certifiée.
+                {t("home.annuaire.data_card_desc")}
               </p>
               <Link
                 to="/directory"
                 className="flex items-center justify-center w-full py-3 bg-brand-gold text-brand-gold-foreground text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:brightness-110 transition-all active:scale-95 shadow-lg shadow-brand-gold/10"
               >
-                Ouvrir le Registre
+                {t("home.annuaire.open_registry")}
               </Link>
             </div>
 
             <div className="p-3">
               <h3 className="text-[10px] font-black text-foreground mb-3 uppercase tracking-[0.3em] opacity-60">
-                Data Par Secteur
+                {t("home.annuaire.sectors_heading")}
               </h3>
               <div className="space-y-1">
-                {SECTORS.map((s) => (
+                {sectors.map((s) => (
                   <button
-                    key={s.name}
-                    onClick={() => setActiveSector(s.key)}
+                    key={s.id}
+                    type="button"
+                    onClick={() => setActiveSector(s.id)}
                     className={cn(
                       "w-full flex items-center justify-between p-2.5 rounded-lg transition-all text-left",
-                      activeSector === s.key
+                      activeSector === s.id
                         ? "bg-primary text-primary-foreground shadow-md"
                         : "hover:bg-muted text-muted-foreground/80 hover:text-foreground",
                     )}
@@ -91,13 +94,13 @@ export function AnnuaireSection({
                       <s.icon
                         className={cn(
                           "w-3.5 h-3.5",
-                          activeSector === s.key
+                          activeSector === s.id
                             ? "text-brand-gold"
                             : "opacity-40",
                         )}
                       />
                       <span className="text-[9px] font-black uppercase tracking-wider">
-                        {s.name}
+                        {s.label}
                       </span>
                     </div>
                     <span className="text-[9px] font-black opacity-30">
@@ -109,7 +112,6 @@ export function AnnuaireSection({
             </div>
           </div>
 
-          {/* Listing */}
           <div className="lg:col-span-9">
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-border">
               <div className="flex items-center gap-3">
@@ -117,14 +119,14 @@ export function AnnuaireSection({
                   <Award className="w-5 h-5 text-brand-emerald" />
                 </div>
                 <h2 className="text-xl md:text-2xl font-bold text-foreground tracking-tight">
-                  Certified Enterprises
+                  {t("home.companies.title")}
                 </h2>
               </div>
               <Link
                 to="/directory"
                 className="text-xs font-bold text-primary hover:text-primary/80 transition-colors uppercase tracking-widest"
               >
-                Voir l'Annuaire →
+                {t("home.annuaire.view_full")} →
               </Link>
             </div>
 
@@ -155,7 +157,7 @@ export function AnnuaireSection({
                           <Building2 className="w-5 h-5 text-brand-emerald mb-0.5" />
                         )}
                         <span className="text-[8px] font-black uppercase tracking-widest text-brand-emerald/70">
-                          Indexé
+                          {t("home.annuaire.indexed")}
                         </span>
                       </div>
 
@@ -164,11 +166,11 @@ export function AnnuaireSection({
                           <div className="flex items-center gap-2 mb-1.5">
                             <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-brand-gold-dark">
                               {getLocalized(company.sector, lang) ||
-                                "EXCELLENCE"}
+                                t("home.annuaire.excellence_fallback")}
                             </span>
                             <span className="hidden sm:inline-flex items-center gap-1 text-[9px] font-semibold uppercase tracking-widest text-muted-foreground/60">
                               <ShieldCheck className="w-3 h-3 text-brand-emerald" />
-                              Certifié
+                              {t("home.annuaire.certified")}
                             </span>
                           </div>
                           <h3 className="font-serif text-base sm:text-xl font-semibold text-foreground leading-tight tracking-tight group-hover/dir:text-brand-gold-dark transition-colors line-clamp-1 italic">
@@ -178,7 +180,7 @@ export function AnnuaireSection({
 
                         <div className="shrink-0 mt-3 sm:mt-0">
                           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-gold/10 border border-brand-gold/25 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-gold-dark group-hover/dir:bg-brand-gold group-hover/dir:text-white group-hover/dir:border-brand-gold transition-all duration-300">
-                            Fiche profil
+                            {t("home.annuaire.profile_cta")}
                             <ChevronRight className="w-3.5 h-3.5 group-hover/dir:translate-x-1 transition-transform" />
                           </div>
                         </div>
@@ -188,7 +190,7 @@ export function AnnuaireSection({
                 ))
               ) : (
                 <p className="text-center text-muted-foreground py-12 border-2 border-dashed border-border rounded-2xl">
-                  Aucun enregistrement indexé dans ce secteur.
+                  {t("home.annuaire.empty_state")}
                 </p>
               )}
             </div>

@@ -6,6 +6,7 @@ import {
   Building2,
   BookOpen,
   Headphones,
+  Crown,
   Search,
   User,
   LogOut,
@@ -23,6 +24,7 @@ export const topNavItems = [
   { key: "nav.news", href: "/news", icon: BookOpen },
   { key: "nav.kiosk", href: "/kiosk", icon: BookOpen },
   { key: "nav.mediatique", href: "/mediatique", icon: Headphones },
+  { key: "nav.pricing", href: "/pricing", icon: Crown },
 ];
 
 /**
@@ -106,7 +108,7 @@ export const SiteHeader = ({
                       {user?.username}
                     </p>
                     <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest mt-1">
-                      Espace Pro
+                      {t("nav.pro_space")}
                     </p>
                   </div>
                 </button>
@@ -132,13 +134,13 @@ export const SiteHeader = ({
                         to="/profile"
                         className="flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold hover:bg-muted transition-all"
                       >
-                        <Settings className="w-4 h-4" /> Paramètres
+                        <Settings className="w-4 h-4" /> {t("nav.settings")}
                       </Link>
                       <button
                         onClick={() => logout()}
                         className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold text-destructive hover:bg-destructive/10 transition-all mt-1 pt-3 border-t border-border"
                       >
-                        <LogOut className="w-4 h-4" /> Déconnexion
+                        <LogOut className="w-4 h-4" /> {t("nav.logout")}
                       </button>
                     </motion.div>
                   )}
@@ -158,7 +160,7 @@ export const SiteHeader = ({
                       {t("nav.login")}
                     </p>
                     <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest mt-1">
-                      Espace Pro
+                      {t("nav.pro_space")}
                     </p>
                   </div>
                 </Link>

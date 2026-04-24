@@ -196,14 +196,14 @@ function NewsPage() {
             <div className="flex items-center gap-2 mb-4">
               <BookOpen className="w-5 h-5 text-accent" />
               <span className="text-xs font-bold uppercase tracking-widest text-white">
-                Intelligence Éditoriale
+                {t("home.editorial.subtitle")}
               </span>
             </div>
             <h1 className="text-3xl md:text-5xl font-extrabold text-primary-foreground tracking-tight mb-4">
-              {t("home.news.title", "Actualités & Analyses")}
+              {t("home.news.title")}
             </h1>
             <p className="text-lg text-accent font-semibold max-w-xl">
-              {t("home.news.subtitle", "Analyses stratégiques, rapports sectoriels et actualités de l'économie certifiée.")}
+              {t("home.news.subtitle")}
             </p>
           </motion.div>
         </div>
@@ -259,7 +259,7 @@ function NewsPage() {
                     setSearch(e.target.value);
                     setPage(1);
                   }}
-                  placeholder="Rechercher un article, un label, un rapport…"
+                  placeholder={t("pages.news.search_placeholder")}
                   className="w-full h-12 pl-11 pr-10 rounded-2xl text-sm bg-white/70 dark:bg-white/5 border border-white/60 dark:border-white/10 shadow-inner placeholder:text-muted-foreground/70 focus:outline-none focus:bg-white focus:border-[hsl(var(--brand-gold)/0.5)] focus:ring-4 focus:ring-[hsl(var(--brand-gold)/0.15)] transition-all"
                 />
                 {search && (
@@ -270,7 +270,7 @@ function NewsPage() {
                       setPage(1);
                     }}
                     className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center text-muted-foreground transition-colors"
-                    aria-label="Effacer la recherche"
+                    aria-label={t("common.clear_search")}
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -299,7 +299,7 @@ function NewsPage() {
                     )}
                   >
                     <Layers className={cn("w-3.5 h-3.5", category !== "all" ? "text-[hsl(var(--brand-gold-dark))]" : "text-muted-foreground")} />
-                    <SelectValue placeholder={t("news.filter.category", "Catégories")} />
+                    <SelectValue placeholder={t("news.filter.category")} />
                   </SelectTrigger>
                   <SelectContent className="bg-popover z-50 rounded-xl">
                     {CATEGORIES.map((c) => (
@@ -327,7 +327,7 @@ function NewsPage() {
                     )}
                   >
                     <Briefcase className={cn("w-3.5 h-3.5", sector !== "all" ? "text-[hsl(var(--brand-gold-dark))]" : "text-muted-foreground")} />
-                    <SelectValue placeholder={t("news.filter.sector", "Secteurs")} />
+                    <SelectValue placeholder={t("news.filter.sector")} />
                   </SelectTrigger>
                   <SelectContent className="bg-popover z-50 rounded-xl">
                     {SECTORS.map((s) => (
@@ -353,7 +353,7 @@ function NewsPage() {
                       <span className="truncate">
                         {dateFrom || dateTo
                           ? `${dateFrom || "…"} → ${dateTo || "…"}`
-                          : t("news.filter.period", "Période")}
+                          : t("news.filter.period")}
                       </span>
                     </button>
                   </PopoverTrigger>
@@ -396,7 +396,7 @@ function NewsPage() {
                   <Select value={sortBy} onValueChange={setSortBy}>
                     <SelectTrigger className="h-11 min-w-[110px] sm:min-w-[130px] rounded-none border-0 bg-transparent px-4 text-xs font-semibold gap-2 shadow-none focus:ring-0">
                       <ArrowUpDown className="w-3.5 h-3.5 text-muted-foreground" />
-                      <SelectValue placeholder={t("news.filter.sort", "Trier")} />
+                      <SelectValue placeholder={t("news.filter.sort")} />
                     </SelectTrigger>
                     <SelectContent className="bg-popover z-50 rounded-xl">
                       {SORT_OPTIONS.map((o) => (
@@ -411,7 +411,7 @@ function NewsPage() {
                     onClick={() =>
                       setSortDir((d) => (d === "asc" ? "desc" : "asc"))
                     }
-                    aria-label="Changer l'ordre"
+                    aria-label={t("common.toggle_order")}
                     className="h-11 w-11 shrink-0 flex items-center justify-center text-muted-foreground hover:text-[hsl(var(--brand-gold-dark))] hover:bg-[hsl(var(--brand-gold)/0.1)] transition-colors"
                   >
                     {sortDir === "asc" ? (
@@ -431,11 +431,7 @@ function NewsPage() {
                   <Sparkles className="w-3 h-3" />
                 </span>
                 <span className="text-[11px] font-black uppercase tracking-[0.16em] text-foreground">
-                  {filtered.length}{" "}
-                  <span className="text-muted-foreground font-semibold normal-case tracking-normal">
-                    {t("common.results", "résultat")}
-                    {filtered.length > 1 ? "s" : ""}
-                  </span>
+                  {t("pages.news.article", { count: filtered.length })}
                 </span>
               </div>
 
@@ -500,7 +496,7 @@ function NewsPage() {
                   className="ml-auto inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-white border border-border text-[10px] font-black uppercase tracking-[0.16em] text-primary hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all shadow-sm"
                 >
                   <X className="w-3 h-3" />
-                  {t("common.reset", "Réinitialiser")}
+                  {t("common.reset_filters")}
                 </button>
               )}
             </div>
@@ -529,7 +525,7 @@ function NewsPage() {
                   : "bg-card border-border text-muted-foreground hover:text-primary hover:border-primary/40"
               )}
             >
-              Grille
+              {t("pages.news.view_grid")}
             </button>
             <button
               type="button"
@@ -541,7 +537,7 @@ function NewsPage() {
                   : "bg-card border-border text-muted-foreground hover:text-primary hover:border-primary/40"
               )}
             >
-              Liste
+              {t("pages.news.view_list")}
             </button>
           </div>
         )}
@@ -625,7 +621,7 @@ function NewsPage() {
                       disabled={currentPage === 1}
                       className="h-10 px-4 rounded-md border-2 border-accent/40 bg-card text-sm font-semibold flex items-center gap-1 hover:bg-accent hover:text-accent-foreground hover:border-accent disabled:opacity-40 disabled:pointer-events-none transition-all"
                     >
-                      <ChevronLeft className="w-4 h-4" /> {t("common.previous", "Précédent")}
+                      <ChevronLeft className="w-4 h-4" /> {t("common.previous")}
                     </button>
                   </PaginationItem>
 
@@ -657,7 +653,7 @@ function NewsPage() {
                       disabled={currentPage === totalPages}
                       className="h-10 px-4 rounded-md border-2 border-accent/40 bg-card text-sm font-semibold flex items-center gap-1 hover:bg-accent hover:text-accent-foreground hover:border-accent disabled:opacity-40 disabled:pointer-events-none transition-all"
                     >
-                      {t("common.next", "Suivant")} <ChevronRight className="w-4 h-4" />
+                      {t("common.next")} <ChevronRight className="w-4 h-4" />
                     </button>
                   </PaginationItem>
                 </PaginationContent>

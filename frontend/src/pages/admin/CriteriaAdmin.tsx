@@ -189,8 +189,8 @@ const CriteriaAdmin = () => {
                         <p className="text-sm font-bold uppercase tracking-widest">En attente de sélection de protocole</p>
                     </div>
                 ) : criteria?.filter((c: any) =>
-                    getLocalized(c.title, i18n.language).toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    getLocalized(c.category, i18n.language).toLowerCase().includes(searchQuery.toLowerCase())
+                    getLocalized((c as any).title, i18n.language).toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    getLocalized((c as any).category, i18n.language).toLowerCase().includes(searchQuery.toLowerCase())
                 ).length === 0 ? (
                     <div className="py-40 text-center rounded-[3rem] border border-dashed border-slate-200 opacity-30">
                         <Search className="w-20 h-20 mx-auto mb-8" />
@@ -199,8 +199,8 @@ const CriteriaAdmin = () => {
                 ) : (
                     <AnimatePresence mode="popLayout">
                         {criteria?.filter((c: any) =>
-                            getLocalized(c.title, i18n.language).toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            getLocalized(c.category, i18n.language).toLowerCase().includes(searchQuery.toLowerCase())
+                            getLocalized((c as any).title, i18n.language).toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            getLocalized((c as any).category, i18n.language).toLowerCase().includes(searchQuery.toLowerCase())
                         ).map((item, idx) => (
                             <motion.div
                                 key={item._id}
@@ -222,11 +222,11 @@ const CriteriaAdmin = () => {
                                         <div className="flex-1 min-w-0 space-y-4">
                                             <div className="flex items-center gap-4">
                                                  <Badge className="rounded-full px-4 py-1 bg-brand-primary/5 text-brand-primary border-none font-bold text-[9px] uppercase tracking-widest shadow-sm">
-                                                    {getLocalized(item.category, i18n.language)}
+                                                    {getLocalized((item as any).category, i18n.language)}
                                                 </Badge>
                                                 <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest font-mono">ID_{item._id.substring(18)}</span>
                                             </div>
-                                             <h3 className="text-2xl font-bold text-brand-secondary tracking-tight group-hover:text-brand-primary transition-colors uppercase leading-none">{getLocalized(item.title, i18n.language)}</h3>
+                                             <h3 className="text-2xl font-bold text-brand-secondary tracking-tight group-hover:text-brand-primary transition-colors uppercase leading-none">{getLocalized((item as any).title, i18n.language)}</h3>
                                             <p className="text-sm text-slate-400 font-medium leading-relaxed max-w-3xl">{getLocalized(item.description, i18n.language)}</p>
                                         </div>
 

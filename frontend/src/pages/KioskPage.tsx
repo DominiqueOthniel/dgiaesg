@@ -55,13 +55,15 @@ function KioskPage() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <div className="flex items-center gap-2 mb-4">
               <BookOpen className="w-5 h-5 text-accent fill-accent" />
-              <span className="text-xs font-bold uppercase tracking-widest text-primary-foreground/70">Kiosque Numérique</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-primary-foreground/70">
+                {t("pages.kiosk.hero_kicker")}
+              </span>
             </div>
             <h1 className="text-3xl md:text-5xl font-extrabold text-primary-foreground tracking-tight mb-4">
-              Revues & Publications
+              {t("pages.kiosk.hero_title")}
             </h1>
             <p className="text-lg text-primary-foreground/70 max-w-xl">
-              Accédez à nos publications stratégiques et aux archives de l'excellence africaine.
+              {t("pages.kiosk.hero_subtitle")}
             </p>
           </motion.div>
         </div>
@@ -77,7 +79,7 @@ function KioskPage() {
                   {filtered.length}
                 </span>
                 <span className="font-semibold text-muted-foreground">
-                  publication{filtered.length > 1 ? "s" : ""} trouvée{filtered.length > 1 ? "s" : ""}
+                  {t("pages.kiosk.publications", { count: filtered.length })}
                 </span>
               </div>
               {(featuredOnly || searchQuery) && (
@@ -90,7 +92,7 @@ function KioskPage() {
                   className="inline-flex items-center gap-1.5 text-[10px] text-primary font-black uppercase tracking-[0.18em] hover:underline"
                 >
                   <X className="w-3 h-3" />
-                  Réinitialiser
+                  {t("common.reset_filters")}
                 </button>
               )}
             </>
@@ -112,7 +114,7 @@ function KioskPage() {
                   type="button"
                   onClick={() => setSearchQuery("")}
                   className="p-1 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-                  aria-label="Effacer la recherche"
+                  aria-label={t("common.clear_search")}
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -133,7 +135,7 @@ function KioskPage() {
               aria-pressed={featuredOnly}
             >
               <Sparkles className={cn("w-3.5 h-3.5 transition-transform", featuredOnly && "fill-current")} />
-              Premium
+              {t("nav.pricing")}
             </button>
 
             <div className="relative">
@@ -143,9 +145,9 @@ function KioskPage() {
                 onChange={(e) => setSortBy(e.target.value as "latest" | "oldest" | "az")}
                 className="appearance-none h-12 pl-9 pr-9 rounded-2xl bg-background/70 border border-border/60 text-[11px] font-bold uppercase tracking-[0.16em] text-foreground hover:border-primary/40 focus:outline-none focus:border-primary/50 cursor-pointer transition-colors"
               >
-                <option value="latest">Plus récents</option>
-                <option value="oldest">Plus anciens</option>
-                <option value="az">A - Z</option>
+                <option value="latest">{t("pages.kiosk.sort_latest")}</option>
+                <option value="oldest">{t("pages.kiosk.sort_oldest")}</option>
+                <option value="az">{t("pages.kiosk.sort_az")}</option>
               </select>
               <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-[10px]">▾</span>
             </div>
@@ -162,7 +164,7 @@ function KioskPage() {
                 )}
               >
                 <Grid3X3 className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Grille</span>
+                <span className="hidden sm:inline">{t("common.view_grid")}</span>
               </button>
               <button
                 type="button"
@@ -175,7 +177,7 @@ function KioskPage() {
                 )}
               >
                 <Rows3 className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Compact</span>
+                <span className="hidden sm:inline">{t("common.view_compact")}</span>
               </button>
               <button
                 type="button"
@@ -188,7 +190,7 @@ function KioskPage() {
                 )}
               >
                 <List className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Liste</span>
+                <span className="hidden sm:inline">{t("common.view_list")}</span>
               </button>
             </div>
           </div>
@@ -251,10 +253,12 @@ function KioskPage() {
                           className="w-full bg-accent text-accent-foreground px-4 py-3 rounded-lg text-xs font-black uppercase tracking-widest hover:brightness-110 transition-all flex items-center justify-center gap-2 shadow-xl active:scale-95"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <Download className="w-4 h-4" /> Télécharger (PDF)
+                          <Download className="w-4 h-4" /> {t("pages.kiosk.download_pdf")}
                         </a>
                       ) : (
-                        <p className="text-white text-xs font-bold uppercase tracking-widest">Abonnement Requis</p>
+                        <p className="text-white text-xs font-bold uppercase tracking-widest">
+                          {t("pages.kiosk.subscription_required")}
+                        </p>
                       )}
                       <a
                         href={mag.coverImageUrl ? resolveImageUrl(mag.coverImageUrl) : "#"}
@@ -268,13 +272,13 @@ function KioskPage() {
                         )}
                         onClick={(e) => e.stopPropagation()}
                       >
-                        Consulter couverture
+                        {t("pages.kiosk.view_cover")}
                       </a>
                     </div>
 
                     {mag.featured && (
                       <div className="absolute top-4 left-4 px-3 py-1 bg-accent text-accent-foreground text-[9px] font-black uppercase tracking-[0.2em] rounded-full shadow-lg">
-                        Premium Focus
+                        {t("pages.kiosk.premium_focus")}
                       </div>
                     )}
                   </div>
@@ -317,7 +321,9 @@ function KioskPage() {
                   <div className="aspect-[3/4] rounded-2xl overflow-hidden border border-border shadow-md bg-gradient-to-br from-primary/20 via-primary/10 to-accent/15 relative">
                     <div className="absolute inset-0 opacity-35 [background:repeating-linear-gradient(135deg,rgba(255,255,255,.45)_0_2px,transparent_2px_14px)]" />
                     <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/55 to-transparent">
-                      <span className="text-[10px] font-black uppercase tracking-wider text-white/90">Edition {String(idx + 1).padStart(2, "0")}</span>
+                      <span className="text-[10px] font-black uppercase tracking-wider text-white/90">
+                        {t("pages.kiosk.edition")} {String(idx + 1).padStart(2, "0")}
+                      </span>
                     </div>
                   </div>
                   <div className="mt-3 space-y-2">
@@ -337,15 +343,17 @@ function KioskPage() {
               <BookOpen className="w-10 h-10 md:w-12 md:h-12" />
            </div>
            <div className="flex-1 text-center md:text-left relative z-10">
-              <h3 className="text-2xl md:text-3xl font-extrabold text-foreground mb-4">Accès illimité aux archives</h3>
+              <h3 className="text-2xl md:text-3xl font-extrabold text-foreground mb-4">
+                {t("pages.kiosk.promo_title")}
+              </h3>
               <p className="text-muted-foreground text-base md:text-lg leading-relaxed max-w-2xl">
-                Rejoignez le réseau DGIAESG et profitez d'un accès exclusif à plus de 50 rapports sectoriels et revues stratégiques.
+                {t("pages.kiosk.promo_body")}
               </p>
            </div>
            <div className="shrink-0 relative z-10">
               <Link to="/pricing">
                 <button className="px-10 py-4 bg-primary text-primary-foreground rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 hover:scale-105 active:scale-95">
-                  Voir nos Formules
+                  {t("pages.kiosk.cta_plans")}
                 </button>
               </Link>
            </div>
