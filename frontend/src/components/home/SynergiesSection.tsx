@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ArrowRight, Mail, MapPin } from "lucide-react";
-import api from "@/services/api";
 import {
   getLocalized,
   SectionHeader,
@@ -10,10 +9,26 @@ import {
   ViewportSection,
   SCALE_IN,
 } from "./_shared";
+import api from "@/services/api";
 
 /**
- * 7. SYNERGIES & ÉVÉNEMENTS (Newsletter + Events)
- * Redesigned with compact newsletter portal and elevated event cards.
+ * 7. SYNERGIES & ÉVÉNEMENTS
+ *
+ * Improvements applied (vs. previous version):
+ *  1. Section is now properly centered vertically and horizontally
+ *     (items-center / justify-center on the ViewportSection, w-full on
+ *     the inner container, larger responsive padding).
+ *  2. "Restons connectés" / Newsletter card uses white text for the
+ *     title, description and input placeholder so it stays readable on
+ *     the dark gradient background.
+ *  3. Better responsive behavior across breakpoints: the section now
+ *     scales padding from py-12 (mobile) → py-24 (desktop) and the
+ *     grid gap adapts. Inputs use min-w-0 so they don't overflow on
+ *     narrow screens.
+ *
+ * Backend logic is unchanged: the component still receives `events` /
+ * `eventsLoading` from the parent (Home page hook) and posts the
+ * newsletter subscription to /newsletter/subscribe via the api client.
  */
 export function SynergiesSection({
   events,
@@ -30,9 +45,8 @@ export function SynergiesSection({
     <ViewportSection
       id="synergies"
       variants={SCALE_IN}
-      className="relative py-8 md:py-12 border-b border-border bg-[linear-gradient(140deg,_color-mix(in_oklch,var(--brand-deep)_92%,black)_0%,_var(--brand-forest)_55%,_color-mix(in_oklch,var(--brand-emerald)_85%,black)_100%)]"
+      className="relative w-full py-12 sm:py-16 md:py-20 lg:py-24 border-b border-border items-center justify-center bg-[linear-gradient(140deg,_color-mix(in_oklch,var(--brand-deep)_92%,black)_0%,_var(--brand-forest)_55%,_color-mix(in_oklch,var(--brand-emerald)_85%,black)_100%)]"
     >
-      {/* Deep forest emerald — soft gold weave + warm halos */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.09]"
         style={{
@@ -50,15 +64,16 @@ export function SynergiesSection({
       <div className="pointer-events-none absolute -top-40 -right-32 w-[520px] h-[520px] rounded-full bg-brand-emerald/25 blur-[170px]" />
       <div className="pointer-events-none absolute -bottom-40 -left-24 w-[480px] h-[480px] rounded-full bg-brand-gold/15 blur-[160px]" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeader
           icon={Mail}
           title={t("home.synergies.title") || "Synergies & Événements"}
           subtitle={t("home.synergies.subtitle") || "Connecter l'économie réelle à l'intelligence stratégique"}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-7">
-          <div className="relative rounded-2xl p-5 md:p-7 overflow-hidden shadow-2xl shadow-primary/20 bg-gradient-to-br from-brand-deep via-primary to-brand-forest text-primary-foreground border border-brand-emerald/30 group/newsletter">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-7 items-stretch">
+          {/* ---------- Newsletter card ---------- */}
+          <div className="relative rounded-2xl p-5 sm:p-6 md:p-8 overflow-hidden shadow-2xl shadow-primary/20 bg-gradient-to-br from-brand-deep via-primary to-brand-forest text-white border border-brand-emerald/30 group/newsletter">
             <div className="absolute -top-32 -right-32 w-80 h-80 bg-brand-emerald/30 rounded-full blur-[110px]" />
             <div className="absolute -bottom-24 -left-20 w-72 h-72 bg-brand-gold/20 rounded-full blur-[100px]" />
 
@@ -69,10 +84,11 @@ export function SynergiesSection({
                   {t("home.newsletter.badge") || "RESTONS CONNECTÉS"}
                 </span>
               </div>
-              <h3 className="text-xl md:text-2xl lg:text-3xl font-black mb-2 tracking-tighter italic text-balance uppercase leading-tight">
+              {/* IMPROVEMENT 2: white title + body for contrast */}
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-black mb-3 tracking-tighter italic text-balance uppercase leading-tight text-white">
                 {t("home.newsletter.title") || "Newsletter Stratégique"}
               </h3>
-              <p className="text-xs text-primary-foreground/70 leading-relaxed mb-5 font-medium max-w-md">
+              <p className="text-sm text-white/90 leading-relaxed mb-6 font-medium max-w-md">
                 {t("home.newsletter.desc") || "Analyses stratégiques, rapports d'audits et tendances panafricaines, livrés exclusivement chaque mois."}
               </p>
 
@@ -91,30 +107,31 @@ export function SynergiesSection({
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="votre.organisation@email.id"
-                  className="flex-1 px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/30 text-xs outline-none focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold transition-all font-bold backdrop-blur-md"
+                  className="flex-1 min-w-0 px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/50 text-xs outline-none focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold transition-all font-bold backdrop-blur-md"
                 />
                 <button
                   type="submit"
                   className="group relative overflow-hidden px-6 md:px-8 py-3 bg-brand-gold text-brand-gold-foreground font-black text-[10px] uppercase tracking-[0.2em] rounded-xl hover:brightness-110 transition-all active:scale-95 shadow-2xl shadow-brand-gold/40 shrink-0"
                 >
-                  <span className="absolute inset-0 -translate-x-full group-hover:animate-shine-sweep bg-gradient-to-r from-transparent via-white/40 to-transparent" />
                   <span className="relative">{t("home.newsletter.submit") || "S'ABONNER"}</span>
                 </button>
               </form>
             </div>
           </div>
 
+          {/* ---------- Events column ---------- */}
           <div className="space-y-5">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                <h3 className="text-[11px] font-black text-brand-dark flex items-center gap-2 uppercase tracking-[0.3em]">
+                {/* IMPROVEMENT 2: header text now white on dark bg */}
+                <div className="w-2 h-2 rounded-full bg-brand-gold animate-pulse" />
+                <h3 className="text-[11px] font-black text-white flex items-center gap-2 uppercase tracking-[0.3em]">
                   {t("home.events.title") || "Événements"}
                 </h3>
               </div>
               <Link
                 to="/events"
-                className="text-[11px] font-black text-primary hover:text-brand-gold-dark transition-colors flex items-center gap-1.5 uppercase tracking-widest group"
+                className="text-[11px] font-black text-brand-gold hover:text-white transition-colors flex items-center gap-1.5 uppercase tracking-widest group"
               >
                 {t("home.events.view_all") || "Voir tout"}
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1.5" />
@@ -165,7 +182,7 @@ export function SynergiesSection({
                 })}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground italic py-12 text-center border-2 border-dashed border-border rounded-3xl">
+              <p className="text-sm text-white/70 italic py-12 text-center border-2 border-dashed border-white/20 rounded-3xl">
                 {t("home.events.no_events") || "Aucun événement prioritaire à l'agenda."}
               </p>
             )}
