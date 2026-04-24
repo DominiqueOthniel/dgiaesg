@@ -9,7 +9,7 @@ import {
   ViewportSection,
   SCALE_IN,
 } from "./_shared";
-import api from "@/services/api";
+import { api } from "@/services/api";
 
 /**
  * 7. SYNERGIES & ÉVÉNEMENTS
