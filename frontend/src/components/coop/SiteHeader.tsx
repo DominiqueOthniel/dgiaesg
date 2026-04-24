@@ -60,7 +60,7 @@ export const SiteHeader = ({
               </div>
               <div className="hidden sm:flex flex-col">
                 <span className="text-base font-black tracking-tight text-foreground uppercase leading-none">
-                  Co-op Label
+                  DGIAESG
                 </span>
                 <span className="text-[9px] font-black text-muted-foreground tracking-widest uppercase mt-1">
                   Africa Certified

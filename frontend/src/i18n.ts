@@ -230,7 +230,7 @@ const resources = {
                 }
             },
             chatbot: {
-                title: "Co-op Assistant",
+                title: "Assistant DGIAESG",
                 online: "En ligne",
                 open: "Ouvrir le chat",
                 close: "Fermer le chat",
@@ -512,7 +512,7 @@ const resources = {
                 }
             },
             chatbot: {
-                title: "Co-op Assistant",
+                title: "DGIAESG Assistant",
                 online: "Online",
                 open: "Open chat",
                 close: "Close chat",

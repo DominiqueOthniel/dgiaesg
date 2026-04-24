@@ -69,7 +69,7 @@ export const generateCertificate = asyncHandler(async (req: Request, res: Respon
     doc.fontSize(12)
         .fillColor("#d4a843")
         .font("Helvetica-Bold")
-        .text("COOPLABEL", 0, 60, { align: "center" });
+        .text("DGIAESG", 0, 60, { align: "center" });
 
     doc.fontSize(32)
         .fillColor("#1a365d")
@@ -145,7 +145,7 @@ export const generateCertificate = asyncHandler(async (req: Request, res: Respon
         .fillColor("#4a5568")
         .font("Helvetica")
         .text("Direction de la Certification", 150, bottomLineY + 15)
-        .text("CoopLabel", 150, bottomLineY + 30);
+        .text("DGIAESG", 150, bottomLineY + 30);
 
     doc.text(`Émis le ${new Date().toLocaleDateString("fr-FR")}`, 450, bottomLineY + 15);
 
@@ -267,7 +267,7 @@ export const getDigitalBadge = asyncHandler(async (req: Request, res: Response) 
   <rect x="2" y="2" width="256" height="116" rx="10" fill="none" stroke="url(#gold)" stroke-width="1.5"/>
   <circle cx="40" cy="50" r="20" fill="none" stroke="#d4a843" stroke-width="2"/>
   <path d="M32 50 L38 56 L48 44" stroke="#d4a843" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <text x="70" y="42" font-family="Arial, sans-serif" font-size="10" fill="#8fa3bf" font-weight="bold" letter-spacing="2">COOPLABEL</text>
+  <text x="70" y="42" font-family="Arial, sans-serif" font-size="10" fill="#8fa3bf" font-weight="bold" letter-spacing="1.5">DGIAESG</text>
   <text x="70" y="60" font-family="Arial, sans-serif" font-size="16" fill="white" font-weight="bold">Certifié ${year}</text>
   <text x="70" y="78" font-family="Arial, sans-serif" font-size="9" fill="#8fa3bf">${label?.name || "Label"}</text>
   <rect x="15" y="92" width="230" height="1" fill="#d4a843" opacity="0.3"/>

@@ -339,7 +339,7 @@ function KioskPage() {
            <div className="flex-1 text-center md:text-left relative z-10">
               <h3 className="text-2xl md:text-3xl font-extrabold text-foreground mb-4">Accès illimité aux archives</h3>
               <p className="text-muted-foreground text-base md:text-lg leading-relaxed max-w-2xl">
-                Rejoignez le réseau COOP-LABEL et profitez d'un accès exclusif à plus de 50 rapports sectoriels et revues stratégiques.
+                Rejoignez le réseau DGIAESG et profitez d'un accès exclusif à plus de 50 rapports sectoriels et revues stratégiques.
               </p>
            </div>
            <div className="shrink-0 relative z-10">

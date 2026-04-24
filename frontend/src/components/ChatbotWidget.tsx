@@ -42,8 +42,8 @@ interface ChatTelemetry {
   actionClicks: number;
 }
 
-const CHAT_HISTORY_KEY = "coop_chatbot_history_v1";
-const CHAT_TELEMETRY_KEY = "coop_chatbot_telemetry_v1";
+const CHAT_HISTORY_KEY = "dgiaesg_chatbot_history_v1";
+const CHAT_TELEMETRY_KEY = "dgiaesg_chatbot_telemetry_v1";
 const COOLDOWN_MS = 900;
 
 const makeId = () => `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;

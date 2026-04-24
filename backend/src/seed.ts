@@ -148,8 +148,8 @@ const newsletterData = Array.from({ length: 3 }).map((_, i) => {
   const category = categories[i % categories.length];
   return {
     title: {
-      fr: `La Lettre du CoopLabel — Édition Spéciale #${i + 1}`,
-      en: `CoopLabel Newsletter — Special Edition #${i + 1}`
+      fr: `La Lettre DGIAESG — Édition Spéciale #${i + 1}`,
+      en: `DGIAESG Newsletter — Special Edition #${i + 1}`
     },
     summary: {
       fr: "Un concentré hebdomadaire d'intelligence économique et de meilleures pratiques de gouvernance.",
@@ -189,8 +189,8 @@ const eventData = Array.from({ length: 15 }).map((_, i) => {
       en: `Excellence Pavilion ${i + 1}, Casablanca`
     },
     organizer: {
-      fr: "CoopLabel Alliance",
-      en: "CoopLabel Alliance"
+      fr: "Alliance DGIAESG",
+      en: "DGIAESG Alliance"
     },
     imageUrl: `https://images.unsplash.com/photo-${1475721027185 + (i * 100)}?auto=format&fit=crop&q=80&w=800`,
     registrationUrl: "https://example.com/register",

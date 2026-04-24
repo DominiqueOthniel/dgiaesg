@@ -11,7 +11,7 @@ const EditorialFooter = () => {
                     <div className="space-y-8">
                         <Link to="/" className="inline-block group">
                             <span className="font-serif text-3xl font-bold tracking-tighter">
-                                Coop<span className="text-brand-accent">Label</span>
+                                DGIA<span className="text-brand-accent">ESG</span>
                             </span>
                         </Link>
                         <p className="text-xs leading-relaxed text-slate-400 font-medium max-w-xs">

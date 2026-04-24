@@ -50,7 +50,7 @@ function LoginPage() {
           >
             <ShieldCheck className="w-10 h-10 text-accent" />
           </motion.div>
-          <h2 className="text-4xl font-black text-white tracking-tight mb-6 italic italic">Co-op Label</h2>
+          <h2 className="text-4xl font-black text-white tracking-tight mb-6 italic italic">DGIAESG</h2>
           <p className="text-primary-foreground/60 text-base leading-relaxed font-medium">
             Plateforme panafricaine de certification et de promotion de l'excellence coopérative et entrepreneuriale.
           </p>
@@ -75,7 +75,7 @@ function LoginPage() {
             <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-primary-foreground">
               <ShieldCheck className="w-6 h-6" />
             </div>
-            <span className="font-extrabold text-xl tracking-tight">Co-op Label</span>
+            <span className="font-extrabold text-xl tracking-tight">DGIAESG</span>
           </div>
 
           <div className="mb-10">
