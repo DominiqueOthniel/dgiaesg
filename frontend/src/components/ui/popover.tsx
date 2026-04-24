@@ -1,24 +1,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-const PopoverInitial = ({ children }: { children: React.ReactNode }) => {
-  return <div className="relative inline-block w-full">{children}</div>;
-};
-
-const PopoverTriggerInitial = ({ asChild, children }: { asChild?: boolean; children: React.ReactNode }) => {
-  const [isOpen, setIsOpen] = React.useState(false);
-  
-  // This is a bit hacky for a simplified version
-  return React.cloneElement(children as React.ReactElement<any>, {
-    onClick: (e: any) => {
-      const clickEvent = (children as any).props.onClick;
-      if (clickEvent) clickEvent(e);
-      // We need a way to communicate to PopoverContent
-    }
-  });
-};
-
-// Re-doing Popover to be more functional
 export const PopoverRoot = ({ children }: { children: React.ReactNode }) => {
   const [isOpen, setIsOpen] = React.useState(false);
   return (

@@ -1,10 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link, useLocation, Outlet, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Menu, X, ShieldCheck, User, LogOut, LayoutDashboard, Settings, ChevronRight, BookOpen, Play, Star, Calendar, Building2, Headphones, Search, Newspaper } from "lucide-react";
+import { X, ShieldCheck, LogOut, ChevronRight, BookOpen, Play, Star, Building2, Newspaper } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
-import { Button } from "./ui/Button";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChatbotWidget } from "./ChatbotWidget";
 
@@ -29,7 +28,7 @@ const SiteLayout = () => {
   );
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
   
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);

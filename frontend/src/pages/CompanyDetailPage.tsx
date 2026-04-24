@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { 
   Building2, MapPin, ShieldCheck, ArrowLeft, ExternalLink, 
-  Award, BarChart3, Globe, Download, Share2, Briefcase 
+  Award, BarChart3, Download, Share2, Briefcase 
 } from "lucide-react";
 import { useCompany } from "@/hooks/useCompanies";
 import { useLabel } from "@/hooks/useLabels";
@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/Button";
 const IMAGE_FALLBACK = "https://placehold.co/400x400/e2e8f0/94a3b8?text=Logo";
 
 function CompanyDetailPage() {
-  const { i18n, t } = useTranslation();
+  const { i18n } = useTranslation();
   const lang = i18n.language;
   const { id } = useParams<{ id: string }>();
   
@@ -84,7 +84,10 @@ function CompanyDetailPage() {
               </div>
             </div>
             <div className="flex items-center gap-3 w-full md:w-auto">
-               <Button className="flex-1 md:flex-none rounded-full px-8 shadow-xl shadow-black/20" onClick={() => window.open(company.website, '_blank')}>
+               <Button
+                 className="flex-1 md:flex-none rounded-full px-8 shadow-xl shadow-black/20"
+                 onClick={() => company.website && window.open(company.website, "_blank")}
+               >
                  Visiter le Site <ExternalLink className="w-4 h-4 ml-2" />
                </Button>
                <Button variant="outline" className="rounded-full w-12 h-12 p-0 border-white/20 text-white hover:bg-white/10">

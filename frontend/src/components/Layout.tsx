@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type WheelEvent } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
 import {
   Menu,
@@ -102,27 +102,6 @@ const Layout = () => {
       setIsSearching(false);
     }
   };
-
-  const handleNavWheel = (event: WheelEvent<HTMLElement>) => {
-    if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
-      if (scrollRef.current) {
-        scrollRef.current.scrollLeft += event.deltaY;
-        event.preventDefault();
-      }
-    }
-  };
-
-  const scrollNav = (direction: 'left' | 'right') => {
-    if (scrollRef.current) {
-      const scrollAmount = Math.max(240, Math.floor(scrollRef.current.clientWidth * 0.9));
-      scrollRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
-      });
-    }
-  };
-
-
 
   const UserMenu = () => {
     if (!isAuthenticated) {

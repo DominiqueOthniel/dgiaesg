@@ -1,13 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { motion } from "framer-motion";
 import { 
   Calendar, MapPin, ShieldCheck, ArrowLeft, ExternalLink, 
-  Clock, Share2, Info, Users 
+  Share2, Info, Users 
 } from "lucide-react";
 import api from "@/services/api";
-import { getLocalized, cn } from "@/lib/utils";
+import { getLocalized } from "@/lib/utils";
 import type { IEvent } from "@/types";
 import { Button } from "@/components/ui/Button";
 
