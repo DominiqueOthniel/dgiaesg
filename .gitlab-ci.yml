@@ -6,6 +6,7 @@
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ci/variables/#cicd-variable-precedence
 stages:
+  - secret-detection
   - test
 
 include:
@@ -14,5 +15,3 @@ include:
 
 variables:
   SECRET_DETECTION_ENABLED: "true"
-secret_detection:
-  stage: secret-detection
