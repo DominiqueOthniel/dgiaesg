@@ -197,29 +197,20 @@
   /* Gold-glow article card — scales up on hover to focus attention */
   .card-gold {
     position: relative;
-    border: 2px solid hsl(var(--brand-gold) / 0.5);
-    background-color: hsl(var(--card));
+    border: 2px solid #FFD700;
+    background-color: #FFFFFF;
+    color: #000000;
     box-shadow:
-      0 1px 0 hsl(var(--brand-gold) / 0.25) inset,
-      0 2px 4px hsl(220 40% 10% / 0.06),
-      0 8px 16px -4px hsl(220 40% 10% / 0.10),
-      0 24px 40px -16px hsl(var(--brand-gold) / 0.30),
-      0 32px 60px -24px hsl(220 40% 10% / 0.18);
-    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-                box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-                border-color 0.35s ease;
-    transform: scale(1);
-    transform-origin: center;
-    will-change: transform;
+      0 0 35px -10px rgba(255, 215, 0, 0.35),
+      0 15px 40px -20px rgba(0, 0, 0, 0.2);
+    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   }
   .card-gold:hover {
-    border-color: hsl(var(--brand-gold));
-    transform: scale(1.04);
+    transform: translateY(-8px) scale(1.02);
+    border-color: #FFC000;
     box-shadow:
-      0 1px 0 hsl(var(--brand-gold) / 0.4) inset,
-      0 8px 20px hsl(220 40% 10% / 0.10),
-      0 24px 50px -12px hsl(var(--brand-gold) / 0.40),
-      0 0 40px hsl(var(--brand-gold) / 0.20);
+      0 0 50px -5px rgba(255, 215, 0, 0.5),
+      0 25px 60px -20px rgba(0, 0, 0, 0.3);
   }
 
   .news-bg {
@@ -642,5 +633,141 @@
     );
     background-size: 300% 100%;
     animation: flow-border 6s linear infinite;
+  }
+
+  /* Intense Glowing Golden Border */
+  .border-glow-gold {
+    border: 2px solid #FFD700 !important;
+    box-shadow: 
+      0 0 15px rgba(255, 215, 0, 0.6), 
+      0 0 30px rgba(255, 215, 0, 0.2),
+      inset 0 0 10px rgba(255, 215, 0, 0.3) !important;
+  }
+  .border-glow-gold:hover {
+    border-color: #FFEA00 !important;
+    box-shadow: 
+      0 0 25px rgba(255, 215, 0, 0.8), 
+      0 0 50px rgba(255, 215, 0, 0.4),
+      inset 0 0 15px rgba(255, 215, 0, 0.5) !important;
+  }
+
+  @keyframes aurora-slow {
+    0% { transform: rotate(0deg) scale(1); }
+    33% { transform: rotate(120deg) scale(1.1); }
+    66% { transform: rotate(240deg) scale(0.9); }
+    100% { transform: rotate(360deg) scale(1); }
+  }
+
+  /* Section to make text readable over aurora */
+  .aurora-overlay {
+    position: relative;
+    z-index: 10;
+  }
+
+  /* ============================================================
+     Golden glow halo for hero H1 titles (NewsPage + ThemePillar +
+     Thematiques portal). Uses brand-gold with multiple soft rings
+     and a slow breathing animation.
+     ============================================================ */
+  .h1-golden-glow {
+    position: relative;
+    display: inline-block;
+    z-index: 1;
+    isolation: isolate;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+  .h1-golden-glow::before {
+    content: "";
+    position: absolute;
+    inset: -30% -20%;
+    background: radial-gradient(
+      circle at center,
+      #FFD700 0%,
+      rgba(255, 215, 0, 0.4) 40%,
+      transparent 80%
+    );
+    filter: blur(35px);
+    z-index: -1;
+    pointer-events: none;
+    animation: golden-pulse 4s ease-in-out infinite;
+    mix-blend-mode: plus-lighter;
+  }
+  @keyframes golden-pulse {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+
+  /* ============================================================
+     Wave reveal — row-by-row, card-by-card cascading fade-in.
+     Apply `.wave-item` to grid children and trigger by adding
+     `.wave-active` on the parent (via IntersectionObserver).
+     Use inline style: `--wave-delay: <ms>ms` for per-card delay.
+     ============================================================ */
+  .wave-item {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+    transition:
+      opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--wave-delay, 0ms);
+    will-change: opacity, transform;
+  }
+  .wave-active .wave-item {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  /* ============================================================
+     Elevated golden card — used on Thematiques portal pillar tiles.
+     Stronger shadow + persistent gold halo so cards visibly float
+     above the page background.
+     ============================================================ */
+  .card-gold-elevated {
+    position: relative;
+    border: 2px solid #FFD700;
+    background: #FFFFFF;
+    color: #000000;
+    box-shadow:
+      0 0 35px -10px rgba(255, 215, 0, 0.4),
+      0 20px 50px -20px rgba(0, 0, 0, 0.25);
+    transition: all 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .card-gold-elevated:hover {
+    transform: translateY(-10px);
+    box-shadow:
+      0 0 50px -5px rgba(255, 215, 0, 0.6),
+      0 30px 70px -25px rgba(0, 0, 0, 0.35);
+    border-color: #FFC000;
+  }
+  /* Corner decorations for elevated cards */
+  .card-gold-elevated .corner {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-color: hsl(var(--brand-gold) / 0.8);
+    transition: all 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+    opacity: 0.6;
+    z-index: 20;
+  }
+  .card-gold-elevated:hover .corner {
+    width: 22px;
+    height: 22px;
+    opacity: 1;
+    border-color: hsl(var(--brand-gold));
+    box-shadow: 0 0 10px hsl(var(--brand-gold) / 0.5);
+  }
+  .card-gold-elevated .corner-tl { top: 0; left: 0; border-top: 2px solid; border-left: 2px solid; border-top-left-radius: 1rem; }
+  .card-gold-elevated .corner-tr { top: 0; right: 0; border-top: 2px solid; border-right: 2px solid; border-top-right-radius: 1rem; }
+  .card-gold-elevated .corner-bl { bottom: 0; left: 0; border-bottom: 2px solid; border-left: 2px solid; border-bottom-left-radius: 1rem; }
+  .card-gold-elevated .corner-br { bottom: 0; right: 0; border-bottom: 2px solid; border-right: 2px solid; border-bottom-right-radius: 1rem; }
+
+  /* Smooth rotate-down chevron utility for filter dropdowns */
+  .chev-rotate {
+    transition: transform 0.25s ease;
+  }
+  [data-state="open"] > .chev-rotate,
+  .chev-open .chev-rotate {
+    transform: rotate(180deg);
   }
 }

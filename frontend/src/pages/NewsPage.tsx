@@ -1,6 +1,6 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { FeaturedCarousel } from "@/components/FeaturedCarousel";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import {
@@ -18,6 +18,8 @@ import {
   Briefcase,
   ArrowUpDown,
   Sparkles,
+  Zap,
+  Clock,
 } from "lucide-react";
 import { useNews } from "@/hooks/useNews";
 import { cn, getLocalized } from "@/lib/utils";
@@ -42,15 +44,88 @@ import {
   PaginationContent,
   PaginationItem,
 } from "@/components/ui/pagination";
+import { PILLARS } from "@/lib/pillars";
 
 const IMAGE_FALLBACK =
   "https://placehold.co/800x400/e2e8f0/94a3b8?text=Article";
 
 const PAGE_SIZE = 6;
 
+// ---------------------------------------------------------------------------
+// Format taxonomy (5 rubriques requested by supervisor).
+// ---------------------------------------------------------------------------
+export type NewsFormat =
+  | "all"
+  | "breve"
+  | "analyse"
+  | "enquete"
+  | "interview"
+  | "communique";
+
+const FORMATS: {
+  value: NewsFormat;
+  label: string;
+  badgeClass: string;
+  readLabel: (min: number) => string;
+}[] = [
+  {
+    value: "all",
+    label: "Tout",
+    badgeClass: "bg-foreground/80 text-background",
+    readLabel: (_m) => `Lecture ${_m} min`,
+  },
+  {
+    value: "breve",
+    label: "Brèves",
+    badgeClass: "bg-sky-600 text-white",
+    readLabel: (_m) => `Flash ${_m} min`,
+  },
+  {
+    value: "analyse",
+    label: "Analyses",
+    badgeClass: "bg-[hsl(var(--brand-emerald))] text-white",
+    readLabel: (_m) => `Lecture ${_m} min`,
+  },
+  {
+    value: "enquete",
+    label: "Enquêtes",
+    badgeClass:
+      "bg-[hsl(var(--brand-gold))] text-[hsl(var(--brand-gold-foreground))]",
+    readLabel: (_m) => `Enquête ${_m} min`,
+  },
+  {
+    value: "interview",
+    label: "Interviews",
+    badgeClass: "bg-violet-600 text-white",
+    readLabel: (_m) => `Entretien ${_m} min`,
+  },
+  {
+    value: "communique",
+    label: "Communiqués",
+    badgeClass: "bg-slate-700 text-white",
+    readLabel: (_m) => `Communiqué`,
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Theme taxonomy (sub-categories).
+// ---------------------------------------------------------------------------
+const THEMES: { value: string; label: string }[] = [
+  { value: "all", label: "Tous les thèmes" },
+  { value: "finance-durable", label: "Finance" },
+  { value: "mines-energie", label: "Énergie" },
+  { value: "climat", label: "Climat" },
+  { value: "social", label: "Social" },
+  { value: "infrastructure", label: "Infrastructure" },
+  { value: "agro-industrie", label: "Agro" },
+];
+
 function NewsPage() {
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
+  const { format: routeFormat } = useParams();
+
+  const initialFormat: NewsFormat = (routeFormat as NewsFormat) || "all";
 
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
@@ -64,13 +139,27 @@ function NewsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
+  // NEW: format + theme filters from the supervisor brief.
+  const [format, setFormat] = useState<NewsFormat>(initialFormat);
+  const [theme, setTheme] = useState<string>("all");
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Sync when the route param changes
   useEffect(() => {
-    // Scroll to top of list when page changes
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [page]);
+    if (routeFormat) {
+      setFormat(routeFormat as NewsFormat);
+    } else {
+      setFormat("all");
+    }
+    setPage(1);
+  }, [routeFormat]);
 
+  useEffect(() => {
+    if (contentRef.current) {
+      contentRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [page, format, theme]);
 
-  // Define categories and sectors with translations
   const CATEGORIES = [
     { value: "all", label: t("news.filters.all_categories", "Catégories") },
     { value: "analyse", label: t("news.categories.analyse", "Analyse") },
@@ -92,17 +181,22 @@ function NewsPage() {
     { value: "title", label: t("news.sort.title", "Titre") },
   ];
 
-  // Fetch data - fetching 24 to have enough for client-side pagination/filtering
-  const { data: newsData, isLoading } = useNews({ page: 1, limit: 24 });
+  // Fetch data
+  const { data: newsData, isLoading } = useNews({ page: 1, limit: 100 }); // Increase limit to allow client-side filtering
   const news = newsData?.data || [];
 
   const filtered = useMemo(() => {
     let list = [...news];
+    
+    // REDESIGN filters
+    if (format !== "all") list = list.filter((n: any) => n.format === format);
+    if (theme !== "all") list = list.filter((n: any) => n.category === theme);
+
     if (sector !== "all") list = list.filter((n: any) => n.sector === sector);
-    if (category !== "all")
-      list = list.filter(
-        (n: any) => (n.category || "actualite") === category
-      );
+    if (category !== "all") {
+        list = list.filter((n: any) => (n.category || "actualite") === category);
+    }
+    
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter((n: any) =>
@@ -137,9 +231,8 @@ function NewsPage() {
       return sortDir === "asc" ? cmp : -cmp;
     });
     return list;
-  }, [news, sector, category, search, dateFrom, dateTo, sortBy, sortDir, lang]);
+  }, [news, format, theme, sector, category, search, dateFrom, dateTo, sortBy, sortDir, lang]);
 
-  // Featured articles: top 5 by views then date
   const featured = useMemo(() => {
     return [...filtered]
       .sort((a: any, b: any) => {
@@ -165,6 +258,8 @@ function NewsPage() {
     setDateTo("");
     setSortBy("newest");
     setSortDir("desc");
+    setFormat("all");
+    setTheme("all");
     setPage(1);
   };
 
@@ -185,7 +280,7 @@ function NewsPage() {
 
   return (
     <div className="min-h-screen news-bg text-foreground">
-      {/* Hero */}
+      {/* Hero — updated SEO H1 + sub-title (supervisor brief) */}
       <section className="relative bg-primary overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_hsl(var(--brand-emerald)/0.3),transparent_70%)]" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 relative z-10">
@@ -200,24 +295,132 @@ function NewsPage() {
               </span>
             </div>
             <h1 className="text-3xl md:text-5xl font-extrabold text-primary-foreground tracking-tight mb-4">
-              {t("home.news.title", "Actualités & Analyses")}
+              <span className="h1-golden-glow">
+                L'actualité RSE et ESG en Afrique, chaque jour.
+              </span>
             </h1>
-            <p className="text-lg text-accent font-semibold max-w-xl">
-              {t("home.news.subtitle", "Analyses stratégiques, rapports sectoriels et actualités de l'économie certifiée.")}
+            <p className="text-lg text-white/80 max-w-2xl">
+              Dépêches, reportages et brèves sur la durabilité à travers les
+              54 pays du continent.
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Filter Bar — redesigned, premium dashboard look */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-20">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, duration: 0.5 }}
-          className="relative rounded-[28px] overflow-hidden"
+      {/* Format bar (rubriques principales) */}
+      <div ref={contentRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        <div
+          role="tablist"
+          aria-label="Formats d'articles"
+          className="flex items-center gap-2 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-thin"
         >
-          {/* Outer gold/green border glow */}
+          {FORMATS.map((f) => {
+            const active = format === f.value;
+            return (
+              <button
+                key={f.value}
+                role="tab"
+                aria-selected={active}
+                onClick={() => {
+                  setFormat(f.value);
+                  setPage(1);
+                }}
+                className={cn(
+                  "shrink-0 h-10 px-4 rounded-full text-xs font-black uppercase tracking-[0.14em] border transition-all",
+                  active
+                    ? "bg-primary text-primary-foreground border-primary shadow-md"
+                    : "bg-white/70 border-white/60 text-foreground hover:bg-white hover:border-[hsl(var(--brand-gold)/0.5)]",
+                )}
+              >
+                {f.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Theme bar (sous-catégories) */}
+        <div
+          aria-label="Thématiques"
+          className="mt-2 flex items-center gap-2 overflow-x-auto pb-1 -mx-1 px-1"
+        >
+          <span className="shrink-0 text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground pr-1">
+            Thèmes :
+          </span>
+          {THEMES.map((t) => {
+            const active = theme === t.value;
+            return (
+              <button
+                key={t.value}
+                onClick={() => {
+                  setTheme(t.value);
+                  setPage(1);
+                }}
+                className={cn(
+                  "shrink-0 h-8 px-3 rounded-full text-[11px] font-bold transition-all border",
+                  active
+                    ? "bg-[hsl(var(--brand-gold)/0.18)] border-[hsl(var(--brand-gold)/0.6)] text-foreground"
+                    : "bg-transparent border-transparent text-muted-foreground hover:text-foreground hover:bg-white/60",
+                )}
+              >
+                {t.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* "Browse by Theme" widget — links to the 6 pillar hubs */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        <div className="rounded-2xl border border-white/60 bg-card/85 backdrop-blur-xl shadow-[0_10px_30px_-15px_rgba(13,77,51,0.25)] p-4 sm:p-5">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-[11px] font-black uppercase tracking-[0.18em] text-foreground">
+              Parcourir par thématique
+            </h2>
+            <Link
+              to="/thematiques"
+              className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary hover:text-[hsl(var(--brand-emerald))] transition-colors"
+            >
+              Voir le portail →
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+            {PILLARS.map((p) => {
+              const Icon = p.icon;
+              return (
+                <Link
+                  key={p.slug}
+                  to={`/thematiques/${p.slug}`}
+                  className={cn(
+                    "group flex items-center gap-2 rounded-xl border bg-white/60 hover:bg-white px-2.5 py-2 text-[11px] font-bold transition-all hover:shadow-md",
+                    p.color.border,
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "inline-flex items-center justify-center w-7 h-7 rounded-lg shrink-0",
+                      p.color.soft,
+                    )}
+                  >
+                    <Icon className={cn("w-3.5 h-3.5", p.color.text)} />
+                  </span>
+                  <span className="truncate text-foreground group-hover:text-primary">
+                    {p.label}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Filter Bar (existing — preserved) */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 relative z-20">
+        <motion.div
+           initial={{ opacity: 0, y: 20 }}
+           animate={{ opacity: 1, y: 0 }}
+           transition={{ delay: 0.1, duration: 0.5 }}
+           className="relative rounded-[28px] overflow-hidden"
+        >
           <div
             aria-hidden
             className="absolute -inset-px rounded-[28px] opacity-70 blur-[3px] pointer-events-none"
@@ -227,8 +430,7 @@ function NewsPage() {
             }}
           />
 
-          <div className="relative rounded-[26px] bg-card/90 backdrop-blur-2xl border border-white/50 dark:border-white/10 shadow-[0_25px_70px_-25px_rgba(13,77,51,0.4),0_10px_30px_-15px_rgba(0,0,0,0.18)]">
-            {/* Animated radial gradient */}
+          <div className="relative rounded-[26px] bg-card/90 backdrop-blur-2xl border border-white/50 shadow-[0_25px_70px_-25px_rgba(13,77,51,0.4),0_10px_30px_-15px_rgba(0,0,0,0.18)]">
             <div
               aria-hidden
               className="pointer-events-none absolute inset-0 animate-gradient-pan"
@@ -237,7 +439,6 @@ function NewsPage() {
                   "radial-gradient(ellipse at 15% 0%, hsl(var(--primary) / 0.12), transparent 55%), radial-gradient(ellipse at 85% 100%, hsl(var(--brand-gold-dark) / 0.18), transparent 60%), radial-gradient(ellipse at 50% 50%, hsl(var(--brand-gold) / 0.08), transparent 70%)",
               }}
             />
-            {/* Top gold hairline */}
             <div
               aria-hidden
               className="pointer-events-none absolute inset-x-0 top-0 h-px animate-hairline"
@@ -248,7 +449,6 @@ function NewsPage() {
             />
 
             <div className="relative p-3 sm:p-4 flex flex-col lg:flex-row lg:items-center gap-2.5">
-              {/* Search — big & prominent */}
               <div className="relative flex-1 min-w-0 group">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
                   <Search className="w-4 h-4 text-muted-foreground group-focus-within:text-[hsl(var(--brand-gold-dark))] transition-colors" />
@@ -260,7 +460,7 @@ function NewsPage() {
                     setPage(1);
                   }}
                   placeholder="Rechercher un article, un label, un rapport…"
-                  className="w-full h-12 pl-11 pr-10 rounded-2xl text-sm bg-white/70 dark:bg-white/5 border border-white/60 dark:border-white/10 shadow-inner placeholder:text-muted-foreground/70 focus:outline-none focus:bg-white focus:border-[hsl(var(--brand-gold)/0.5)] focus:ring-4 focus:ring-[hsl(var(--brand-gold)/0.15)] transition-all"
+                  className="w-full h-12 pl-11 pr-10 rounded-2xl text-sm bg-white/70 border border-white/60 shadow-inner placeholder:text-muted-foreground/70 focus:outline-none focus:bg-white focus:border-[hsl(var(--brand-gold)/0.5)] focus:ring-4 focus:ring-[hsl(var(--brand-gold)/0.15)] transition-all"
                 />
                 {search && (
                   <button
@@ -277,12 +477,12 @@ function NewsPage() {
                 )}
               </div>
 
-              {/* Vertical divider */}
-              <div aria-hidden className="hidden lg:block h-8 w-px bg-gradient-to-b from-transparent via-border to-transparent mx-1" />
+              <div
+                aria-hidden
+                className="hidden lg:block h-8 w-px bg-gradient-to-b from-transparent via-border to-transparent mx-1"
+              />
 
-              {/* Compact pill controls */}
               <div className="flex flex-wrap lg:flex-nowrap items-stretch sm:items-center gap-2 w-full lg:w-auto">
-                {/* Category */}
                 <Select
                   value={category}
                   onValueChange={(v: string) => {
@@ -292,13 +492,20 @@ function NewsPage() {
                 >
                   <SelectTrigger
                     className={cn(
-                      "h-11 min-w-[118px] sm:min-w-[140px] w-full sm:w-auto rounded-full border bg-white/70 dark:bg-white/5 px-4 text-xs font-semibold gap-2 shadow-sm hover:bg-white hover:shadow-md transition-all",
+                      "h-11 min-w-[118px] sm:min-w-[140px] w-full sm:w-auto rounded-full border bg-white/70 px-4 text-xs font-semibold gap-2 shadow-sm hover:bg-white hover:shadow-md transition-all",
                       category !== "all"
                         ? "border-[hsl(var(--brand-gold)/0.5)] bg-[hsl(var(--brand-gold)/0.08)] text-foreground"
-                        : "border-white/60 dark:border-white/10"
+                        : "border-white/60",
                     )}
                   >
-                    <Layers className={cn("w-3.5 h-3.5", category !== "all" ? "text-[hsl(var(--brand-gold-dark))]" : "text-muted-foreground")} />
+                    <Layers
+                      className={cn(
+                        "w-3.5 h-3.5",
+                        category !== "all"
+                          ? "text-[hsl(var(--brand-gold-dark))]"
+                          : "text-muted-foreground",
+                      )}
+                    />
                     <SelectValue placeholder={t("news.filter.category", "Catégories")} />
                   </SelectTrigger>
                   <SelectContent className="bg-popover z-50 rounded-xl">
@@ -310,7 +517,6 @@ function NewsPage() {
                   </SelectContent>
                 </Select>
 
-                {/* Sector */}
                 <Select
                   value={sector}
                   onValueChange={(v: string) => {
@@ -320,13 +526,20 @@ function NewsPage() {
                 >
                   <SelectTrigger
                     className={cn(
-                      "h-11 min-w-[118px] sm:min-w-[130px] w-full sm:w-auto rounded-full border bg-white/70 dark:bg-white/5 px-4 text-xs font-semibold gap-2 shadow-sm hover:bg-white hover:shadow-md transition-all",
+                      "h-11 min-w-[118px] sm:min-w-[130px] w-full sm:w-auto rounded-full border bg-white/70 px-4 text-xs font-semibold gap-2 shadow-sm hover:bg-white hover:shadow-md transition-all",
                       sector !== "all"
                         ? "border-[hsl(var(--brand-gold)/0.5)] bg-[hsl(var(--brand-gold)/0.08)] text-foreground"
-                        : "border-white/60 dark:border-white/10"
+                        : "border-white/60",
                     )}
                   >
-                    <Briefcase className={cn("w-3.5 h-3.5", sector !== "all" ? "text-[hsl(var(--brand-gold-dark))]" : "text-muted-foreground")} />
+                    <Briefcase
+                      className={cn(
+                        "w-3.5 h-3.5",
+                        sector !== "all"
+                          ? "text-[hsl(var(--brand-gold-dark))]"
+                          : "text-muted-foreground",
+                      )}
+                    />
                     <SelectValue placeholder={t("news.filter.sector", "Secteurs")} />
                   </SelectTrigger>
                   <SelectContent className="bg-popover z-50 rounded-xl">
@@ -338,7 +551,6 @@ function NewsPage() {
                   </SelectContent>
                 </Select>
 
-                {/* Period */}
                 <Popover>
                   <PopoverTrigger asChild>
                     <button
@@ -346,10 +558,17 @@ function NewsPage() {
                         "h-11 rounded-full border px-4 text-xs font-semibold flex items-center gap-2 shadow-sm hover:bg-white hover:shadow-md transition-all w-full sm:w-auto",
                         dateFrom || dateTo
                           ? "border-[hsl(var(--brand-gold)/0.5)] bg-[hsl(var(--brand-gold)/0.08)] text-foreground"
-                          : "border-white/60 dark:border-white/10 bg-white/70 dark:bg-white/5"
+                          : "border-white/60 bg-white/70",
                       )}
                     >
-                      <Calendar className={cn("w-3.5 h-3.5", dateFrom || dateTo ? "text-[hsl(var(--brand-gold-dark))]" : "text-muted-foreground")} />
+                      <Calendar
+                        className={cn(
+                          "w-3.5 h-3.5",
+                          dateFrom || dateTo
+                            ? "text-[hsl(var(--brand-gold-dark))]"
+                            : "text-muted-foreground",
+                        )}
+                      />
                       <span className="truncate">
                         {dateFrom || dateTo
                           ? `${dateFrom || "…"} → ${dateTo || "…"}`
@@ -357,7 +576,10 @@ function NewsPage() {
                       </span>
                     </button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-72 bg-popover z-50 rounded-2xl border-white/60 shadow-xl" align="start">
+                  <PopoverContent
+                    className="w-72 bg-popover z-50 rounded-2xl border-white/60 shadow-xl"
+                    align="start"
+                  >
                     <div className="space-y-3">
                       <div>
                         <label className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground">
@@ -391,8 +613,7 @@ function NewsPage() {
                   </PopoverContent>
                 </Popover>
 
-                {/* Sort — segmented pill (sort field + direction toggle) */}
-                <div className="flex items-center h-11 rounded-full border border-white/60 dark:border-white/10 bg-white/70 dark:bg-white/5 shadow-sm overflow-hidden hover:shadow-md transition-all w-full sm:w-auto">
+                <div className="flex items-center h-11 rounded-full border border-white/60 bg-white/70 shadow-sm overflow-hidden hover:shadow-md transition-all w-full sm:w-auto">
                   <Select value={sortBy} onValueChange={setSortBy}>
                     <SelectTrigger className="h-11 min-w-[110px] sm:min-w-[130px] rounded-none border-0 bg-transparent px-4 text-xs font-semibold gap-2 shadow-none focus:ring-0">
                       <ArrowUpDown className="w-3.5 h-3.5 text-muted-foreground" />
@@ -411,8 +632,8 @@ function NewsPage() {
                     onClick={() =>
                       setSortDir((d) => (d === "asc" ? "desc" : "asc"))
                     }
-                    aria-label="Changer l'ordre"
-                    className="h-11 w-11 shrink-0 flex items-center justify-center text-muted-foreground hover:text-[hsl(var(--brand-gold-dark))] hover:bg-[hsl(var(--brand-gold)/0.1)] transition-colors"
+                    className="h-11 px-3 text-xs font-semibold flex items-center text-muted-foreground hover:text-foreground"
+                    aria-label="Inverser le tri"
                   >
                     {sortDir === "asc" ? (
                       <ArrowUp className="w-4 h-4" />
@@ -424,8 +645,8 @@ function NewsPage() {
               </div>
             </div>
 
-            {/* Footer : results counter + active chips + reset */}
-            <div className="relative px-4 sm:px-5 py-3 border-t border-border/40 bg-gradient-to-r from-transparent via-muted/20 to-transparent flex flex-wrap items-center gap-3">
+            {/* Result row + active chips */}
+            <div className="relative px-4 pb-3 flex items-center gap-3 flex-wrap">
               <div className="flex items-center gap-2">
                 <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-br from-primary to-[hsl(var(--brand-deep))] text-primary-foreground shadow-sm">
                   <Sparkles className="w-3 h-3" />
@@ -439,18 +660,44 @@ function NewsPage() {
                 </span>
               </div>
 
-              {/* Active chips */}
               {(search ||
                 category !== "all" ||
                 sector !== "all" ||
+                format !== "all" ||
+                theme !== "all" ||
                 dateFrom ||
                 dateTo) && (
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <Filter className="w-3 h-3 text-muted-foreground" />
+                  {format !== "all" && (
+                    <span className="inline-flex items-center gap-1 h-6 px-2.5 rounded-full bg-[hsl(var(--brand-gold)/0.12)] border border-[hsl(var(--brand-gold)/0.3)] text-[10px] font-bold text-foreground">
+                      {FORMATS.find((f) => f.value === format)?.label}
+                      <button
+                        onClick={() => setFormat("all")}
+                        className="hover:text-destructive"
+                      >
+                        <X className="w-2.5 h-2.5" />
+                      </button>
+                    </span>
+                  )}
+                  {theme !== "all" && (
+                    <span className="inline-flex items-center gap-1 h-6 px-2.5 rounded-full bg-[hsl(var(--brand-gold)/0.12)] border border-[hsl(var(--brand-gold)/0.3)] text-[10px] font-bold text-foreground">
+                      {THEMES.find((t) => t.value === theme)?.label}
+                      <button
+                        onClick={() => setTheme("all")}
+                        className="hover:text-destructive"
+                      >
+                        <X className="w-2.5 h-2.5" />
+                      </button>
+                    </span>
+                  )}
                   {search && (
                     <span className="inline-flex items-center gap-1 h-6 px-2.5 rounded-full bg-[hsl(var(--brand-gold)/0.12)] border border-[hsl(var(--brand-gold)/0.3)] text-[10px] font-bold text-foreground">
                       "{search.length > 16 ? search.slice(0, 16) + "…" : search}"
-                      <button onClick={() => setSearch("")} className="hover:text-destructive">
+                      <button
+                        onClick={() => setSearch("")}
+                        className="hover:text-destructive"
+                      >
                         <X className="w-2.5 h-2.5" />
                       </button>
                     </span>
@@ -458,49 +705,32 @@ function NewsPage() {
                   {category !== "all" && (
                     <span className="inline-flex items-center gap-1 h-6 px-2.5 rounded-full bg-[hsl(var(--brand-gold)/0.12)] border border-[hsl(var(--brand-gold)/0.3)] text-[10px] font-bold text-foreground">
                       {CATEGORIES.find((c) => c.value === category)?.label}
-                      <button onClick={() => setCategory("all")} className="hover:text-destructive">
-                        <X className="w-2.5 h-2.5" />
-                      </button>
-                    </span>
-                  )}
-                  {sector !== "all" && (
-                    <span className="inline-flex items-center gap-1 h-6 px-2.5 rounded-full bg-[hsl(var(--brand-gold)/0.12)] border border-[hsl(var(--brand-gold)/0.3)] text-[10px] font-bold text-foreground">
-                      {SECTORS.find((s) => s.value === sector)?.label}
-                      <button onClick={() => setSector("all")} className="hover:text-destructive">
-                        <X className="w-2.5 h-2.5" />
-                      </button>
-                    </span>
-                  )}
-                  {(dateFrom || dateTo) && (
-                    <span className="inline-flex items-center gap-1 h-6 px-2.5 rounded-full bg-[hsl(var(--brand-gold)/0.12)] border border-[hsl(var(--brand-gold)/0.3)] text-[10px] font-bold text-foreground">
-                      <Calendar className="w-2.5 h-2.5" />
-                      {`${dateFrom || "…"} → ${dateTo || "…"}`}
                       <button
-                        onClick={() => {
-                          setDateFrom("");
-                          setDateTo("");
-                        }}
+                        onClick={() => setCategory("all")}
                         className="hover:text-destructive"
                       >
                         <X className="w-2.5 h-2.5" />
                       </button>
                     </span>
                   )}
+                  {sector !== "all" && (
+                    <span className="inline-flex items-center gap-1 h-6 px-2.5 rounded-full bg-[hsl(var(--brand-gold)/0.12)] border border-[hsl(var(--brand-gold)/0.3)] text-[10px] font-bold text-foreground">
+                        {SECTORS.find((s) => s.value === sector)?.label}
+                        <button onClick={() => setSector("all")} className="hover:text-destructive">
+                            <X className="w-2.5 h-2.5" />
+                        </button>
+                    </span>
+                  )}
                 </div>
               )}
-
-              {/* Reset button */}
-              {(search ||
-                category !== "all" ||
-                sector !== "all" ||
-                dateFrom ||
-                dateTo) && (
+              
+              {(search || category !== "all" || sector !== "all" || format !== "all" || theme !== "all" || dateFrom || dateTo) && (
                 <button
-                  onClick={resetFilters}
-                  className="ml-auto inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-white border border-border text-[10px] font-black uppercase tracking-[0.16em] text-primary hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all shadow-sm"
+                    onClick={resetFilters}
+                    className="ml-auto inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-white border border-border text-[10px] font-black uppercase tracking-[0.16em] text-primary hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all shadow-sm"
                 >
-                  <X className="w-3 h-3" />
-                  {t("common.reset", "Réinitialiser")}
+                    <X className="w-3 h-3" />
+                    {t("common.reset", "Réinitialiser")}
                 </button>
               )}
             </div>
@@ -545,6 +775,7 @@ function NewsPage() {
             </button>
           </div>
         )}
+
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -560,59 +791,89 @@ function NewsPage() {
               "grid gap-8",
               viewMode === "grid" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
             )}>
-              {paginated.map((article: any, idx: number) => (
-                <motion.div
-                  key={article._id}
-                  initial={{ opacity: 0, y: 28 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: false, margin: "-50px" }}
-                  transition={{
-                    delay: idx * 0.06,
-                    duration: 0.6,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
-                >
-                  <Link
-                    to={`/news/${article.slug}`}
-                    className="group card-gold block bg-card rounded-2xl overflow-hidden h-full flex flex-col"
+              {paginated.map((article: any, idx: number) => {
+                // Determine format badge if it exists in the data
+                const fmtValue = article.format || "all";
+                const fmt = FORMATS.find(f => f.value === fmtValue) || FORMATS[0];
+                const readingTime = article.readingTime || 5;
+
+                return (
+                  <motion.div
+                    key={article._id}
+                    initial={{ opacity: 0, y: 28 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: false, margin: "-50px" }}
+                    transition={{
+                      delay: idx * 0.06,
+                      duration: 0.6,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
                   >
-                    <div className={cn("bg-muted overflow-hidden", viewMode === "grid" ? "aspect-video" : "h-56")}>
-                      <img
-                        src={
-                          resolveImageUrl(article.imageUrl) || IMAGE_FALLBACK
-                        }
-                        alt={getLocalized(article.title, lang)}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = IMAGE_FALLBACK;
-                        }}
-                      />
-                    </div>
-                    <div className="p-6 flex-1 flex flex-col">
-                      {article.sector && (
-                        <span className="text-[9px] font-black uppercase tracking-widest text-primary group-hover:text-accent transition-colors mb-2 block">
-                          {getLocalized(article.sector as any, lang)}
-                        </span>
-                      )}
-                      <h3 className="text-lg font-extrabold text-foreground group-hover:text-accent transition-colors line-clamp-2 mb-3 leading-snug">
-                        {getLocalized(article.title, lang)}
-                      </h3>
-                      <p className="text-sm text-foreground/70 line-clamp-2 mb-6 leading-relaxed flex-1">
-                        {getLocalized(article.excerpt, lang)}
-                      </p>
-                      <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-black">
-                        <span className="flex items-center gap-1 group-hover:text-primary transition-colors">
-                          <Calendar className="w-3 h-3" />
-                          {new Date(
-                            article.publishedAt || article.createdAt,
-                          ).toLocaleDateString(lang === "fr" ? "fr-FR" : "en-US")}
-                        </span>
-                        <ArrowRight className="w-4 h-4 text-primary group-hover:text-[hsl(var(--brand-emerald))] group-hover:translate-x-1.5 transition-all duration-300" />
+                    <Link
+                      to={`/news/${article.slug}`}
+                      className="group card-gold block bg-card rounded-2xl overflow-hidden h-full flex flex-col relative"
+                    >
+                      {/* Golden corners for elevation effect */}
+                      <div className="corner corner-tl" />
+                      <div className="corner corner-tr" />
+                      <div className="corner corner-bl" />
+                      <div className="corner corner-br" />
+                      
+                      <div className={cn("relative bg-muted overflow-hidden", viewMode === "grid" ? "aspect-video" : "h-56")}>
+                        <img
+                          src={
+                            resolveImageUrl(article.imageUrl) || IMAGE_FALLBACK
+                          }
+                          alt={getLocalized(article.title, lang)}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = IMAGE_FALLBACK;
+                          }}
+                        />
+                        {/* Format Badge Overlay */}
+                        {article.format && (
+                           <span
+                           className={cn(
+                             "absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 h-6 rounded-full text-[10px] font-black uppercase tracking-[0.14em] shadow-md backdrop-blur-sm",
+                             fmt.badgeClass,
+                           )}
+                         >
+                           {fmt.label}
+                         </span>
+                        )}
                       </div>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
+                      <div className="p-6 flex-1 flex flex-col">
+                        <div className="flex items-center justify-between mb-2">
+                           {article.sector && (
+                            <span className="text-[9px] font-black uppercase tracking-widest text-primary group-hover:text-accent transition-colors">
+                                {getLocalized(article.sector as any, lang)}
+                            </span>
+                           )}
+                           <span className="flex items-center gap-1 text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
+                                {fmtValue === 'breve' ? <Zap className="w-2.5 h-2.5 text-sky-600" /> : <Clock className="w-2.5 h-2.5" />}
+                                {fmt.readLabel(readingTime)}
+                           </span>
+                        </div>
+                        <h3 className="text-lg font-extrabold text-foreground group-hover:text-accent transition-colors line-clamp-2 mb-3 leading-snug">
+                          {getLocalized(article.title, lang)}
+                        </h3>
+                        <p className="text-sm text-foreground/70 line-clamp-2 mb-6 leading-relaxed flex-1">
+                          {getLocalized(article.excerpt, lang)}
+                        </p>
+                        <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-black">
+                          <span className="flex items-center gap-1 group-hover:text-primary transition-colors">
+                            <Calendar className="w-3 h-3" />
+                            {new Date(
+                              article.publishedAt || article.createdAt,
+                            ).toLocaleDateString(lang === "fr" ? "fr-FR" : "en-US")}
+                          </span>
+                          <ArrowRight className="w-4 h-4 text-primary group-hover:text-[hsl(var(--brand-emerald))] group-hover:translate-x-1.5 transition-all duration-300" />
+                        </div>
+                      </div>
+                    </Link>
+                  </motion.div>
+                );
+              })}
             </div>
 
             {/* Pagination */}

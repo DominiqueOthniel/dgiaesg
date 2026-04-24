@@ -33,6 +33,8 @@ const OrgProfilePage = lazy(() => import("./pages/OrgProfilePage"));
 const ApplyPage = lazy(() => import("./pages/ApplyPage"));
 const MyApplicationsPage = lazy(() => import("./pages/MyApplicationsPage"));
 const CertificationHistoryPage = lazy(() => import("./pages/CertificationHistoryPage"));
+const ThematiquesPortal = lazy(() => import("./pages/ThematiquesPortal"));
+const ThemePillarPage = lazy(() => import("./pages/ThemePillarPage"));
 
 // Admin pages
 const Dashboard = lazy(() => import("./pages/admin/Dashboard"));
@@ -80,6 +82,12 @@ function App() {
             <Route path="events" element={<Events />} />
             <Route path="events/:id" element={<EventDetail />} />
             <Route path="pricing" element={<PricingPage />} />
+            
+            {/* New Editorial Routes */}
+            <Route path="actualites" element={<NewsPage />} />
+            <Route path="actualites/:format" element={<NewsPage />} />
+            <Route path="thematiques" element={<ThematiquesPortal />} />
+            <Route path="thematiques/:pillar" element={<ThemePillarPage />} />
 
             <Route element={<ProtectedRoute />}>
               <Route path="profile" element={<ProfilePage />} />
