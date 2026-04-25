@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface FlipCardProps {
   icon: LucideIcon;
@@ -36,18 +35,28 @@ export function FlipCard({ icon: Icon, label, desc, back, index }: FlipCardProps
           </div>
         </div>
 
-        {/* Back Face: Elevated Golden Gradient (Matches Image 2) */}
-        <div className="flip-face flip-face-back bg-gradient-to-br from-[hsl(var(--brand-gold-dark))] via-[hsl(var(--brand-gold))] to-[hsl(var(--brand-gold-dark))] p-7 flex flex-col justify-center items-center text-center text-[hsl(var(--brand-gold-foreground))] shadow-2xl">
-           <div className="absolute top-0 right-0 p-5 opacity-15">
-             <Icon className="w-20 h-20" />
-           </div>
-           <h3 className="text-sm font-black uppercase tracking-widest mb-4 border-b border-black/10 pb-2">
-             {label}
-           </h3>
-           <p className="text-xs leading-relaxed font-black uppercase tracking-tighter">
-             {back}
-           </p>
-           <div className="mt-6 w-12 h-1 bg-black/15 rounded-full" />
+        {/* Back Face: Professional Editorial Layout (Matches Image 1) */}
+        <div className="flip-face flip-face-back bg-gradient-to-br from-[hsl(var(--brand-gold))] to-[hsl(var(--brand-gold-dark))] p-7 flex flex-col items-start text-left text-[hsl(var(--brand-gold-foreground))] shadow-2xl relative overflow-hidden">
+          {/* Top Left Icon Box */}
+          <div className="w-12 h-12 rounded-xl bg-black/10 flex items-center justify-center mb-6">
+            <Icon className="w-5 h-5 text-black/60" />
+          </div>
+
+          <h3 className="text-base font-black text-black mb-2">
+            {label}
+          </h3>
+
+          <p className="text-xs text-black/70 leading-relaxed max-w-[90%] font-medium">
+            {back}
+          </p>
+
+          {/* Footer Text */}
+          <div className="mt-auto pt-4 text-[9px] font-black uppercase tracking-[0.22em] text-black/40">
+            COOP-LABEL • REVUE
+          </div>
+
+          {/* Subtle background pattern/texture if needed */}
+          <div className="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(circle_at_30%_20%,white_0%,transparent_60%)]" />
         </div>
       </div>
     </motion.div>

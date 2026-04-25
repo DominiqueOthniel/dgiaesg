@@ -70,16 +70,29 @@ export const SiteHeader = ({
           </div>
 
           {/* Center: Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-2">
+          <nav className="hidden lg:flex items-center gap-1">
             {topNavItems.map((it) => {
               const Icon = it.icon;
+              // Detect active state for both exact match and sub-paths (e.g., /revue/numeros)
+              const isActive = it.href === "/" 
+                ? location.pathname === "/" 
+                : location.pathname.startsWith(it.href);
+
               return (
                 <Link
                   key={it.key}
                   to={it.href}
-                  className="group inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[11px] font-bold uppercase tracking-widest text-foreground bg-transparent border border-transparent hover:bg-brand-gold hover:border-brand-gold-dark/40 hover:shadow-md hover:shadow-brand-gold/30 hover:-translate-y-0.5 transition-all duration-200 active:scale-95"
+                  className={cn(
+                    "group inline-flex items-center gap-2 px-3.5 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 active:scale-95 whitespace-nowrap",
+                    isActive 
+                      ? "bg-brand-gold text-brand-dark shadow-[0_10px_25px_-5px_rgba(var(--brand-gold-rgb),0.5)] -translate-y-0.5" 
+                      : "text-foreground/80 bg-transparent hover:bg-muted/50 hover:text-foreground"
+                  )}
                 >
-                  <Icon className="w-3.5 h-3.5 text-foreground/70 group-hover:text-foreground transition-colors" />
+                  <Icon className={cn(
+                    "w-3.5 h-3.5 transition-transform duration-300",
+                    isActive ? "text-brand-dark" : "text-foreground/40 group-hover:text-foreground group-hover:scale-110"
+                  )} />
                   <span>{t(it.key)}</span>
                 </Link>
               );
