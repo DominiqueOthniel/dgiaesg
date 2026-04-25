@@ -57,7 +57,9 @@ export default function CountriesPage() {
   const totalCountries = REGIONS.reduce((sum, region) => sum + region.count, 0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/25">
+    <div className="relative min-h-screen bg-gradient-to-b from-background via-background to-muted/25 overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 opacity-[0.06] [background:radial-gradient(circle_at_14%_12%,hsl(var(--brand-emerald))_0%,transparent_35%),radial-gradient(circle_at_88%_78%,hsl(var(--brand-gold))_0%,transparent_30%)]" />
+      <div className="pointer-events-none absolute inset-0 opacity-[0.05] [background:linear-gradient(125deg,transparent_0_40%,hsl(var(--foreground))_40%_41%,transparent_41%_100%)]" />
       <section className="relative bg-primary overflow-hidden border-b border-white/10">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_hsl(var(--brand-emerald)/0.35),transparent_70%)]" />
         <div className="absolute inset-0 opacity-10 [background:repeating-linear-gradient(45deg,white_0_1px,transparent_1px_18px)]" />
@@ -92,45 +94,50 @@ export default function CountriesPage() {
         </div>
       </section>
 
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-7">
-          {REGIONS.map((region, idx) => (
-            <motion.div
-              key={region.slug}
-              initial={{ opacity: 0, y: 20, scale: 0.98 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.15 }}
-              transition={{ duration: 0.4, delay: idx * 0.04 }}
-            >
-              <Link
-                to={`/pays/${region.slug}`}
-                className="group relative block h-full rounded-3xl border border-border/80 bg-card/95 p-6 overflow-hidden hover:border-primary/30 hover:shadow-[0_24px_60px_-24px_rgba(13,77,51,0.5)] hover:-translate-y-1 transition-all duration-300"
+      <div className="gradient-flow-bg mt-2">
+        <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 z-10">
+          <div className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 w-[80%] h-24 rounded-full bg-primary/10 blur-3xl" />
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-7">
+            {REGIONS.map((region, idx) => (
+              <motion.div
+                key={region.slug}
+                initial={{ opacity: 0, y: 20, scale: 0.98 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.15 }}
+                transition={{ duration: 0.4, delay: idx * 0.04 }}
               >
-                <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[radial-gradient(ellipse_at_top,_hsl(var(--brand-gold)/0.16),transparent_60%)]" />
-                <div className="flex items-start justify-between gap-4 mb-4">
-                  <div className="w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center ring-1 ring-primary/20 group-hover:scale-105 transition-transform">
-                    <Globe2 className="w-5 h-5" />
+                <Link
+                  to={`/pays/${region.slug}`}
+                  className="group golden-glow relative block h-full rounded-3xl border-border/90 bg-card p-6 overflow-hidden shadow-[0_30px_72px_-30px_rgba(13,77,51,0.58)]"
+                >
+                  <div className="absolute inset-0 opacity-80 bg-[radial-gradient(ellipse_at_top,_hsl(var(--brand-gold)/0.16),transparent_60%)]" />
+                  <div className="pointer-events-none absolute inset-0 opacity-80 [background:linear-gradient(155deg,hsl(var(--background)/0.65)_0%,transparent_45%)]" />
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 opacity-100 bg-[linear-gradient(180deg,transparent_0%,hsl(var(--brand-emerald)/0.12)_100%)]" />
+                  <div className="relative flex items-start justify-between gap-4 mb-4">
+                    <div className="w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center ring-1 ring-primary/20 shadow-[0_12px_22px_-12px_rgba(13,77,51,0.65)]">
+                      <Globe2 className="w-5 h-5" />
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 py-1 rounded-full bg-muted/70 border border-border/60">
+                      {t("pages.countries.region_countries", { count: region.count })}
+                    </span>
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 py-1 rounded-full bg-muted/70 border border-border/60">
-                    {t("pages.countries.region_countries", { count: region.count })}
-                  </span>
-                </div>
 
-                <h2 className="text-xl font-extrabold tracking-tight text-foreground group-hover:text-primary transition-colors mb-2">
-                  {isEn ? region.title.en : region.title.fr}
-                </h2>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {(isEn ? region.countries.en : region.countries.fr).join(" • ")}
-                </p>
+                  <h2 className="relative text-xl font-extrabold tracking-tight text-foreground mb-2">
+                    {isEn ? region.title.en : region.title.fr}
+                  </h2>
+                  <p className="relative text-sm text-muted-foreground leading-relaxed">
+                    {(isEn ? region.countries.en : region.countries.fr).join(" • ")}
+                  </p>
 
-                <div className="mt-6 pt-4 border-t border-border/60 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary">
-                  {t("pages.countries.explore_region")} <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+                  <div className="relative mt-6 pt-4 border-t border-border/60 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary">
+                    {t("pages.countries.explore_region")} <ChevronRight className="w-4 h-4" />
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      </div>
     </div>
   );
 }

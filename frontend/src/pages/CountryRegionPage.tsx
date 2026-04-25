@@ -252,7 +252,8 @@ export default function CountryRegionPage() {
   if (!data) return <Navigate to="/pays" replace />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20">
+    <div className="relative min-h-screen bg-gradient-to-b from-background via-background to-muted/20 overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 opacity-[0.06] [background:radial-gradient(circle_at_18%_10%,hsl(var(--brand-emerald))_0%,transparent_34%),radial-gradient(circle_at_85%_75%,hsl(var(--brand-gold))_0%,transparent_30%)]" />
       <section className="bg-primary relative overflow-hidden border-b border-white/10">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_hsl(var(--brand-emerald)/0.35),transparent_70%)]" />
         <div className="absolute inset-0 opacity-10 [background:repeating-linear-gradient(45deg,white_0_1px,transparent_1px_18px)]" />
@@ -275,72 +276,76 @@ export default function CountryRegionPage() {
         </div>
       </section>
 
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14 space-y-7">
-        {data.countries.map((country) => (
-          <article key={country.name.fr} className="group relative rounded-3xl border border-border/80 bg-card/95 p-6 md:p-8 overflow-hidden shadow-[0_18px_45px_-24px_rgba(13,77,51,0.25)] hover:shadow-[0_28px_60px_-24px_rgba(13,77,51,0.4)] transition-all">
-            <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[radial-gradient(ellipse_at_top,_hsl(var(--brand-gold)/0.18),transparent_60%)]" />
-            <div className="relative">
-              <div className="flex items-center justify-between gap-4 mb-3">
-                <h2 className="text-2xl font-extrabold tracking-tight text-foreground">
-                  {isEn ? country.name.en : country.name.fr}
-                </h2>
-                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 py-1 rounded-full bg-muted/70 border border-border/60">
-                  ESG
-                </span>
-              </div>
-              <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-6">
-                {isEn ? country.esgProfile.en : country.esgProfile.fr}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-              <div className="rounded-2xl border border-border/70 bg-background/80 p-4">
-                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary mb-3">
-                  <Newspaper className="w-4 h-4" /> {t("pages.countries.section_news")}
+      <div className="gradient-flow-bg mt-2">
+        <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14 space-y-7 z-10">
+          {data.countries.map((country) => (
+            <article key={country.name.fr} className="group relative rounded-3xl border border-border/80 bg-card/98 p-6 md:p-8 overflow-hidden shadow-[0_20px_52px_-26px_rgba(0,0,0,0.34)]">
+              <div className="pointer-events-none absolute inset-0 bg-white/90" />
+              <div className="pointer-events-none absolute inset-0 opacity-28 bg-[radial-gradient(ellipse_at_top,_hsl(var(--brand-gold)/0.1),transparent_65%)]" />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 opacity-35 bg-[linear-gradient(180deg,transparent_0%,hsl(var(--brand-emerald)/0.08)_100%)]" />
+              <div className="relative z-10">
+                <div className="flex items-center justify-between gap-4 mb-3">
+                  <h2 className="text-2xl font-extrabold tracking-tight text-foreground">
+                    {isEn ? country.name.en : country.name.fr}
+                  </h2>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-foreground/80 px-2 py-1 rounded-full bg-background border border-border/70">
+                    ESG
+                  </span>
                 </div>
-                <ul className="space-y-2 text-sm text-foreground">
-                  {country.headlines.map((line) => (
-                    <li key={line.fr} className="flex items-start gap-2">
-                      <ChevronRight className="w-4 h-4 mt-0.5 text-primary shrink-0 group-hover:translate-x-0.5 transition-transform" />
-                      <span>{isEn ? line.en : line.fr}</span>
-                    </li>
-                  ))}
-                </ul>
+                <p className="text-sm md:text-base text-foreground/80 leading-relaxed mb-6">
+                  {isEn ? country.esgProfile.en : country.esgProfile.fr}
+                </p>
               </div>
 
-              <div className="rounded-2xl border border-border/70 bg-background/80 p-4">
-                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary mb-3">
-                  <Building2 className="w-4 h-4" /> {t("pages.countries.section_companies")}
+              <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-5">
+                <div className="rounded-2xl border border-border/75 bg-background p-4 shadow-[0_10px_24px_-18px_rgba(0,0,0,0.35)]">
+                  <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary mb-3">
+                    <Newspaper className="w-4 h-4" /> {t("pages.countries.section_news")}
+                  </div>
+                  <ul className="space-y-2 text-sm text-foreground/90">
+                    {country.headlines.map((line) => (
+                      <li key={line.fr} className="flex items-start gap-2">
+                        <ChevronRight className="w-4 h-4 mt-0.5 text-primary shrink-0" />
+                        <span>{isEn ? line.en : line.fr}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul className="space-y-2 text-sm text-foreground">
-                  {country.companies.map((line) => (
-                    <li key={line.fr} className="flex items-start gap-2">
-                      <ChevronRight className="w-4 h-4 mt-0.5 text-primary shrink-0 group-hover:translate-x-0.5 transition-transform" />
-                      <span>{isEn ? line.en : line.fr}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
 
-              <div className="rounded-2xl border border-border/70 bg-background/80 p-4">
-                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary mb-3">
-                  <BarChart3 className="w-4 h-4" /> {t("pages.countries.section_indicators")}
+                <div className="rounded-2xl border border-border/75 bg-background p-4 shadow-[0_10px_24px_-18px_rgba(0,0,0,0.35)]">
+                  <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary mb-3">
+                    <Building2 className="w-4 h-4" /> {t("pages.countries.section_companies")}
+                  </div>
+                  <ul className="space-y-2 text-sm text-foreground/90">
+                    {country.companies.map((line) => (
+                      <li key={line.fr} className="flex items-start gap-2">
+                        <ChevronRight className="w-4 h-4 mt-0.5 text-primary shrink-0" />
+                        <span>{isEn ? line.en : line.fr}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <dl className="space-y-3">
-                  {country.indicators.map((kpi) => (
-                    <div key={kpi.label.fr} className="flex items-center justify-between gap-3 pb-2 border-b border-border/40 last:border-0 last:pb-0">
-                      <dt className="text-xs font-semibold text-muted-foreground">
-                        {isEn ? kpi.label.en : kpi.label.fr}
-                      </dt>
-                      <dd className="text-sm font-black text-foreground bg-primary/10 px-2 py-0.5 rounded-md">{kpi.value}</dd>
-                    </div>
-                  ))}
-                </dl>
+
+                <div className="rounded-2xl border border-border/75 bg-background p-4 shadow-[0_10px_24px_-18px_rgba(0,0,0,0.35)]">
+                  <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary mb-3">
+                    <BarChart3 className="w-4 h-4" /> {t("pages.countries.section_indicators")}
+                  </div>
+                  <dl className="space-y-3">
+                    {country.indicators.map((kpi) => (
+                      <div key={kpi.label.fr} className="flex items-center justify-between gap-3 pb-2 border-b border-border/40 last:border-0 last:pb-0">
+                        <dt className="text-xs font-semibold text-foreground/70">
+                          {isEn ? kpi.label.en : kpi.label.fr}
+                        </dt>
+                        <dd className="text-sm font-black text-foreground bg-primary/10 px-2 py-0.5 rounded-md">{kpi.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
               </div>
-            </div>
-          </article>
-        ))}
-      </section>
+            </article>
+          ))}
+        </section>
+      </div>
     </div>
   );
 }

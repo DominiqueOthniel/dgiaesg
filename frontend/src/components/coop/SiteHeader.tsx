@@ -5,6 +5,8 @@ import {
   ShieldCheck,
   Building2,
   MapPin,
+  Factory,
+  Database,
   BookOpen,
   Headphones,
   Crown,
@@ -23,6 +25,8 @@ export const topNavItems = [
   { key: "nav.labels", href: "/labels", icon: ShieldCheck },
   { key: "nav.directory", href: "/directory", icon: Building2 },
   { key: "nav.countries", href: "/pays", icon: MapPin },
+  { key: "nav.companies", href: "/entreprises", icon: Factory },
+  { key: "nav.data", href: "/donnees", icon: Database },
   { key: "nav.news", href: "/news", icon: BookOpen },
   { key: "nav.kiosk", href: "/kiosk", icon: BookOpen },
   { key: "nav.mediatique", href: "/mediatique", icon: Headphones },
@@ -54,10 +58,10 @@ export const SiteHeader = ({
           : "bg-background"
       )}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+      <div className="max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center h-20 gap-3 xl:gap-5">
           {/* Left: Logo */}
-          <div className="flex items-center gap-2 md:gap-6">
+          <div className="flex items-center gap-2 md:gap-6 shrink-0">
             <Link to="/" className="flex items-center gap-3 group">
               <div className="w-11 h-11 bg-primary rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg shadow-primary/20">
                 <ShieldCheck className="w-7 h-7 text-brand-gold" />
@@ -74,25 +78,25 @@ export const SiteHeader = ({
           </div>
 
           {/* Center: Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-2">
+          <nav className="hidden lg:flex flex-1 min-w-0 items-center justify-start xl:justify-center gap-1 xl:gap-1.5 overflow-x-auto no-scrollbar px-1">
             {topNavItems.map((it) => {
               const Icon = it.icon;
               return (
                 <Link
                   key={it.key}
                   to={it.href}
-                  className="group inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[11px] font-bold uppercase tracking-widest text-foreground bg-transparent border border-transparent hover:bg-brand-gold hover:border-brand-gold-dark/40 hover:shadow-md hover:shadow-brand-gold/30 hover:-translate-y-0.5 transition-all duration-200 active:scale-95"
+                  className="group flex-none inline-flex items-center gap-1 px-2 xl:px-2.5 py-2 rounded-full text-[9px] xl:text-[10px] 2xl:text-[11px] leading-none font-bold uppercase tracking-[0.08em] whitespace-nowrap text-foreground bg-transparent border border-transparent hover:bg-brand-gold hover:border-brand-gold-dark/40 hover:shadow-md hover:shadow-brand-gold/30 hover:-translate-y-0.5 transition-all duration-200 active:scale-95"
                 >
-                  <Icon className="w-3.5 h-3.5 text-foreground/70 group-hover:text-foreground transition-colors" />
-                  <span>{t(it.key)}</span>
+                  <Icon className="w-3 h-3 xl:w-3.5 xl:h-3.5 text-foreground/70 group-hover:text-foreground transition-colors" />
+                  <span className="whitespace-nowrap">{t(it.key)}</span>
                 </Link>
               );
             })}
           </nav>
 
           {/* Right: Actions + sandwich */}
-          <div className="flex items-center gap-4">
-            <button className="p-2 text-foreground/70 hover:text-primary transition-colors">
+          <div className="flex items-center gap-1.5 xl:gap-2 shrink-0 ml-auto">
+            <button className="p-2 text-foreground/70 hover:text-primary transition-colors shrink-0">
               <Search className="w-5 h-5" />
             </button>
 
@@ -100,12 +104,12 @@ export const SiteHeader = ({
               <div className="relative">
                 <button
                   onClick={() => setProfileOpen(!profileOpen)}
-                  className="flex items-center gap-3 pl-2 pr-4 py-2 bg-muted rounded-2xl hover:bg-muted/80 transition-all border border-border"
+                  className="flex items-center gap-2 pl-2 pr-3 py-2 bg-muted rounded-2xl hover:bg-muted/80 transition-all border border-border"
                 >
                   <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shadow-md">
                     <User className="w-4 h-4" />
                   </div>
-                  <div className="hidden sm:block text-left">
+                  <div className="hidden 2xl:block text-left">
                     <p className="text-[10px] font-black uppercase tracking-widest leading-none">
                       {user?.username}
                     </p>
@@ -152,12 +156,12 @@ export const SiteHeader = ({
               <div className="flex items-center gap-2">
                 <Link
                   to="/login"
-                  className="flex items-center gap-3 pl-2 pr-4 py-2 bg-muted rounded-2xl hover:bg-muted/80 transition-all border border-border"
+                  className="flex items-center gap-2 pl-2 pr-3 py-2 bg-muted rounded-2xl hover:bg-muted/80 transition-all border border-border"
                 >
                   <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shadow-md">
                     <User className="w-4 h-4" />
                   </div>
-                  <div className="hidden sm:block text-left">
+                  <div className="hidden 2xl:block text-left">
                     <p className="text-[10px] font-black uppercase tracking-widest leading-none">
                       {t("nav.login")}
                     </p>
