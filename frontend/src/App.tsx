@@ -19,6 +19,16 @@ const NewsArticlePage = lazy(() => import("./pages/NewsArticlePage"));
 const SectorPage = lazy(() => import("./pages/SectorPage"));
 const CountriesPage = lazy(() => import("./pages/CountriesPage"));
 const CountryRegionPage = lazy(() => import("./pages/CountryRegionPage"));
+const CompaniesPage = lazy(() => import("./pages/CompaniesPage"));
+const CompaniesRankingsPage = lazy(() => import("./pages/CompaniesRankingsPage"));
+const CompaniesSectorsPage = lazy(() => import("./pages/CompaniesSectorsPage"));
+const CompanyProfileSlugPage = lazy(() => import("./pages/CompanyProfileSlugPage"));
+const CompaniesProfilesPage = lazy(() => import("./pages/CompaniesProfilesPage"));
+const DataPage = lazy(() => import("./pages/DataPage"));
+const DataIndicatorsPage = lazy(() => import("./pages/DataIndicatorsPage"));
+const DataRankingsPage = lazy(() => import("./pages/DataRankingsPage"));
+const DataReportsPage = lazy(() => import("./pages/DataReportsPage"));
+const DataComparatorPage = lazy(() => import("./pages/DataComparatorPage"));
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 const SignupPage = lazy(() => import("./pages/SignupPage"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
@@ -77,6 +87,16 @@ function App() {
             <Route path="news/sector/:sector" element={<SectorPage />} />
             <Route path="pays" element={<CountriesPage />} />
             <Route path="pays/:region" element={<CountryRegionPage />} />
+            <Route path="entreprises" element={<CompaniesPage />} />
+            <Route path="entreprises/classements" element={<CompaniesRankingsPage />} />
+            <Route path="entreprises/profils" element={<CompaniesProfilesPage />} />
+            <Route path="entreprises/profils/:companySlug" element={<CompanyProfileSlugPage />} />
+            <Route path="entreprises/secteurs" element={<CompaniesSectorsPage />} />
+            <Route path="donnees" element={<DataPage />} />
+            <Route path="donnees/indicateurs" element={<DataIndicatorsPage />} />
+            <Route path="donnees/classements" element={<DataRankingsPage />} />
+            <Route path="donnees/rapports" element={<DataReportsPage />} />
+            <Route path="donnees/comparateur" element={<DataComparatorPage />} />
             <Route path="kiosk" element={<KioskPage />} />
             <Route path="mediatique" element={<MultimediaPage />} />
             <Route path="multimedia" element={<MultimediaPage />} />

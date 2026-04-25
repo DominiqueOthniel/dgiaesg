@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link, useLocation, Outlet, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { X, ShieldCheck, LogOut, ChevronRight, BookOpen, Play, Star, Building2, Newspaper, MapPin } from "lucide-react";
+import { X, ShieldCheck, LogOut, ChevronRight, BookOpen, Play, Star, Building2, Newspaper, MapPin, Factory, Database } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
@@ -18,6 +18,8 @@ const SiteLayout = () => {
       { key: "nav.labels", href: "/labels", icon: ShieldCheck },
       { key: "nav.directory", href: "/directory", icon: Building2 },
       { key: "nav.countries", href: "/pays", icon: MapPin },
+      { key: "nav.companies", href: "/entreprises", icon: Factory },
+      { key: "nav.data", href: "/donnees", icon: Database },
       { key: "nav.news", href: "/news", icon: Newspaper },
       { midhead: t("footer.sidebar_mid_media") },
       { key: "nav.kiosk", href: "/kiosk", icon: BookOpen },
