@@ -16,10 +16,10 @@ const sidebarItems = [
   { key: "nav.directory", href: "/directory", icon: Building2 },
   { key: "nav.news", href: "/news", icon: Newspaper },
   { midhead: "Espace Media" },
-  { key: "nav.kiosk", href: "/kiosk", icon: BookOpen },
+  { key: "nav.kiosk", href: "/revue", icon: BookOpen },
   { key: "nav.multimedia", href: "/multimedia", icon: Play },
   { midhead: "Services & Accès" },
-  { key: "nav.pricing", href: "/pricing", icon: Star },
+  { key: "nav.pricing", href: "/abonnement", icon: Star },
 ];
 
 
@@ -187,14 +187,14 @@ const SiteLayout = () => {
                 Media
               </h4>
               <div className="flex flex-col gap-4">
-                <Link to="/kiosk" className="text-sm font-bold text-white/80 hover:text-brand-gold transition-colors">
+                <Link to="/revue" className="text-sm font-bold text-white/80 hover:text-brand-gold transition-colors">
                   {t("nav.kiosk")}
                 </Link>
                 <Link to="/multimedia" className="text-sm font-bold text-white/80 hover:text-brand-gold transition-colors">
                   {t("nav.multimedia")}
                 </Link>
-                <Link to="/pricing" className="text-sm font-bold text-white/80 hover:text-brand-gold transition-colors">
-                  Premium
+                <Link to="/abonnement" className="text-sm font-bold text-white/80 hover:text-brand-gold transition-colors">
+                  {t("nav.pricing")}
                 </Link>
               </div>
             </div>

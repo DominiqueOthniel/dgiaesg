@@ -29,6 +29,10 @@ const MultimediaPage = lazy(() => import("./pages/MultimediaPage"));
 const Events = lazy(() => import("./pages/Events"));
 const EventDetail = lazy(() => import("./pages/EventDetail"));
 const PricingPage = lazy(() => import("./pages/PricingPage"));
+const RevuePortal = lazy(() => import("./pages/RevuePortal"));
+const RevueArchive = lazy(() => import("./pages/RevueArchive"));
+const RevueIssuePage = lazy(() => import("./pages/RevueIssuePage"));
+const SubscriptionPage = lazy(() => import("./pages/SubscriptionPage"));
 const OrgProfilePage = lazy(() => import("./pages/OrgProfilePage"));
 const ApplyPage = lazy(() => import("./pages/ApplyPage"));
 const MyApplicationsPage = lazy(() => import("./pages/MyApplicationsPage"));
@@ -81,7 +85,10 @@ function App() {
             <Route path="multimedia" element={<MultimediaPage />} />
             <Route path="events" element={<Events />} />
             <Route path="events/:id" element={<EventDetail />} />
-            <Route path="pricing" element={<PricingPage />} />
+            <Route path="revue" element={<RevuePortal />} />
+            <Route path="revue/numeros" element={<RevueArchive />} />
+            <Route path="revue/numeros/:slug" element={<RevueIssuePage />} />
+            <Route path="abonnement" element={<SubscriptionPage />} />
             
             {/* New Editorial Routes */}
             <Route path="actualites" element={<NewsPage />} />
@@ -131,6 +138,8 @@ function App() {
           <Route path="/articles" element={<Navigate to="/news" replace />} />
           <Route path="/label" element={<Navigate to="/labels" replace />} />
           <Route path="/annuaire" element={<Navigate to="/directory" replace />} />
+          <Route path="/kiosk" element={<Navigate to="/revue/numeros" replace />} />
+          <Route path="/pricing" element={<Navigate to="/abonnement" replace />} />
           
           <Route path="*" element={
             <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center">

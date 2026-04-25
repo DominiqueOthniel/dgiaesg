@@ -64,7 +64,7 @@ export function PublicationsSection({
             </p>
           </div>
           <Link
-            to="/kiosk"
+            to="/revue"
             className="group inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-primary hover:text-primary/80 transition-colors self-start md:self-end whitespace-nowrap"
           >
             {t("home.kiosk.view_all")}
@@ -84,7 +84,7 @@ export function PublicationsSection({
         ) : magazines && magazines.length > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4">
             <Link
-              to="/kiosk"
+              to="/revue"
               className="lg:col-span-6 group relative bg-card rounded-2xl overflow-hidden ring-1 ring-border/60 shadow-[0_22px_50px_-18px_rgba(13,77,51,0.35),0_8px_20px_-10px_rgba(0,0,0,0.18)] hover:shadow-[0_30px_70px_-20px_rgba(13,77,51,0.5),0_12px_28px_-10px_rgba(0,0,0,0.25)] hover:-translate-y-1.5 transition-all duration-500"
             >
               <div className="aspect-[16/9] lg:aspect-[16/10] bg-muted overflow-hidden relative">
@@ -122,7 +122,7 @@ export function PublicationsSection({
               {magazines.slice(1, 5).map((mag: any, idx: number) => (
                 <Link
                   key={mag._id}
-                  to="/kiosk"
+                  to="/revue"
                   className="group relative bg-card rounded-lg overflow-hidden ring-1 ring-border/50 shadow-[0_14px_30px_-14px_rgba(13,77,51,0.30),0_6px_14px_-8px_rgba(0,0,0,0.15)] hover:shadow-[0_22px_45px_-15px_rgba(13,77,51,0.45),0_10px_20px_-8px_rgba(0,0,0,0.22)] hover:-translate-y-1 hover:ring-primary/30 transition-all"
                 >
                   <div className="aspect-[4/3] bg-muted overflow-hidden relative">

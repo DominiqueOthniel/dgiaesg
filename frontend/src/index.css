@@ -729,15 +729,28 @@
     color: #000000;
     box-shadow:
       0 0 35px -10px rgba(255, 215, 0, 0.4),
-      0 20px 50px -20px rgba(0, 0, 0, 0.25);
+      0 20px 50px -20px rgba(0, 0, 0, 0.25),
+      0 4px 10px -5px rgba(255, 215, 0, 0.3);
     transition: all 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    isolation: isolate;
   }
   .card-gold-elevated:hover {
-    transform: translateY(-10px);
+    transform: translateY(-12px);
     box-shadow:
-      0 0 50px -5px rgba(255, 215, 0, 0.6),
-      0 30px 70px -25px rgba(0, 0, 0, 0.35);
+      0 0 60px -5px rgba(255, 215, 0, 0.6),
+      0 35px 80px -25px rgba(0, 0, 0, 0.45),
+      0 8px 16px -8px rgba(255, 215, 0, 0.4);
     border-color: #FFC000;
+  }
+
+  .border-glow-gold {
+    border: 2px solid hsl(var(--brand-gold));
+    box-shadow: 0 0 20px -5px hsl(var(--brand-gold) / 0.4);
+    transition: all 0.3s ease;
+  }
+  .border-glow-gold:hover {
+    box-shadow: 0 0 30px -2px hsl(var(--brand-gold) / 0.6);
+    border-color: hsl(var(--brand-gold-dark));
   }
   /* Corner decorations for elevated cards */
   .card-gold-elevated .corner {
@@ -769,5 +782,274 @@
   [data-state="open"] > .chev-rotate,
   .chev-open .chev-rotate {
     transform: rotate(180deg);
+  }
+
+  /* ============================================================
+     Magazine cover artwork (no images required).
+     ============================================================ */
+  .magazine-cover {
+    position: relative;
+    isolation: isolate;
+    aspect-ratio: 3 / 4;
+    border-radius: 1.25rem;
+    overflow: hidden;
+    box-shadow:
+      0 1px 0 hsl(var(--brand-gold) / 0.25) inset,
+      0 24px 50px -20px hsl(var(--brand-deep) / 0.55),
+      0 6px 20px -10px rgba(0, 0, 0, 0.25);
+    transition:
+      transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .magazine-cover::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.08) 0 1px,
+        transparent 1px 14px
+      );
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  .magazine-cover::after {
+    content: "";
+    position: absolute;
+    inset: -40%;
+    background: linear-gradient(
+      115deg,
+      transparent 35%,
+      #FFD700 50%,
+      transparent 65%
+    );
+    transform: translateX(-60%);
+    transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+  .group:hover .magazine-cover::after,
+  .magazine-cover:hover::after {
+    transform: translateX(60%);
+  }
+  .group:hover .magazine-cover,
+  .magazine-cover:hover {
+    transform: translateY(-6px) rotate(-0.6deg);
+    box-shadow:
+      0 1px 0 rgba(255, 215, 0, 0.45) inset,
+      0 30px 60px -18px rgba(255, 215, 0, 0.35),
+      0 14px 36px -16px rgba(13, 77, 51, 0.55);
+  }
+  .magazine-spine {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 6px;
+    background: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.35),
+      rgba(0, 0, 0, 0) 80%
+    );
+    pointer-events: none;
+  }
+
+  @keyframes float-cover {
+    0%, 100% { transform: translateY(0) rotate(-1.2deg); }
+    50%      { transform: translateY(-10px) rotate(-2deg); }
+  }
+  .animate-float-cover { animation: float-cover 7s ease-in-out infinite; }
+
+  /* ---------- Animated aurora background (subtle, premium) ---------- */
+  @keyframes aurora-drift {
+    0%, 100% {
+      transform: translate3d(0, 0, 0) scale(1);
+      opacity: 0.85;
+    }
+    33% {
+      transform: translate3d(2%, -1.5%, 0) scale(1.05);
+      opacity: 1;
+    }
+    66% {
+      transform: translate3d(-1.5%, 2%, 0) scale(1.02);
+      opacity: 0.9;
+    }
+  }
+  @keyframes aurora-hue {
+    0%, 100% { filter: hue-rotate(0deg); }
+    50%      { filter: hue-rotate(20deg); }
+  }
+
+  .aurora-bg {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+  .aurora-bg::before {
+    content: "";
+    position: absolute;
+    inset: -20%;
+    z-index: -2;
+    background:
+      radial-gradient(40% 40% at 15% 20%, hsl(var(--brand-emerald) / 0.22), transparent 60%),
+      radial-gradient(45% 45% at 85% 30%, hsl(var(--brand-gold) / 0.18), transparent 60%),
+      radial-gradient(50% 50% at 50% 90%, hsl(var(--brand-deep) / 0.20), transparent 65%),
+      radial-gradient(35% 35% at 75% 75%, hsl(var(--brand-forest) / 0.18), transparent 60%);
+    animation: aurora-drift 22s ease-in-out infinite, aurora-hue 18s ease-in-out infinite;
+    pointer-events: none;
+  }
+  .aurora-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      repeating-linear-gradient(45deg, hsl(var(--brand-deep) / 0.04) 0 1px, transparent 1px 14px);
+    pointer-events: none;
+  }
+  .aurora-bg-soft::before {
+    background:
+      radial-gradient(38% 38% at 12% 18%, hsl(var(--brand-emerald) / 0.14), transparent 60%),
+      radial-gradient(42% 42% at 88% 28%, hsl(var(--brand-gold) / 0.12), transparent 60%),
+      radial-gradient(48% 48% at 50% 92%, hsl(var(--brand-deep) / 0.12), transparent 65%);
+  }
+
+  /* ---------- 3D flip card (Y-axis turn) ---------- */
+  .flip-card {
+    perspective: 1200px;
+  }
+  .flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+  .flip-card:hover .flip-card-inner,
+  .flip-card:focus-within .flip-card-inner,
+  .flip-card.is-flipped .flip-card-inner {
+    transform: rotateY(180deg);
+  }
+  .flip-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 1.25rem;
+    overflow: hidden;
+  }
+  .flip-face-back {
+    transform: rotateY(180deg);
+  }
+
+  /* ---------- Wave / staggered reveal helpers ---------- */
+  @keyframes wave-rise {
+    0%   { opacity: 0; transform: translateY(28px) scale(0.98); }
+    60%  { opacity: 1; transform: translateY(-2px) scale(1.005); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .wave-rise {
+    animation: wave-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes breathe-gold {
+    0%, 100% {
+      box-shadow:
+        0 30px 80px -30px hsl(var(--brand-gold) / 0.35),
+        0 10px 30px -15px rgba(0, 0, 0, 0.18);
+    }
+    50% {
+      box-shadow:
+        0 34px 90px -28px hsl(var(--brand-gold) / 0.55),
+        0 14px 34px -14px rgba(0, 0, 0, 0.22);
+    }
+  }
+  .breathe-gold { animation: breathe-gold 5s ease-in-out infinite; }
+
+  @keyframes shine-sweep {
+    0%   { transform: translateX(-120%) skewX(-12deg); }
+    100% { transform: translateX(220%) skewX(-12deg); }
+  }
+  .shine-on-hover {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .shine-on-hover::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      100deg,
+      transparent 35%,
+      hsl(var(--brand-gold) / 0.18) 50%,
+      transparent 65%
+    );
+    transform: translateX(-120%) skewX(-12deg);
+    pointer-events: none;
+    transition: transform 0s;
+  }
+  .shine-on-hover:hover::after {
+    animation: shine-sweep 1.1s ease forwards;
+  }
+
+  .pricing-row {
+    position: relative;
+    overflow: hidden;
+  }
+  .pricing-row::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsl(var(--brand-gold) / 0.10) 50%,
+      transparent 100%
+    );
+    transform: translateX(-120%);
+    transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+  .pricing-row:hover::after { transform: translateX(120%); }
+
+  @keyframes prismatic {
+    0% { filter: hue-rotate(0deg) brightness(1); }
+    50% { filter: hue-rotate(90deg) brightness(1.2); }
+    100% { filter: hue-rotate(180deg) brightness(1); }
+  }
+  .animate-prismatic {
+    animation: prismatic 3s linear infinite;
+  }
+
+  @keyframes shine-gold {
+    0% { box-shadow: 0 0 10px hsl(var(--brand-gold) / 0.2); }
+    50% { box-shadow: 0 0 25px hsl(var(--brand-gold) / 0.5); }
+    100% { box-shadow: 0 0 10px hsl(var(--brand-gold) / 0.2); }
+  }
+  .animate-shine-gold {
+    animation: shine-gold 4s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    100% { transform: translateX(100%); }
+  }
+
+  .border-glow-gold-strong {
+    border: 2px solid hsl(var(--brand-gold));
+    box-shadow: 0 0 30px -5px hsl(var(--brand-gold) / 0.45);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aurora-bg::before,
+    .aurora-bg-soft::before { animation: none !important; }
+    .flip-card-inner { transition: none !important; }
+    .wave-rise { animation: none !important; opacity: 1 !important; transform: none !important; }
+    .shine-on-hover::after { display: none !important; }
+    .animate-float-cover { animation: none !important; }
+    .breathe-gold { animation: none !important; }
+    .animate-prismatic { animation: none !important; }
+    .animate-shine-gold { animation: none !important; }
   }
 }
