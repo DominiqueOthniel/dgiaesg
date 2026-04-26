@@ -10,7 +10,6 @@ import {
   BookOpen,
   Headphones,
   Crown,
-  CalendarDays,
   Search,
   User,
   LogOut,
@@ -34,7 +33,6 @@ export const topNavMainItems = [
   { key: "nav.news", href: "/news", icon: BookOpen },
   { key: "nav.kiosk", href: "/kiosk", icon: BookOpen },
   { key: "nav.mediatique", href: "/mediatique", icon: Headphones },
-  { key: "nav.events", href: "/events", icon: CalendarDays },
   { key: "nav.pricing", href: "/pricing", icon: Crown },
 ];
 
