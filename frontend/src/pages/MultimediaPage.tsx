@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import { Play, Headphones, Share2, Sparkles, X, LayoutGrid, Rows3, List } from "lucide-react";
+import { Play, Headphones, Share2, Sparkles, X, Search, LayoutGrid, Rows3, List } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/services/api";
 import type { IMultimedia, PaginatedResponse } from "@/types";
@@ -69,11 +69,11 @@ function MultimediaPage() {
         <ControlsBar
           footer={
             <>
-              <div className="flex items-center gap-2 text-xs">
-                <span className="inline-flex items-center justify-center min-w-[1.75rem] h-6 px-2 rounded-full bg-primary/10 text-primary text-[11px] font-black">
+              <div className="flex min-w-0 items-center gap-2.5 text-xs">
+                <span className="inline-flex h-7 min-w-7 items-center justify-center rounded-full border border-primary/20 bg-primary/10 px-2 text-xs font-black tabular-nums text-primary">
                   {items.length}
                 </span>
-                <span className="font-semibold text-muted-foreground">
+                <span className="font-semibold leading-snug text-muted-foreground">
                   {t("pages.multimedia.contents", { count: items.length })}
                 </span>
               </div>
@@ -93,10 +93,10 @@ function MultimediaPage() {
             </>
           }
         >
-          <div className="relative flex-1 group">
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary/15 via-transparent to-[hsl(var(--brand-gold)/0.2)] opacity-0 group-focus-within:opacity-100 blur-md transition-opacity" />
-            <div className="relative flex items-center gap-3 px-4 h-12 rounded-2xl bg-background/70 border border-border/60 focus-within:border-primary/50 focus-within:bg-background transition-all">
-              <LayoutGrid className="w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+          <div className="relative min-w-0 flex-1 group">
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary/12 via-transparent to-primary/5 opacity-0 group-focus-within:opacity-100 blur-md transition-opacity" />
+            <div className="relative flex h-12 items-center gap-3 rounded-2xl border border-border/60 bg-card px-4 shadow-sm transition-all focus-within:border-primary/45 focus-within:ring-2 focus-within:ring-primary/10">
+              <Search className="h-4 w-4 shrink-0 text-muted-foreground group-focus-within:text-primary transition-colors" />
               <input
                 type="text"
                 placeholder={t("pages.multimedia.search_placeholder")}
@@ -117,7 +117,7 @@ function MultimediaPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 flex-wrap w-full lg:w-auto">
+          <div className="flex w-full min-w-0 flex-wrap items-center gap-2 sm:gap-2.5 lg:w-auto lg:justify-end">
             {[
               { value: "all", label: t("common.all"), icon: Sparkles },
               { value: "video", label: t("pages.multimedia.filter_videos"), icon: Play },
@@ -130,57 +130,61 @@ function MultimediaPage() {
                   type="button"
                   onClick={() => setType(f.value as typeof type)}
                   className={cn(
-                    "inline-flex items-center gap-2 h-12 px-4 rounded-2xl text-[11px] font-bold uppercase tracking-[0.16em] transition-all",
+                    "inline-flex h-12 items-center gap-2 rounded-2xl px-3.5 text-[11px] font-bold uppercase tracking-[0.16em] transition-all sm:px-4",
                     active
-                      ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-lg shadow-primary/25"
-                      : "bg-background/70 border border-border/60 text-foreground hover:border-primary/40 hover:text-primary"
+                      ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                      : "border border-border/60 bg-card text-foreground shadow-sm hover:border-primary/40 hover:text-primary"
                   )}
                   aria-pressed={active}
                 >
-                  <f.icon className={cn("w-3.5 h-3.5", active && f.icon === Sparkles && "fill-current")} />
+                  <f.icon className={cn("h-3.5 w-3.5", active && f.icon === Sparkles && "fill-current")} />
                   {f.label}
                 </button>
               );
             })}
 
-            <div className="inline-flex items-center h-12 rounded-2xl bg-background/70 border border-border/60 p-1 w-full sm:w-auto overflow-x-auto">
+            <div
+              className="isolate inline-flex h-12 w-full max-w-full shrink-0 items-center gap-0.5 rounded-2xl border border-border/60 bg-card p-1 shadow-sm sm:w-auto"
+              role="group"
+              aria-label={t("common.view_mode")}
+            >
               <button
                 type="button"
                 onClick={() => setViewMode("grid")}
                 className={cn(
-                  "h-10 px-3 rounded-xl inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] transition-all whitespace-nowrap",
+                  "inline-flex h-10 min-w-0 items-center gap-1.5 rounded-[10px] px-2.5 text-[10px] font-black uppercase tracking-[0.14em] transition-colors sm:px-3",
                   viewMode === "grid"
-                    ? "bg-primary text-primary-foreground shadow"
-                    : "text-foreground/80 hover:text-primary"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-foreground/80 hover:bg-muted/80 hover:text-primary"
                 )}
               >
-                <LayoutGrid className="w-3.5 h-3.5" />
+                <LayoutGrid className="h-3.5 w-3.5 shrink-0" />
                 <span className="hidden sm:inline">{t("common.view_grid")}</span>
               </button>
               <button
                 type="button"
                 onClick={() => setViewMode("compact")}
                 className={cn(
-                  "h-10 px-3 rounded-xl inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] transition-all whitespace-nowrap",
+                  "inline-flex h-10 min-w-0 items-center gap-1.5 rounded-[10px] px-2.5 text-[10px] font-black uppercase tracking-[0.14em] transition-colors sm:px-3",
                   viewMode === "compact"
-                    ? "bg-primary text-primary-foreground shadow"
-                    : "text-foreground/80 hover:text-primary"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-foreground/80 hover:bg-muted/80 hover:text-primary"
                 )}
               >
-                <Rows3 className="w-3.5 h-3.5" />
+                <Rows3 className="h-3.5 w-3.5 shrink-0" />
                 <span className="hidden sm:inline">{t("common.view_compact")}</span>
               </button>
               <button
                 type="button"
                 onClick={() => setViewMode("list")}
                 className={cn(
-                  "h-10 px-3 rounded-xl inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] transition-all whitespace-nowrap",
+                  "inline-flex h-10 min-w-0 items-center gap-1.5 rounded-[10px] px-2.5 text-[10px] font-black uppercase tracking-[0.14em] transition-colors sm:px-3",
                   viewMode === "list"
-                    ? "bg-primary text-primary-foreground shadow"
-                    : "text-foreground/80 hover:text-primary"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-foreground/80 hover:bg-muted/80 hover:text-primary"
                 )}
               >
-                <List className="w-3.5 h-3.5" />
+                <List className="h-3.5 w-3.5 shrink-0" />
                 <span className="hidden sm:inline">{t("common.view_list")}</span>
               </button>
             </div>

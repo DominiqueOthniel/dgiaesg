@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   Menu,
@@ -10,18 +10,22 @@ import {
   BookOpen,
   Headphones,
   Crown,
+  CalendarDays,
   Search,
   User,
   LogOut,
   LayoutDashboard,
   Settings,
+  Info,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
-export const topNavItems = [
+/** Liens principaux du header (sans sous-pages institutionnelles). */
+export const topNavMainItems = [
   { key: "nav.labels", href: "/labels", icon: ShieldCheck },
   { key: "nav.directory", href: "/directory", icon: Building2 },
   { key: "nav.countries", href: "/pays", icon: MapPin },
@@ -30,8 +34,17 @@ export const topNavItems = [
   { key: "nav.news", href: "/news", icon: BookOpen },
   { key: "nav.kiosk", href: "/kiosk", icon: BookOpen },
   { key: "nav.mediatique", href: "/mediatique", icon: Headphones },
+  { key: "nav.events", href: "/events", icon: CalendarDays },
   { key: "nav.pricing", href: "/pricing", icon: Crown },
 ];
+
+export const topNavInstitutionItems = [
+  { key: "nav.about", href: "/a-propos", icon: Info },
+  { key: "nav.team", href: "/equipe", icon: Users },
+] as const;
+
+/** Tous les liens (footer, etc.) — inclut À propos + Équipe. */
+export const topNavItems = [...topNavMainItems, ...topNavInstitutionItems];
 
 /**
  * SiteHeader — extracted from SiteLayout.
@@ -46,6 +59,7 @@ export const SiteHeader = ({
   scrolled: boolean;
 }) => {
   const { t } = useTranslation();
+  const { pathname } = useLocation();
   const { user, isAuthenticated, logout } = useAuth();
   const [profileOpen, setProfileOpen] = useState(false);
 
@@ -79,15 +93,26 @@ export const SiteHeader = ({
 
           {/* Center: Desktop Nav */}
           <nav className="hidden lg:flex flex-1 min-w-0 items-center justify-start xl:justify-center gap-1 xl:gap-1.5 overflow-x-auto no-scrollbar px-1">
-            {topNavItems.map((it) => {
+            {topNavMainItems.map((it) => {
               const Icon = it.icon;
+              const active = pathname === it.href || pathname.startsWith(`${it.href}/`);
               return (
                 <Link
                   key={it.key}
                   to={it.href}
-                  className="group flex-none inline-flex items-center gap-1 px-2 xl:px-2.5 py-2 rounded-full text-[9px] xl:text-[10px] 2xl:text-[11px] leading-none font-bold uppercase tracking-[0.08em] whitespace-nowrap text-foreground bg-transparent border border-transparent hover:bg-brand-gold hover:border-brand-gold-dark/40 hover:shadow-md hover:shadow-brand-gold/30 hover:-translate-y-0.5 transition-all duration-200 active:scale-95"
+                  className={cn(
+                    "group flex-none inline-flex items-center gap-1 px-2 xl:px-2.5 py-2 rounded-full text-[9px] xl:text-[10px] 2xl:text-[11px] leading-none font-bold uppercase tracking-[0.08em] whitespace-nowrap border transition-all duration-200 active:scale-95",
+                    active
+                      ? "bg-primary text-primary-foreground border-primary shadow-md"
+                      : "text-foreground bg-transparent border-transparent hover:bg-brand-gold hover:border-brand-gold-dark/40 hover:shadow-md hover:shadow-brand-gold/30 hover:-translate-y-0.5"
+                  )}
                 >
-                  <Icon className="w-3 h-3 xl:w-3.5 xl:h-3.5 text-foreground/70 group-hover:text-foreground transition-colors" />
+                  <Icon
+                    className={cn(
+                      "w-3 h-3 xl:w-3.5 xl:h-3.5 transition-colors",
+                      active ? "text-primary-foreground" : "text-foreground/70 group-hover:text-foreground"
+                    )}
+                  />
                   <span className="whitespace-nowrap">{t(it.key)}</span>
                 </Link>
               );

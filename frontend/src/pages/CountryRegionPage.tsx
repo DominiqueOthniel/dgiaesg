@@ -1,6 +1,7 @@
 import { Link, Navigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Building2, ChevronRight, Newspaper, BarChart3, ArrowLeft } from "lucide-react";
+import { Building2, ChevronRight, Newspaper, BarChart3, ArrowLeft, MapPin } from "lucide-react";
+import { HubSubpageShell } from "@/components/hub/HubCinematicHero";
 
 type LocalizedText = { fr: string; en: string };
 
@@ -251,33 +252,34 @@ export default function CountryRegionPage() {
 
   if (!data) return <Navigate to="/pays" replace />;
 
-  return (
-    <div className="relative min-h-screen bg-gradient-to-b from-background via-background to-muted/20 overflow-hidden">
-      <div className="pointer-events-none absolute inset-0 opacity-[0.06] [background:radial-gradient(circle_at_18%_10%,hsl(var(--brand-emerald))_0%,transparent_34%),radial-gradient(circle_at_85%_75%,hsl(var(--brand-gold))_0%,transparent_30%)]" />
-      <section className="bg-primary relative overflow-hidden border-b border-white/10">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_hsl(var(--brand-emerald)/0.35),transparent_70%)]" />
-        <div className="absolute inset-0 opacity-10 [background:repeating-linear-gradient(45deg,white_0_1px,transparent_1px_18px)]" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 relative z-10">
-          <Link to="/pays" className="inline-flex items-center gap-2 text-sm text-primary-foreground/70 hover:text-primary-foreground mb-6 px-3 py-1.5 rounded-full border border-white/15 bg-white/10">
-            <ArrowLeft className="w-4 h-4" /> {t("pages.countries.back_regions")}
-          </Link>
-          <h1 className="text-3xl md:text-5xl font-extrabold text-primary-foreground tracking-tight mb-4">
-            {isEn ? data.title.en : data.title.fr}
-          </h1>
-          <p className="text-base md:text-lg max-w-3xl text-primary-foreground/75">
-            {t("pages.countries.region_subtitle")}
-          </p>
-          <div className="mt-8 inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 border border-white/15">
-            <span className="text-xl font-black text-brand-gold leading-none">{data.countries.length}</span>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-primary-foreground/80">
-              {isEn ? "featured countries" : "pays en focus"}
-            </span>
-          </div>
-        </div>
-      </section>
+  const regionTitle = isEn ? data.title.en : data.title.fr;
 
-      <div className="gradient-flow-bg mt-2">
-        <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14 space-y-7 z-10">
+  return (
+    <HubSubpageShell
+      badgeIcon={MapPin}
+      badgeLabel={t("pages.countries.region_hero_badge")}
+      sectionsKicker={t("pages.countries.hub_sections")}
+      titleLead={regionTitle}
+      titleBrand={t("pages.countries.region_hero_brand")}
+      subtitle={t("pages.countries.region_subtitle")}
+      beforeBadge={
+        <Link
+          to="/pays"
+          className="inline-flex items-center gap-2 text-sm text-primary-foreground/80 hover:text-primary-foreground px-3 py-1.5 rounded-full border border-white/15 bg-white/5 backdrop-blur-sm transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4 shrink-0" /> {t("pages.countries.back_regions")}
+        </Link>
+      }
+      heroFooter={
+        <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 border border-white/15 backdrop-blur-sm">
+          <span className="text-xl font-black text-brand-gold leading-none tabular-nums">{data.countries.length}</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-primary-foreground/80">
+            {t("pages.countries.region_focus_countries")}
+          </span>
+        </div>
+      }
+    >
+      <section className="relative space-y-7">
           {data.countries.map((country) => (
             <article key={country.name.fr} className="group relative rounded-3xl border border-border/80 bg-card/98 p-6 md:p-8 overflow-hidden shadow-[0_20px_52px_-26px_rgba(0,0,0,0.34)]">
               <div className="pointer-events-none absolute inset-0 bg-white/90" />
@@ -344,8 +346,7 @@ export default function CountryRegionPage() {
               </div>
             </article>
           ))}
-        </section>
-      </div>
-    </div>
+      </section>
+    </HubSubpageShell>
   );
 }

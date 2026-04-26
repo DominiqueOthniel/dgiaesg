@@ -1,7 +1,7 @@
-import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Database, LineChart, Trophy, FileText, SlidersHorizontal, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { HubCinematicHero, HubBentoLink, hubVariantClass } from "@/components/hub/HubCinematicHero";
 
 const BLOCKS = [
   {
@@ -34,67 +34,115 @@ const BLOCKS = [
   },
 ] as const;
 
+function DataCard({
+  block,
+  idx,
+  variant,
+  t,
+}: {
+  block: (typeof BLOCKS)[number];
+  idx: number;
+  variant: "flagship" | "offset" | "heritage";
+  t: (k: string) => string;
+}) {
+  const Icon = block.icon;
+  const n = `0${idx + 1}`;
+
+  if (variant === "offset") {
+    return (
+      <>
+        <div className="absolute right-0 top-0 p-2 opacity-20 text-5xl font-black text-emerald-600/40">
+          {n}
+        </div>
+        <div className="relative mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
+          <Icon className="h-6 w-6" />
+        </div>
+        <h2 className="relative text-xl font-extrabold tracking-tight text-foreground mb-2">
+          {t(block.titleKey)}
+        </h2>
+        <p className="relative text-sm text-muted-foreground leading-relaxed">
+          {t(block.descKey)}
+        </p>
+        <div className="relative mt-6 flex items-center gap-2 border-t border-border/60 pt-4 text-xs font-bold uppercase tracking-wider text-primary">
+          {t("pages.data.explore")} <ChevronRight className="h-4 w-4" />
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <div
+        className="pointer-events-none absolute bottom-0 right-1 text-5xl font-black leading-none text-foreground/[0.06] select-none"
+        aria-hidden
+      >
+        {n}
+      </div>
+      <div className="absolute inset-0 opacity-70 bg-[radial-gradient(ellipse_at_top,_hsl(var(--brand-gold)/0.13),transparent_62%)]" />
+      <div className="pointer-events-none absolute inset-0 opacity-80 [background:linear-gradient(155deg,hsl(var(--background)/0.62)_0%,transparent_44%)]" />
+      <div className="relative mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/25 shadow-[0_12px_24px_-12px_rgba(13,77,51,0.65)]">
+        <Icon className="h-5 w-5" />
+      </div>
+      <h2 className="relative text-xl font-extrabold tracking-tight text-foreground mb-2">
+        {t(block.titleKey)}
+      </h2>
+      <p className="relative text-sm text-muted-foreground leading-relaxed">
+        {t(block.descKey)}
+      </p>
+      <div className="relative mt-6 inline-flex items-center gap-2 border-t border-border/60 pt-4 text-xs font-bold uppercase tracking-wider text-primary">
+        {t("pages.data.explore")} <ChevronRight className="h-4 w-4" />
+      </div>
+    </>
+  );
+}
+
 export default function DataPage() {
   const { t } = useTranslation();
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-background via-background to-muted/20 overflow-hidden">
-      <div className="pointer-events-none absolute inset-0 opacity-[0.07] [background:radial-gradient(circle_at_15%_15%,hsl(var(--brand-emerald))_0%,transparent_34%),radial-gradient(circle_at_88%_78%,hsl(var(--brand-gold))_0%,transparent_30%)]" />
-      <div className="pointer-events-none absolute inset-0 opacity-[0.045] [background:linear-gradient(120deg,transparent_0_43%,hsl(var(--foreground))_43%_44%,transparent_44%_100%)]" />
-      <section className="relative bg-primary overflow-hidden border-b border-white/10">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_hsl(var(--brand-emerald)/0.35),transparent_70%)]" />
-        <div className="absolute inset-0 opacity-10 [background:repeating-linear-gradient(45deg,white_0_1px,transparent_1px_18px)]" />
-        <div className="absolute -top-28 -right-24 w-80 h-80 rounded-full bg-brand-gold/20 blur-[90px]" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/15 bg-white/10 mb-5 shadow-[0_8px_24px_-10px_rgba(0,0,0,0.5)]">
-            <Database className="w-4 h-4 text-brand-gold" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-primary-foreground/80">
-              {t("nav.data")}
-            </span>
-          </div>
-          <h1 className="text-3xl md:text-6xl font-extrabold text-primary-foreground tracking-tight mb-4 max-w-4xl leading-[1.05]">
-            {t("pages.data.hero_title")}
-          </h1>
-          <p className="text-base md:text-lg max-w-3xl text-primary-foreground/75 leading-relaxed">
-            {t("pages.data.hero_subtitle")}
-          </p>
+    <div className="relative min-h-screen overflow-x-hidden bg-background">
+      <HubCinematicHero
+        badgeIcon={Database}
+        badgeLabel={t("nav.data")}
+        sectionsKicker={t("pages.data.hero_sections")}
+        titleLead={t("pages.data.hero_title_lead")}
+        titleBrand={t("pages.data.hero_title_brand")}
+        subtitle={t("pages.data.hero_subtitle")}
+        chipsAriaLabel={t("pages.data.hero_sections")}
+        chips={BLOCKS.map((b, i) => ({
+          id: b.key,
+          idx: `0${i + 1}`,
+          label: t(b.titleKey),
+        }))}
+      >
+        <div className="inline-flex items-center gap-3 rounded-2xl border border-white/20 bg-white/5 px-4 py-2.5 backdrop-blur-sm">
+          <span className="text-2xl font-black leading-none text-brand-gold tabular-nums">
+            {BLOCKS.length}
+          </span>
+          <span className="max-w-[14rem] text-[10px] font-bold uppercase tracking-widest text-primary-foreground/80">
+            {t("pages.data.explore")}
+          </span>
         </div>
-      </section>
+      </HubCinematicHero>
 
-      <div className="gradient-flow-bg mt-2">
-        <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 z-10">
-          <div className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 w-[80%] h-24 rounded-full bg-primary/10 blur-3xl" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="gradient-flow-bg relative">
+        <div className="pointer-events-none absolute left-0 top-0 h-40 w-full bg-gradient-to-b from-primary to-transparent opacity-30" />
+        <section className="relative z-10 mx-auto max-w-7xl px-4 py-12 sm:px-6 md:py-20 lg:px-8">
+          <div className="pointer-events-none absolute -top-6 left-1/2 h-24 w-[80%] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {BLOCKS.map((block, idx) => {
-              const Icon = block.icon;
+              const v = hubVariantClass(idx, "quad");
               return (
                 <motion.div
                   key={block.key}
-                  initial={{ opacity: 0, y: 18 }}
+                  initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.2 }}
-                  transition={{ delay: idx * 0.05, duration: 0.4 }}
+                  transition={{ delay: idx * 0.05, duration: 0.45 }}
                 >
-                  <Link
-                    to={block.href}
-                    className="group golden-glow relative block rounded-3xl border-border/90 bg-card p-6 h-full overflow-hidden shadow-[0_24px_58px_-26px_rgba(13,77,51,0.5)] hover:border-primary/35 transition-all duration-300"
-                  >
-                    <div className="pointer-events-none absolute inset-0 opacity-70 bg-[radial-gradient(ellipse_at_top,_hsl(var(--brand-gold)/0.13),transparent_62%)]" />
-                    <div className="pointer-events-none absolute inset-0 opacity-80 [background:linear-gradient(155deg,hsl(var(--background)/0.62)_0%,transparent_44%)]" />
-                    <div className="relative w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 ring-1 ring-primary/25 shadow-[0_12px_24px_-12px_rgba(13,77,51,0.65)]">
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <h2 className="relative text-xl font-extrabold tracking-tight text-foreground mb-2">
-                      {t(block.titleKey)}
-                    </h2>
-                    <p className="relative text-sm text-muted-foreground leading-relaxed">
-                      {t(block.descKey)}
-                    </p>
-                    <div className="relative mt-6 pt-4 border-t border-border/60 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary">
-                      {t("pages.data.explore")}
-                      <ChevronRight className="w-4 h-4" />
-                    </div>
-                  </Link>
+                  <HubBentoLink to={block.href} id={block.key} variant={v} className="h-full">
+                    <DataCard block={block} idx={idx} variant={v} t={t} />
+                  </HubBentoLink>
                 </motion.div>
               );
             })}

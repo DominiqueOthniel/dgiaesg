@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link, useLocation, Outlet, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { X, ShieldCheck, LogOut, ChevronRight, BookOpen, Play, Star, Building2, Newspaper, MapPin, Factory, Database } from "lucide-react";
+import { X, ShieldCheck, LogOut, ChevronRight, BookOpen, Play, Star, Building2, Newspaper, MapPin, Factory, Database, Info, Users, CalendarDays, PenLine } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
@@ -24,8 +24,12 @@ const SiteLayout = () => {
       { midhead: t("footer.sidebar_mid_media") },
       { key: "nav.kiosk", href: "/kiosk", icon: BookOpen },
       { key: "nav.multimedia", href: "/multimedia", icon: Play },
+      { key: "nav.events", href: "/events", icon: CalendarDays },
       { midhead: t("footer.sidebar_mid_services") },
       { key: "nav.pricing", href: "/pricing", icon: Star },
+      { key: "nav.about", href: "/a-propos", icon: Info },
+      { key: "nav.team", href: "/equipe", icon: Users },
+      { key: "nav.contribute", href: "/contribuer", icon: PenLine },
     ],
     [t, i18n.language],
   );
@@ -236,6 +240,12 @@ const SiteLayout = () => {
             <p className="text-[10px] font-bold text-white/60 uppercase tracking-[0.3em]">
               © {new Date().getFullYear()} DGIAESG — {t("footer.copyright_suffix")}
             </p>
+            <Link
+              to="/a-propos"
+              className="text-xs font-bold text-white/70 hover:text-brand-gold transition-colors"
+            >
+              {t("nav.about")}
+            </Link>
           </div>
         </div>
       </footer>

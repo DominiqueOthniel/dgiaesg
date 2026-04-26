@@ -40,6 +40,9 @@ const MultimediaPage = lazy(() => import("./pages/MultimediaPage"));
 const Events = lazy(() => import("./pages/Events"));
 const EventDetail = lazy(() => import("./pages/EventDetail"));
 const PricingPage = lazy(() => import("./pages/PricingPage"));
+const AboutPage = lazy(() => import("./pages/AboutPage"));
+const TeamPage = lazy(() => import("./pages/TeamPage"));
+const ContributePage = lazy(() => import("./pages/ContributePage"));
 const OrgProfilePage = lazy(() => import("./pages/OrgProfilePage"));
 const ApplyPage = lazy(() => import("./pages/ApplyPage"));
 const MyApplicationsPage = lazy(() => import("./pages/MyApplicationsPage"));
@@ -103,6 +106,9 @@ function App() {
             <Route path="events" element={<Events />} />
             <Route path="events/:id" element={<EventDetail />} />
             <Route path="pricing" element={<PricingPage />} />
+            <Route path="a-propos" element={<AboutPage />} />
+            <Route path="equipe" element={<TeamPage />} />
+            <Route path="contribuer" element={<ContributePage />} />
 
             <Route element={<ProtectedRoute />}>
               <Route path="profile" element={<ProfilePage />} />
