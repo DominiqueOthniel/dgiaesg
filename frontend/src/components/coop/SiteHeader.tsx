@@ -90,9 +90,17 @@ export const SiteHeader = ({
                 <Link
                   key={it.key}
                   to={it.href}
-                  className="group flex-none inline-flex items-center gap-1 px-2 xl:px-2.5 py-2 rounded-full text-[9px] xl:text-[10px] 2xl:text-[11px] leading-none font-bold uppercase tracking-[0.08em] whitespace-nowrap text-foreground bg-transparent border border-transparent hover:bg-brand-gold hover:border-brand-gold-dark/40 hover:shadow-md hover:shadow-brand-gold/30 hover:-translate-y-0.5 transition-all duration-200 active:scale-95"
+                  className={cn(
+                    "group inline-flex items-center gap-2 px-3.5 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 active:scale-95 whitespace-nowrap",
+                    isActive 
+                      ? "bg-brand-gold text-brand-dark shadow-[0_10px_25px_-5px_rgba(var(--brand-gold-rgb),0.5)] -translate-y-0.5" 
+                      : "text-foreground/80 bg-transparent hover:bg-muted/50 hover:text-foreground"
+                  )}
                 >
-                  <Icon className="w-3 h-3 xl:w-3.5 xl:h-3.5 text-foreground/70 group-hover:text-foreground transition-colors" />
+                  <Icon className={cn(
+                    "w-3.5 h-3.5 transition-transform duration-300",
+                    isActive ? "text-brand-dark" : "text-foreground/40 group-hover:text-foreground group-hover:scale-110"
+                  )} />
                   <span className="whitespace-nowrap">{t(it.key)}</span>
                 </Link>
               );
