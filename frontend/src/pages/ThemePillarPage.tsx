@@ -135,7 +135,7 @@ export default function ThemePillarPage() {
                         pillar.color.border,
                         pillar.color.text,
                       )
-                    : "bg-white/70 border-white/60 text-muted-foreground hover:text-foreground hover:bg-white",
+                    : "bg-white/60 border-white/40 text-muted-foreground hover:text-primary hover:bg-white hover:border-primary/30 hover:shadow-sm",
                 )}
               >
                 {s.label}
@@ -206,7 +206,7 @@ export default function ThemePillarPage() {
                     </span>
                   </div>
                   <div className="p-6 flex-1 flex flex-col">
-                    <h3 className="text-lg font-extrabold text-foreground group-hover:text-accent transition-colors line-clamp-2 mb-3 leading-snug">
+                    <h3 className="text-lg font-extrabold text-foreground group-hover:text-[hsl(var(--brand-emerald))] transition-colors line-clamp-2 mb-3 leading-snug">
                       {article.title}
                     </h3>
                     <p className="text-sm text-foreground/70 line-clamp-2 mb-6 leading-relaxed flex-1">
@@ -264,19 +264,19 @@ export default function ThemePillarPage() {
                 key={p.slug}
                 to={`/thematiques/${p.slug}`}
                 className={cn(
-                  "group flex items-center gap-2 rounded-xl border bg-card px-3 py-2.5 text-xs font-bold transition-all hover:shadow-md",
+                  "group flex items-center gap-2 rounded-xl border bg-white/50 backdrop-blur-sm px-3 py-2.5 text-xs font-bold transition-all hover:bg-white hover:shadow-[0_10px_25px_-10px_hsl(var(--brand-emerald)/0.15)] hover:border-brand-emerald/40",
                   p.color.border,
                 )}
               >
                 <span
                   className={cn(
-                    "inline-flex items-center justify-center w-7 h-7 rounded-lg shrink-0",
+                    "inline-flex items-center justify-center w-7 h-7 rounded-lg shrink-0 transition-transform group-hover:scale-110",
                     p.color.soft,
                   )}
                 >
                   <PIcon className={cn("w-3.5 h-3.5", p.color.text)} />
                 </span>
-                <span className="truncate text-foreground group-hover:text-primary">
+                <span className="truncate text-foreground group-hover:text-[hsl(var(--brand-emerald))]">
                   {p.label}
                 </span>
               </Link>

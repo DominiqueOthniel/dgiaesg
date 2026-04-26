@@ -57,7 +57,7 @@ export default function ThematiquesPortal() {
                 key={p.slug}
                 to={`/thematiques/${p.slug}`}
                 style={{ ["--wave-delay" as string]: `${delay}ms` }}
-                className="wave-item card-gold-elevated border-glow-gold group block rounded-2xl overflow-hidden h-full flex flex-col"
+                className="wave-item card-gold-elevated group block rounded-2xl overflow-hidden h-full flex flex-col"
               >
                 {/* Golden corners for elevation effect */}
                 <div className="corner corner-tl" />
@@ -89,7 +89,7 @@ export default function ThematiquesPortal() {
                   >
                     {p.label}
                   </span>
-                  <h2 className="text-lg font-extrabold text-foreground group-hover:text-accent transition-colors line-clamp-2 mb-2 leading-snug">
+                  <h2 className="text-lg font-extrabold text-foreground group-hover:text-[hsl(var(--brand-emerald))] transition-colors line-clamp-2 mb-2 leading-snug">
                     {p.h1}
                   </h2>
                   <p className="text-sm text-foreground/70 line-clamp-3 mb-5 leading-relaxed flex-1">

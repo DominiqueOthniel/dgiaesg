@@ -38,7 +38,7 @@ const resources = {
                 palette: "Palette",
                 save_desc: "Votre sélection est enregistrée localement et sera appliquée à chaque visite.",
                 themes: {
-                    default: "Coop Red (Défaut)",
+                    default: "DGIAESG Red (Défaut)",
                     forest: "Forest Prestige",
                     ocean: "Océan Profond",
                     bordeaux: "Bordeaux Royal",
@@ -732,7 +732,7 @@ const resources = {
                 palette: "Palette",
                 save_desc: "Your selection is saved locally and will be applied on every visit.",
                 themes: {
-                    default: "Coop Red (Default)",
+                    default: "DGIAESG Red (Default)",
                     forest: "Forest Prestige",
                     ocean: "Deep Ocean",
                     bordeaux: "Royal Bordeaux",

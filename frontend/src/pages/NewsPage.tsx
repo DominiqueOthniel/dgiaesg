@@ -329,7 +329,7 @@ function NewsPage() {
                   "shrink-0 h-10 px-4 rounded-full text-xs font-black uppercase tracking-[0.14em] border transition-all",
                   active
                     ? "bg-primary text-primary-foreground border-primary shadow-md"
-                    : "bg-white/70 border-white/60 text-foreground hover:bg-white hover:border-[hsl(var(--brand-gold)/0.5)]",
+                    : "bg-[hsl(var(--primary)/0.04)] border-primary/10 text-foreground/80 hover:bg-white hover:border-[hsl(var(--brand-emerald)/0.4)] hover:text-primary hover:shadow-sm",
                 )}
               >
                 {f.label}
@@ -359,7 +359,7 @@ function NewsPage() {
                   "shrink-0 h-8 px-3 rounded-full text-[11px] font-bold transition-all border",
                   active
                     ? "bg-[hsl(var(--brand-gold)/0.18)] border-[hsl(var(--brand-gold)/0.6)] text-foreground"
-                    : "bg-transparent border-transparent text-muted-foreground hover:text-foreground hover:bg-white/60",
+                    : "bg-transparent border-transparent text-muted-foreground hover:text-primary hover:bg-[hsl(var(--brand-emerald)/0.08)]",
                 )}
               >
                 {t.label}
@@ -371,7 +371,7 @@ function NewsPage() {
 
       {/* "Browse by Theme" widget — links to the 6 pillar hubs */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-        <div className="rounded-2xl border border-white/60 bg-card/85 backdrop-blur-xl shadow-[0_10px_30px_-15px_rgba(13,77,51,0.25)] p-4 sm:p-5">
+        <div className="rounded-2xl border border-primary/10 bg-white/40 backdrop-blur-xl shadow-[0_10px_40px_-20px_rgba(13,77,51,0.15)] p-4 sm:p-5">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-[11px] font-black uppercase tracking-[0.18em] text-foreground">
               Parcourir par thématique
@@ -391,7 +391,7 @@ function NewsPage() {
                   key={p.slug}
                   to={`/thematiques/${p.slug}`}
                   className={cn(
-                    "group flex items-center gap-2 rounded-xl border bg-white/60 hover:bg-white px-2.5 py-2 text-[11px] font-bold transition-all hover:shadow-md",
+                    "group flex items-center gap-2 rounded-xl border bg-white/60 hover:bg-white px-2.5 py-2 text-[11px] font-bold transition-all hover:shadow-md hover:border-brand-emerald/30",
                     p.color.border,
                   )}
                 >
@@ -430,7 +430,7 @@ function NewsPage() {
             }}
           />
 
-          <div className="relative rounded-[26px] bg-card/90 backdrop-blur-2xl border border-white/50 shadow-[0_25px_70px_-25px_rgba(13,77,51,0.4),0_10px_30px_-15px_rgba(0,0,0,0.18)]">
+          <div className="relative rounded-[26px] bg-[hsl(var(--primary)/0.02)] backdrop-blur-3xl border border-primary/10 shadow-[0_30px_80px_-30px_rgba(13,77,51,0.3),0_10px_30px_-15px_rgba(0,0,0,0.1)]">
             <div
               aria-hidden
               className="pointer-events-none absolute inset-0 animate-gradient-pan"
@@ -460,7 +460,7 @@ function NewsPage() {
                     setPage(1);
                   }}
                   placeholder="Rechercher un article, un label, un rapport…"
-                  className="w-full h-12 pl-11 pr-10 rounded-2xl text-sm bg-white/70 border border-white/60 shadow-inner placeholder:text-muted-foreground/70 focus:outline-none focus:bg-white focus:border-[hsl(var(--brand-gold)/0.5)] focus:ring-4 focus:ring-[hsl(var(--brand-gold)/0.15)] transition-all"
+                  className="w-full h-12 pl-11 pr-10 rounded-2xl text-sm bg-white/80 border border-primary/10 shadow-inner placeholder:text-muted-foreground/60 focus:outline-none focus:bg-white focus:border-brand-emerald/40 focus:ring-4 focus:ring-brand-emerald/5 transition-all"
                 />
                 {search && (
                   <button
@@ -492,10 +492,10 @@ function NewsPage() {
                 >
                   <SelectTrigger
                     className={cn(
-                      "h-11 min-w-[118px] sm:min-w-[140px] w-full sm:w-auto rounded-full border bg-white/70 px-4 text-xs font-semibold gap-2 shadow-sm hover:bg-white hover:shadow-md transition-all",
+                      "h-11 min-w-[118px] sm:min-w-[140px] w-full sm:w-auto rounded-full border bg-white/80 px-4 text-xs font-semibold gap-2 shadow-sm hover:bg-white hover:shadow-md transition-all hover:border-brand-emerald/30",
                       category !== "all"
                         ? "border-[hsl(var(--brand-gold)/0.5)] bg-[hsl(var(--brand-gold)/0.08)] text-foreground"
-                        : "border-white/60",
+                        : "border-primary/10",
                     )}
                   >
                     <Layers
@@ -526,10 +526,10 @@ function NewsPage() {
                 >
                   <SelectTrigger
                     className={cn(
-                      "h-11 min-w-[118px] sm:min-w-[130px] w-full sm:w-auto rounded-full border bg-white/70 px-4 text-xs font-semibold gap-2 shadow-sm hover:bg-white hover:shadow-md transition-all",
+                      "h-11 min-w-[118px] sm:min-w-[130px] w-full sm:w-auto rounded-full border bg-white/80 px-4 text-xs font-semibold gap-2 shadow-sm hover:bg-white hover:shadow-md transition-all hover:border-brand-emerald/30",
                       sector !== "all"
                         ? "border-[hsl(var(--brand-gold)/0.5)] bg-[hsl(var(--brand-gold)/0.08)] text-foreground"
-                        : "border-white/60",
+                        : "border-primary/10",
                     )}
                   >
                     <Briefcase
@@ -555,10 +555,10 @@ function NewsPage() {
                   <PopoverTrigger asChild>
                     <button
                       className={cn(
-                        "h-11 rounded-full border px-4 text-xs font-semibold flex items-center gap-2 shadow-sm hover:bg-white hover:shadow-md transition-all w-full sm:w-auto",
+                        "h-11 rounded-full border px-4 text-xs font-semibold flex items-center gap-2 shadow-sm hover:bg-[hsl(var(--brand-emerald)/0.1)] hover:shadow-md transition-all w-full sm:w-auto",
                         dateFrom || dateTo
                           ? "border-[hsl(var(--brand-gold)/0.5)] bg-[hsl(var(--brand-gold)/0.08)] text-foreground"
-                          : "border-white/60 bg-white/70",
+                          : "border-primary/10 bg-[hsl(var(--brand-emerald)/0.05)]",
                       )}
                     >
                       <Calendar
@@ -613,7 +613,7 @@ function NewsPage() {
                   </PopoverContent>
                 </Popover>
 
-                <div className="flex items-center h-11 rounded-full border border-white/60 bg-white/70 shadow-sm overflow-hidden hover:shadow-md transition-all w-full sm:w-auto">
+                <div className="flex items-center h-11 rounded-full border border-primary/10 bg-white/80 shadow-sm overflow-hidden hover:shadow-md hover:border-brand-emerald/30 transition-all w-full sm:w-auto">
                   <Select value={sortBy} onValueChange={setSortBy}>
                     <SelectTrigger className="h-11 min-w-[110px] sm:min-w-[130px] rounded-none border-0 bg-transparent px-4 text-xs font-semibold gap-2 shadow-none focus:ring-0">
                       <ArrowUpDown className="w-3.5 h-3.5 text-muted-foreground" />
