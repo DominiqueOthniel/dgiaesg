@@ -28,7 +28,7 @@ export const topNavItems = [
   { key: "nav.companies", href: "/entreprises", icon: Factory },
   { key: "nav.data", href: "/donnees", icon: Database },
   { key: "nav.news", href: "/news", icon: BookOpen },
-  { key: "nav.kiosk", href: "/kiosk", icon: BookOpen },
+  { key: "nav.kiosk", href: "/revue", icon: BookOpen },
   { key: "nav.mediatique", href: "/mediatique", icon: Headphones },
   { key: "nav.pricing", href: "/pricing", icon: Crown },
 ];
@@ -81,6 +81,11 @@ export const SiteHeader = ({
           <nav className="hidden lg:flex flex-1 min-w-0 items-center justify-start xl:justify-center gap-1 xl:gap-1.5 overflow-x-auto no-scrollbar px-1">
             {topNavItems.map((it) => {
               const Icon = it.icon;
+              // Detect active state for both exact match and sub-paths (e.g., /revue/numeros)
+              const isActive = it.href === "/" 
+                ? location.pathname === "/" 
+                : location.pathname.startsWith(it.href);
+
               return (
                 <Link
                   key={it.key}
