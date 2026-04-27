@@ -17,12 +17,9 @@ import {
   Layers,
   Briefcase,
   ArrowUpDown,
-<<<<<<< HEAD
   Sparkles,
   Zap,
-  Clock,
-=======
->>>>>>> 0448f380c34a991df70db3a60d66875142eb08c6
+  Clock
 } from "lucide-react";
 import { useNews } from "@/hooks/useNews";
 import { cn, getLocalized } from "@/lib/utils";
@@ -439,7 +436,7 @@ function NewsPage() {
               className="pointer-events-none absolute inset-0 animate-gradient-pan"
               style={{
                 background:
-                  "radial-gradient(ellipse 100% 70% at 10% 0%, hsl(var(--primary) / 0.1), transparent 52%), radial-gradient(ellipse 80% 50% at 100% 100%, hsl(var(--brand-emerald) / 0.06), transparent 55%)",
+                  "radial-gradient(ellipse at 15% 0%, hsl(var(--primary) / 0.12), transparent 55%), radial-gradient(ellipse at 85% 100%, hsl(var(--brand-gold-dark) / 0.18), transparent 60%), radial-gradient(ellipse at 50% 50%, hsl(var(--brand-gold) / 0.08), transparent 70%)",
               }}
             />
             <div
@@ -543,9 +540,8 @@ function NewsPage() {
                 <Popover>
                   <PopoverTrigger asChild>
                     <button
-                      type="button"
                       className={cn(
-                        "flex h-11 w-auto min-w-[8.75rem] max-w-[13rem] shrink-0 items-center gap-2 rounded-full border px-3 py-0 text-xs font-semibold shadow-sm hover:bg-white hover:shadow-md sm:max-w-[14rem] lg:min-w-[8.25rem]",
+                        "h-11 rounded-full border px-4 text-xs font-semibold flex items-center gap-2 shadow-sm hover:bg-white hover:shadow-md transition-all w-full sm:w-auto",
                         dateFrom || dateTo
                           ? "border-[hsl(var(--brand-gold)/0.5)] bg-[hsl(var(--brand-gold)/0.08)] text-foreground"
                           : "border-white/60 bg-white/70 dark:border-white/10 dark:bg-white/5"
@@ -610,9 +606,8 @@ function NewsPage() {
                       ))}
                     </SelectContent>
                   </Select>
-                  <div aria-hidden className="w-px shrink-0 self-stretch bg-border/70" />
+                  <div aria-hidden className="h-5 w-px bg-border" />
                   <button
-                    type="button"
                     onClick={() =>
                       setSortDir((d) => (d === "asc" ? "desc" : "asc"))
                     }
