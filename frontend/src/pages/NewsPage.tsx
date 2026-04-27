@@ -17,9 +17,12 @@ import {
   Layers,
   Briefcase,
   ArrowUpDown,
+<<<<<<< HEAD
   Sparkles,
   Zap,
   Clock,
+=======
+>>>>>>> 0448f380c34a991df70db3a60d66875142eb08c6
 } from "lucide-react";
 import { useNews } from "@/hooks/useNews";
 import { cn, getLocalized } from "@/lib/utils";
@@ -436,7 +439,7 @@ function NewsPage() {
               className="pointer-events-none absolute inset-0 animate-gradient-pan"
               style={{
                 background:
-                  "radial-gradient(ellipse at 15% 0%, hsl(var(--primary) / 0.12), transparent 55%), radial-gradient(ellipse at 85% 100%, hsl(var(--brand-gold-dark) / 0.18), transparent 60%), radial-gradient(ellipse at 50% 50%, hsl(var(--brand-gold) / 0.08), transparent 70%)",
+                  "radial-gradient(ellipse 100% 70% at 10% 0%, hsl(var(--primary) / 0.1), transparent 52%), radial-gradient(ellipse 80% 50% at 100% 100%, hsl(var(--brand-emerald) / 0.06), transparent 55%)",
               }}
             />
             <div
@@ -448,8 +451,10 @@ function NewsPage() {
               }}
             />
 
-            <div className="relative p-3 sm:p-4 flex flex-col lg:flex-row lg:items-center gap-2.5">
-              <div className="relative flex-1 min-w-0 group">
+            {/* Petits écrans : 2 lignes (recherche puis filtres). lg+ : une ligne — recherche plafonnée, filtres nowrap + défilement horizontal si besoin. */}
+            <div className="relative flex flex-col gap-3 p-3 sm:p-4 lg:flex-row lg:items-center lg:gap-4">
+              {/* Search — big & prominent */}
+              <div className="relative w-full min-w-0 max-w-full shrink-0 group lg:w-[min(100%,26rem)] xl:w-[min(100%,30rem)]">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
                   <Search className="w-4 h-4 text-muted-foreground group-focus-within:text-[hsl(var(--brand-gold-dark))] transition-colors" />
                 </div>
@@ -476,13 +481,9 @@ function NewsPage() {
                   </button>
                 )}
               </div>
-
-              <div
-                aria-hidden
-                className="hidden lg:block h-8 w-px bg-gradient-to-b from-transparent via-border to-transparent mx-1"
-              />
-
-              <div className="flex flex-wrap lg:flex-nowrap items-stretch sm:items-center gap-2 w-full lg:w-auto">
+              {/* Filtres : une rangée (scroll horizontal si besoin). Jamais plus de 2 lignes avec la recherche au-dessus sur <lg. */}
+              <div className="scrollbar-hide -mx-0.5 flex min-w-0 flex-1 flex-nowrap items-center justify-start gap-2 overflow-x-auto px-0.5 py-0.5 sm:gap-2.5 lg:mx-0 lg:justify-end lg:px-0">
+                {/* Category */}
                 <Select
                   value={category}
                   onValueChange={(v: string) => {
@@ -492,21 +493,15 @@ function NewsPage() {
                 >
                   <SelectTrigger
                     className={cn(
-                      "h-11 min-w-[118px] sm:min-w-[140px] w-full sm:w-auto rounded-full border bg-white/70 px-4 text-xs font-semibold gap-2 shadow-sm hover:bg-white hover:shadow-md transition-all",
+                      "h-11 w-auto min-w-[9.25rem] max-w-[14rem] shrink-0 justify-start gap-2 rounded-full border bg-white/70 px-3 py-0 pr-8 text-left text-xs font-semibold shadow-sm hover:bg-white hover:shadow-md sm:min-w-[10rem] sm:max-w-[15rem] lg:min-w-[9.5rem]",
                       category !== "all"
                         ? "border-[hsl(var(--brand-gold)/0.5)] bg-[hsl(var(--brand-gold)/0.08)] text-foreground"
-                        : "border-white/60",
+                        : "border-white/60 dark:border-white/10 dark:bg-white/5",
+                      "[&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate"
                     )}
                   >
-                    <Layers
-                      className={cn(
-                        "w-3.5 h-3.5",
-                        category !== "all"
-                          ? "text-[hsl(var(--brand-gold-dark))]"
-                          : "text-muted-foreground",
-                      )}
-                    />
-                    <SelectValue placeholder={t("news.filter.category", "Catégories")} />
+                    <Layers className={cn("h-3.5 w-3.5 shrink-0", category !== "all" ? "text-[hsl(var(--brand-gold-dark))]" : "text-muted-foreground")} />
+                    <SelectValue placeholder={t("news.filter.category")} />
                   </SelectTrigger>
                   <SelectContent className="bg-popover z-50 rounded-xl">
                     {CATEGORIES.map((c) => (
@@ -526,21 +521,15 @@ function NewsPage() {
                 >
                   <SelectTrigger
                     className={cn(
-                      "h-11 min-w-[118px] sm:min-w-[130px] w-full sm:w-auto rounded-full border bg-white/70 px-4 text-xs font-semibold gap-2 shadow-sm hover:bg-white hover:shadow-md transition-all",
+                      "h-11 w-auto min-w-[9.25rem] max-w-[14rem] shrink-0 justify-start gap-2 rounded-full border bg-white/70 px-3 py-0 pr-8 text-left text-xs font-semibold shadow-sm hover:bg-white hover:shadow-md sm:min-w-[9.75rem] sm:max-w-[15rem] lg:min-w-[9rem]",
                       sector !== "all"
                         ? "border-[hsl(var(--brand-gold)/0.5)] bg-[hsl(var(--brand-gold)/0.08)] text-foreground"
-                        : "border-white/60",
+                        : "border-white/60 dark:border-white/10 dark:bg-white/5",
+                      "[&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate"
                     )}
                   >
-                    <Briefcase
-                      className={cn(
-                        "w-3.5 h-3.5",
-                        sector !== "all"
-                          ? "text-[hsl(var(--brand-gold-dark))]"
-                          : "text-muted-foreground",
-                      )}
-                    />
-                    <SelectValue placeholder={t("news.filter.sector", "Secteurs")} />
+                    <Briefcase className={cn("h-3.5 w-3.5 shrink-0", sector !== "all" ? "text-[hsl(var(--brand-gold-dark))]" : "text-muted-foreground")} />
+                    <SelectValue placeholder={t("news.filter.sector")} />
                   </SelectTrigger>
                   <SelectContent className="bg-popover z-50 rounded-xl">
                     {SECTORS.map((s) => (
@@ -554,22 +543,16 @@ function NewsPage() {
                 <Popover>
                   <PopoverTrigger asChild>
                     <button
+                      type="button"
                       className={cn(
-                        "h-11 rounded-full border px-4 text-xs font-semibold flex items-center gap-2 shadow-sm hover:bg-white hover:shadow-md transition-all w-full sm:w-auto",
+                        "flex h-11 w-auto min-w-[8.75rem] max-w-[13rem] shrink-0 items-center gap-2 rounded-full border px-3 py-0 text-xs font-semibold shadow-sm hover:bg-white hover:shadow-md sm:max-w-[14rem] lg:min-w-[8.25rem]",
                         dateFrom || dateTo
                           ? "border-[hsl(var(--brand-gold)/0.5)] bg-[hsl(var(--brand-gold)/0.08)] text-foreground"
-                          : "border-white/60 bg-white/70",
+                          : "border-white/60 bg-white/70 dark:border-white/10 dark:bg-white/5"
                       )}
                     >
-                      <Calendar
-                        className={cn(
-                          "w-3.5 h-3.5",
-                          dateFrom || dateTo
-                            ? "text-[hsl(var(--brand-gold-dark))]"
-                            : "text-muted-foreground",
-                        )}
-                      />
-                      <span className="truncate">
+                      <Calendar className={cn("h-3.5 w-3.5 shrink-0", dateFrom || dateTo ? "text-[hsl(var(--brand-gold-dark))]" : "text-muted-foreground")} />
+                      <span className="min-w-0 flex-1 truncate text-left">
                         {dateFrom || dateTo
                           ? `${dateFrom || "…"} → ${dateTo || "…"}`
                           : t("news.filter.period", "Période")}
@@ -612,12 +595,12 @@ function NewsPage() {
                     </div>
                   </PopoverContent>
                 </Popover>
-
-                <div className="flex items-center h-11 rounded-full border border-white/60 bg-white/70 shadow-sm overflow-hidden hover:shadow-md transition-all w-full sm:w-auto">
+                {/* Sort — segmented pill (sort field + direction toggle) */}
+                <div className="flex h-11 w-auto min-w-[11.5rem] max-w-[18rem] shrink-0 items-stretch rounded-full border border-white/60 bg-white/70 shadow-sm hover:shadow-md dark:border-white/10 dark:bg-white/5 sm:min-w-[12rem] sm:max-w-[20rem]">
                   <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger className="h-11 min-w-[110px] sm:min-w-[130px] rounded-none border-0 bg-transparent px-4 text-xs font-semibold gap-2 shadow-none focus:ring-0">
-                      <ArrowUpDown className="w-3.5 h-3.5 text-muted-foreground" />
-                      <SelectValue placeholder={t("news.filter.sort", "Trier")} />
+                    <SelectTrigger className="h-11 min-h-11 min-w-[7rem] flex-1 rounded-l-full rounded-r-none border-0 bg-transparent px-2.5 py-0 pr-7 text-left text-xs font-semibold shadow-none focus:ring-0 focus:ring-offset-0 sm:min-w-[8rem] [&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate">
+                      <ArrowUpDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                      <SelectValue placeholder={t("news.filter.sort")} />
                     </SelectTrigger>
                     <SelectContent className="bg-popover z-50 rounded-xl">
                       {SORT_OPTIONS.map((o) => (
@@ -627,13 +610,14 @@ function NewsPage() {
                       ))}
                     </SelectContent>
                   </Select>
-                  <div aria-hidden className="h-5 w-px bg-border" />
+                  <div aria-hidden className="w-px shrink-0 self-stretch bg-border/70" />
                   <button
+                    type="button"
                     onClick={() =>
                       setSortDir((d) => (d === "asc" ? "desc" : "asc"))
                     }
-                    className="h-11 px-3 text-xs font-semibold flex items-center text-muted-foreground hover:text-foreground"
-                    aria-label="Inverser le tri"
+                    aria-label={t("common.toggle_order")}
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-r-full text-muted-foreground transition-colors hover:bg-[hsl(var(--brand-gold)/0.1)] hover:text-[hsl(var(--brand-gold-dark))]"
                   >
                     {sortDir === "asc" ? (
                       <ArrowUp className="w-4 h-4" />
@@ -645,18 +629,14 @@ function NewsPage() {
               </div>
             </div>
 
-            {/* Result row + active chips */}
-            <div className="relative px-4 pb-3 flex items-center gap-3 flex-wrap">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-br from-primary to-[hsl(var(--brand-deep))] text-primary-foreground shadow-sm">
-                  <Sparkles className="w-3 h-3" />
+            {/* Footer : results counter + active chips + reset */}
+            <div className="relative flex flex-wrap items-center gap-3 border-t border-border/50 bg-muted/15 px-4 py-2.5 sm:px-5 sm:py-3">
+              <div className="flex min-w-0 items-center gap-2.5">
+                <span className="inline-flex h-7 min-w-7 items-center justify-center rounded-full border border-primary/20 bg-primary/10 px-2 text-xs font-black tabular-nums text-primary">
+                  {filtered.length}
                 </span>
-                <span className="text-[11px] font-black uppercase tracking-[0.16em] text-foreground">
-                  {filtered.length}{" "}
-                  <span className="text-muted-foreground font-semibold normal-case tracking-normal">
-                    {t("common.results", "résultat")}
-                    {filtered.length > 1 ? "s" : ""}
-                  </span>
+                <span className="text-[11px] font-black uppercase tracking-[0.16em] text-foreground/90">
+                  {t("pages.news.article", { count: filtered.length })}
                 </span>
               </div>
 

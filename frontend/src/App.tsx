@@ -44,6 +44,9 @@ const RevuePortal = lazy(() => import("./pages/RevuePortal"));
 const RevueArchive = lazy(() => import("./pages/RevueArchive"));
 const RevueIssuePage = lazy(() => import("./pages/RevueIssuePage"));
 const SubscriptionPage = lazy(() => import("./pages/SubscriptionPage"));
+const AboutPage = lazy(() => import("./pages/AboutPage"));
+const TeamPage = lazy(() => import("./pages/TeamPage"));
+const ContributePage = lazy(() => import("./pages/ContributePage"));
 const OrgProfilePage = lazy(() => import("./pages/OrgProfilePage"));
 const ApplyPage = lazy(() => import("./pages/ApplyPage"));
 const MyApplicationsPage = lazy(() => import("./pages/MyApplicationsPage"));
@@ -118,6 +121,10 @@ function App() {
             <Route path="actualites/:format" element={<NewsPage />} />
             <Route path="thematiques" element={<ThematiquesPortal />} />
             <Route path="thematiques/:pillar" element={<ThemePillarPage />} />
+            <Route path="pricing" element={<PricingPage />} />
+            <Route path="a-propos" element={<AboutPage />} />
+            <Route path="equipe" element={<TeamPage />} />
+            <Route path="contribuer" element={<ContributePage />} />
 
             <Route element={<ProtectedRoute />}>
               <Route path="profile" element={<ProfilePage />} />

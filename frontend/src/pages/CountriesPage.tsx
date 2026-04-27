@@ -1,7 +1,7 @@
-import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { MapPin, ChevronRight, Globe2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { HubCinematicHero, HubBentoLink, hubVariantClass } from "@/components/hub/HubCinematicHero";
 
 const REGIONS = [
   {
@@ -51,90 +51,157 @@ const REGIONS = [
   },
 ] as const;
 
+type Region = (typeof REGIONS)[number];
+
+function RegionCard({
+  region,
+  isEn,
+  idx,
+  variant,
+  t,
+}: {
+  region: Region;
+  isEn: boolean;
+  idx: number;
+  variant: "flagship" | "offset" | "heritage";
+  t: (k: string, o?: { count: number }) => string;
+}) {
+  const n = `0${idx + 1}`;
+  const title = isEn ? region.title.en : region.title.fr;
+  const line = (isEn ? region.countries.en : region.countries.fr).join(" • ");
+
+  if (variant === "offset") {
+    return (
+      <>
+        <div className="absolute right-0 top-0 p-2 opacity-15 text-5xl font-black text-emerald-600/35">
+          {n}
+        </div>
+        <div className="relative mb-4 flex items-start justify-between gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
+            <Globe2 className="h-6 w-6" />
+          </div>
+          <span className="shrink-0 rounded-full border border-border/60 bg-muted/70 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+            {t("pages.countries.region_countries", { count: region.count })}
+          </span>
+        </div>
+        <h2 className="relative text-xl font-extrabold tracking-tight text-foreground mb-2">
+          {title}
+        </h2>
+        <p className="relative text-sm text-muted-foreground leading-relaxed">
+          {line}
+        </p>
+        <div className="relative mt-6 flex items-center gap-2 border-t border-border/60 pt-4 text-xs font-bold uppercase tracking-wider text-primary">
+          {t("pages.countries.explore_region")} <ChevronRight className="h-4 w-4" />
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <div
+        className="pointer-events-none absolute bottom-0 right-2 text-5xl font-black leading-none text-foreground/[0.07] select-none"
+        aria-hidden
+      >
+        {n}
+      </div>
+      <div className="absolute inset-0 opacity-80 bg-[radial-gradient(ellipse_at_top,_hsl(var(--brand-gold)/0.16),transparent_60%)]" />
+      <div className="pointer-events-none absolute inset-0 opacity-80 [background:linear-gradient(155deg,hsl(var(--background)/0.65)_0%,transparent_45%)]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-[linear-gradient(180deg,transparent_0%,hsl(var(--brand-emerald)/0.12)_100%)]" />
+      <div className="relative mb-4 flex items-start justify-between gap-3">
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20 shadow-[0_12px_22px_-12px_rgba(13,77,51,0.65)]">
+          <Globe2 className="h-5 w-5" />
+        </div>
+        <span className="shrink-0 rounded-full border border-border/60 bg-muted/70 px-2 py-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+          {t("pages.countries.region_countries", { count: region.count })}
+        </span>
+      </div>
+      <h2 className="relative text-xl font-extrabold tracking-tight text-foreground mb-2">
+        {title}
+      </h2>
+      <p className="relative text-sm text-muted-foreground leading-relaxed">
+        {line}
+      </p>
+      <div className="relative mt-6 inline-flex items-center gap-2 border-t border-border/60 pt-4 text-xs font-bold uppercase tracking-wider text-primary">
+        {t("pages.countries.explore_region")} <ChevronRight className="h-4 w-4" />
+      </div>
+    </>
+  );
+}
+
 export default function CountriesPage() {
   const { t, i18n } = useTranslation();
   const isEn = i18n.language.startsWith("en");
   const totalCountries = REGIONS.reduce((sum, region) => sum + region.count, 0);
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-background via-background to-muted/25 overflow-hidden">
-      <div className="pointer-events-none absolute inset-0 opacity-[0.06] [background:radial-gradient(circle_at_14%_12%,hsl(var(--brand-emerald))_0%,transparent_35%),radial-gradient(circle_at_88%_78%,hsl(var(--brand-gold))_0%,transparent_30%)]" />
-      <div className="pointer-events-none absolute inset-0 opacity-[0.05] [background:linear-gradient(125deg,transparent_0_40%,hsl(var(--foreground))_40%_41%,transparent_41%_100%)]" />
-      <section className="relative bg-primary overflow-hidden border-b border-white/10">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_hsl(var(--brand-emerald)/0.35),transparent_70%)]" />
-        <div className="absolute inset-0 opacity-10 [background:repeating-linear-gradient(45deg,white_0_1px,transparent_1px_18px)]" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 relative z-10">
-          <div className="flex items-center gap-2 mb-5">
-            <MapPin className="w-5 h-5 text-brand-gold" />
-            <span className="px-2.5 py-1 rounded-full bg-white/10 border border-white/15 text-[10px] font-black uppercase tracking-widest text-primary-foreground/85">
-              {t("pages.countries.hub_kicker")}
+    <div className="relative min-h-screen overflow-x-hidden bg-background">
+      <HubCinematicHero
+        badgeIcon={MapPin}
+        badgeLabel={t("pages.countries.hub_kicker")}
+        sectionsKicker={t("pages.countries.hub_sections")}
+        titleLead={t("pages.countries.hub_title_lead")}
+        titleBrand={t("pages.countries.hub_title_brand")}
+        subtitle={t("pages.countries.hub_subtitle")}
+        chipsAriaLabel={t("pages.countries.hub_sections")}
+        chips={REGIONS.map((r, i) => ({
+          id: r.slug,
+          idx: `0${i + 1}`,
+          label: isEn ? r.title.en : r.title.fr,
+        }))}
+      >
+        <div className="flex flex-wrap gap-2 md:gap-3">
+          <div className="inline-flex items-center gap-2.5 rounded-2xl border border-white/20 bg-white/5 px-3.5 py-2.5 backdrop-blur-sm">
+            <span className="text-2xl font-black leading-none text-brand-gold tabular-nums">
+              {totalCountries}
+            </span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-primary-foreground/80">
+              {t("pages.countries.stats_countries")}
             </span>
           </div>
-          <h1 className="text-3xl md:text-5xl font-extrabold text-primary-foreground tracking-tight leading-tight mb-4 max-w-4xl">
-            {t("pages.countries.hub_title")}
-          </h1>
-          <p className="text-base md:text-lg max-w-3xl text-primary-foreground/75 leading-relaxed">
-            {t("pages.countries.hub_subtitle")}
-          </p>
-
-          <div className="mt-8 flex flex-wrap gap-3">
-            <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 border border-white/15">
-              <span className="text-xl font-black text-brand-gold leading-none">{totalCountries}</span>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-primary-foreground/80">
-                {isEn ? "countries indexed" : "pays couverts"}
-              </span>
-            </div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 border border-white/15">
-              <span className="text-xl font-black text-brand-gold leading-none">{REGIONS.length}</span>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-primary-foreground/80">
-                {isEn ? "regional hubs" : "hubs régionaux"}
-              </span>
-            </div>
+          <div className="inline-flex items-center gap-2.5 rounded-2xl border border-white/20 bg-white/5 px-3.5 py-2.5 backdrop-blur-sm">
+            <span className="text-2xl font-black leading-none text-brand-gold tabular-nums">
+              {REGIONS.length}
+            </span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-primary-foreground/80">
+              {t("pages.countries.stats_hubs")}
+            </span>
           </div>
         </div>
-      </section>
+      </HubCinematicHero>
 
-      <div className="gradient-flow-bg mt-2">
-        <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 z-10">
-          <div className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 w-[80%] h-24 rounded-full bg-primary/10 blur-3xl" />
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-7">
-            {REGIONS.map((region, idx) => (
-              <motion.div
-                key={region.slug}
-                initial={{ opacity: 0, y: 20, scale: 0.98 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.15 }}
-                transition={{ duration: 0.4, delay: idx * 0.04 }}
-              >
-                <Link
-                  to={`/pays/${region.slug}`}
-                  className="group golden-glow relative block h-full rounded-3xl border-border/90 bg-card p-6 overflow-hidden shadow-[0_30px_72px_-30px_rgba(13,77,51,0.58)]"
+      <div className="gradient-flow-bg relative">
+        <div className="pointer-events-none absolute left-0 top-0 h-40 w-full bg-gradient-to-b from-primary to-transparent opacity-30" />
+        <section className="relative z-10 mx-auto max-w-7xl px-4 py-12 sm:px-6 md:py-20 lg:px-8">
+          <div className="pointer-events-none absolute -top-6 left-1/2 h-24 w-[80%] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {REGIONS.map((region, idx) => {
+              const v = hubVariantClass(idx, "trio");
+              return (
+                <motion.div
+                  key={region.slug}
+                  initial={{ opacity: 0, y: 22, scale: 0.99 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: true, amount: 0.15 }}
+                  transition={{ duration: 0.45, delay: idx * 0.04 }}
                 >
-                  <div className="absolute inset-0 opacity-80 bg-[radial-gradient(ellipse_at_top,_hsl(var(--brand-gold)/0.16),transparent_60%)]" />
-                  <div className="pointer-events-none absolute inset-0 opacity-80 [background:linear-gradient(155deg,hsl(var(--background)/0.65)_0%,transparent_45%)]" />
-                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 opacity-100 bg-[linear-gradient(180deg,transparent_0%,hsl(var(--brand-emerald)/0.12)_100%)]" />
-                  <div className="relative flex items-start justify-between gap-4 mb-4">
-                    <div className="w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center ring-1 ring-primary/20 shadow-[0_12px_22px_-12px_rgba(13,77,51,0.65)]">
-                      <Globe2 className="w-5 h-5" />
-                    </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 py-1 rounded-full bg-muted/70 border border-border/60">
-                      {t("pages.countries.region_countries", { count: region.count })}
-                    </span>
-                  </div>
-
-                  <h2 className="relative text-xl font-extrabold tracking-tight text-foreground mb-2">
-                    {isEn ? region.title.en : region.title.fr}
-                  </h2>
-                  <p className="relative text-sm text-muted-foreground leading-relaxed">
-                    {(isEn ? region.countries.en : region.countries.fr).join(" • ")}
-                  </p>
-
-                  <div className="relative mt-6 pt-4 border-t border-border/60 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary">
-                    {t("pages.countries.explore_region")} <ChevronRight className="w-4 h-4" />
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
+                  <HubBentoLink
+                    to={`/pays/${region.slug}`}
+                    id={region.slug}
+                    variant={v}
+                    className="h-full"
+                  >
+                    <RegionCard
+                      region={region}
+                      isEn={isEn}
+                      idx={idx}
+                      variant={v}
+                      t={t}
+                    />
+                  </HubBentoLink>
+                </motion.div>
+              );
+            })}
           </div>
         </section>
       </div>

@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Trophy } from "lucide-react";
+import { HubSubpageShell } from "@/components/hub/HubCinematicHero";
 
 const TOP_COMPANIES = ["OCP Group", "Safaricom", "Attijariwafa bank", "Nedbank", "Sonatel"];
 const TOP_COUNTRIES = ["Maroc", "Rwanda", "Kenya", "Ghana", "Afrique du Sud"];
@@ -30,35 +31,18 @@ export default function DataRankingsPage() {
   const { t } = useTranslation();
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-background via-background to-muted/20 overflow-hidden">
-      <div className="pointer-events-none absolute inset-0 opacity-[0.065] [background:radial-gradient(circle_at_14%_14%,hsl(var(--brand-emerald))_0%,transparent_35%),radial-gradient(circle_at_86%_72%,hsl(var(--brand-gold))_0%,transparent_30%)]" />
-      <section className="relative bg-primary overflow-hidden border-b border-white/10">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_hsl(var(--brand-emerald)/0.35),transparent_70%)]" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/15 bg-white/10 mb-5">
-            <Trophy className="w-4 h-4 text-brand-gold" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-primary-foreground/80">
-              {t("pages.data.blocks.rankings_title")}
-            </span>
-          </div>
-          <h1 className="text-3xl md:text-6xl font-extrabold text-primary-foreground tracking-tight mb-4 leading-[1.05]">
-            {t("pages.data.rankings.title")}
-          </h1>
-          <p className="text-base md:text-lg max-w-3xl text-primary-foreground/75 leading-relaxed">
-            {t("pages.data.rankings.subtitle")}
-          </p>
-        </div>
-      </section>
-
-      <div className="gradient-flow-bg mt-2">
-        <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14 z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <RankingCard title={t("pages.data.rankings.top_companies")} items={TOP_COMPANIES} />
-            <RankingCard title={t("pages.data.rankings.top_countries")} items={TOP_COUNTRIES} />
-            <RankingCard title={t("pages.data.rankings.top_sectors")} items={TOP_SECTORS} />
-          </div>
-        </section>
+    <HubSubpageShell
+      badgeIcon={Trophy}
+      badgeLabel={t("pages.data.blocks.rankings_title")}
+      titleLead={t("pages.data.rankings.hero_title_lead")}
+      titleBrand={t("pages.data.rankings.hero_title_brand")}
+      subtitle={t("pages.data.rankings.subtitle")}
+    >
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <RankingCard title={t("pages.data.rankings.top_companies")} items={TOP_COMPANIES} />
+        <RankingCard title={t("pages.data.rankings.top_countries")} items={TOP_COUNTRIES} />
+        <RankingCard title={t("pages.data.rankings.top_sectors")} items={TOP_SECTORS} />
       </div>
-    </div>
+    </HubSubpageShell>
   );
 }

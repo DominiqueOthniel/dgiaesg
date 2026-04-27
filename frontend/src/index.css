@@ -1054,4 +1054,33 @@
     .animate-prismatic { animation: none !important; }
     .animate-shine-gold { animation: none !important; }
   }
+  
+  /* About page — hero orbit & sheen */
+  @keyframes about-orbit {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @keyframes about-sheen {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+  }
+  .about-orbit-slow {
+    animation: about-orbit 140s linear infinite;
+  }
+  .about-hero-sheen {
+    background: linear-gradient(
+      100deg,
+      transparent 0%,
+      hsl(var(--brand-gold) / 0.12) 45%,
+      transparent 90%
+    );
+    background-size: 200% 100%;
+    animation: about-sheen 8s ease-in-out infinite alternate;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .about-orbit-slow,
+    .about-hero-sheen {
+      animation: none;
+    }
+  }
 }
