@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   Menu,
@@ -19,7 +20,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { Logo } from "../Logo";
 
 export const topNavItems = [
   { key: "nav.labels", href: "/labels", icon: ShieldCheck },
@@ -35,8 +36,6 @@ export const topNavItems = [
 
 /**
  * SiteHeader — extracted from SiteLayout.
- * The sandwich (menu) button now sits on the RIGHT side,
- * AFTER the "S'inscrire" button for a more modern UX.
  */
 export const SiteHeader = ({
   onMenuClick,
@@ -58,30 +57,19 @@ export const SiteHeader = ({
           : "bg-background"
       )}
     >
-      <div className="max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center h-20 gap-3 xl:gap-5">
+      <div className="max-w-[1720px] mx-auto px-2 sm:px-4 lg:px-6">
+        <div className="flex items-center h-20 gap-2 xl:gap-4">
           {/* Left: Logo */}
-          <div className="flex items-center gap-2 md:gap-6 shrink-0">
-            <Link to="/" className="flex items-center gap-3 group">
-              <div className="w-11 h-11 bg-primary rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg shadow-primary/20">
-                <ShieldCheck className="w-7 h-7 text-brand-gold" />
-              </div>
-              <div className="hidden sm:flex flex-col">
-                <span className="text-base font-black tracking-tight text-foreground uppercase leading-none">
-                  DGIAESG
-                </span>
-                <span className="text-[9px] font-black text-muted-foreground tracking-widest uppercase mt-1">
-                  Africa Certified
-                </span>
-              </div>
+          <div className="flex items-center shrink-0">
+            <Link to="/" className="group -mt-1">
+              <Logo className="scale-95 origin-left" />
             </Link>
           </div>
 
-          {/* Center: Desktop Nav */}
-          <nav className="hidden lg:flex flex-1 min-w-0 items-center justify-start xl:justify-center gap-1 xl:gap-1.5 overflow-x-auto no-scrollbar px-1">
+          {/* Center: Desktop Nav — Optimized for no-scroll */}
+          <nav className="hidden lg:flex flex-1 min-w-0 items-center justify-center gap-0.5 xl:gap-1 px-1">
             {topNavItems.map((it) => {
               const Icon = it.icon;
-              // Detect active state for both exact match and sub-paths (e.g., /revue/numeros)
               const isActive = it.href === "/" 
                 ? location.pathname === "/" 
                 : location.pathname.startsWith(it.href);
@@ -91,17 +79,17 @@ export const SiteHeader = ({
                   key={it.key}
                   to={it.href}
                   className={cn(
-                    "group inline-flex items-center gap-2 px-3.5 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 active:scale-95 whitespace-nowrap",
+                    "group inline-flex items-center gap-1.5 px-2.5 xl:px-3 py-2 rounded-full text-[9px] xl:text-[10px] font-black uppercase tracking-wider transition-all duration-300 active:scale-95 whitespace-nowrap",
                     isActive 
-                      ? "bg-brand-gold text-brand-dark shadow-[0_10px_25px_-5px_rgba(var(--brand-gold-rgb),0.5)] -translate-y-0.5" 
+                      ? "bg-brand-gold text-brand-dark shadow-lg -translate-y-0.5" 
                       : "text-foreground/80 bg-transparent hover:bg-muted/50 hover:text-foreground"
                   )}
                 >
                   <Icon className={cn(
-                    "w-3.5 h-3.5 transition-transform duration-300",
+                    "w-3 h-3 xl:w-3.5 xl:h-3.5 transition-transform duration-300",
                     isActive ? "text-brand-dark" : "text-foreground/40 group-hover:text-foreground group-hover:scale-110"
                   )} />
-                  <span className="whitespace-nowrap">{t(it.key)}</span>
+                  <span>{t(it.key)}</span>
                 </Link>
               );
             })}

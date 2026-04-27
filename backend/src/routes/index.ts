@@ -22,6 +22,7 @@ import renewalRouter from "./renewal.routes";
 import categoryRouter from "./category.routes";
 import subCategoryRouter from "./subCategory.routes";
 import eventRouter from "./event.routes";
+import contactRouter from "./contact.routes";
 
 const router = Router();
 
@@ -56,5 +57,6 @@ router.use("/renewals", renewalRouter);
 router.use("/categories", categoryRouter);
 router.use("/subcategories", subCategoryRouter);
 router.use("/events", eventRouter);
+router.use("/contact", contactRouter);
 
 export default router;

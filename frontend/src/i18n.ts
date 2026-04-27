@@ -16,7 +16,7 @@ const resources = {
                 companies: "Entreprises",
                 data: "Données ESG",
                 news: "Journal",
-                kiosk: "Kiosque",
+                kiosk: "La Revue",
                 mediatique: "Médiatique",
                 multimedia: "Médiathèque",
                 pricing: "Premium",

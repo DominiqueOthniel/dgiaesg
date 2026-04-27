@@ -55,6 +55,12 @@ const AboutPage = lazy(() => import("./pages/AboutPage"));
 const TeamPage = lazy(() => import("./pages/TeamPage"));
 const ContributePage = lazy(() => import("./pages/ContributePage"));
 
+// Secondary pages (legal & partnerships)
+const PartenariatsPage = lazy(() => import("./pages/PartenariatsPage"));
+const ContactPage = lazy(() => import("./pages/ContactPage"));
+const MentionsLegalesPage = lazy(() => import("./pages/MentionsLegalesPage"));
+const CGUPage = lazy(() => import("./pages/CGUPage"));
+
 // Admin pages
 const Dashboard = lazy(() => import("./pages/admin/Dashboard"));
 const LabelsAdmin = lazy(() => import("./pages/admin/LabelsAdmin"));
@@ -120,6 +126,12 @@ function App() {
             <Route path="equipe" element={<TeamPage />} />
             <Route path="contribuer" element={<ContributePage />} />
             <Route path="pricing" element={<PricingPage />} />
+
+            {/* Secondary pages */}
+            <Route path="partenariats" element={<PartenariatsPage />} />
+            <Route path="contact" element={<ContactPage />} />
+            <Route path="mentions-legales" element={<MentionsLegalesPage />} />
+            <Route path="conditions-utilisation" element={<CGUPage />} />
             
             {/* New Editorial Routes */}
             <Route path="actualites" element={<NewsPage />} />
