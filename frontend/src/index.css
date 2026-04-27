@@ -201,16 +201,17 @@
     background-color: #FFFFFF;
     color: #000000;
     box-shadow:
-      0 0 35px -10px rgba(255, 215, 0, 0.35),
-      0 15px 40px -20px rgba(0, 0, 0, 0.2);
+      0 0 20px -5px rgba(255, 215, 0, 0.25),
+      0 12px 30px -15px rgba(0, 0, 0, 0.15);
     transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    animation: gold-emerald-cycle 5s ease-in-out infinite;
   }
   .card-gold:hover {
-    transform: translateY(-8px) scale(1.02);
-    border-color: #FFC000;
+    transform: translateY(-8px) scale(1.01);
+    border-color: hsl(var(--brand-emerald) / 0.5);
     box-shadow:
-      0 0 50px -5px rgba(255, 215, 0, 0.5),
-      0 25px 60px -20px rgba(0, 0, 0, 0.3);
+      0 0 40px -10px hsl(var(--brand-emerald) / 0.25),
+      0 20px 50px -20px rgba(0, 0, 0, 0.2);
   }
 
   .news-bg {
@@ -479,11 +480,20 @@
     box-shadow: 0 22px 50px -22px hsl(var(--primary) / 0.25);
   }
 
+  @keyframes gold-emerald-cycle {
+    0%, 100% { 
+      border-color: #FFD700;
+      box-shadow: 0 0 20px -5px rgba(255, 215, 0, 0.25);
+    }
+    50% { 
+      border-color: hsl(var(--brand-emerald));
+      box-shadow: 0 0 20px -5px hsl(var(--brand-emerald) / 0.3);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .animate-hairline,
-    .animate-gradient-pan,
-    .breathe-gold,
-    .pulse-gold { animation: none !important; }
+    .card-gold,
+    .card-gold-elevated { animation: none !important; }
   }
 
   /* ============================================================
@@ -730,19 +740,19 @@
     background: #FFFFFF;
     color: #000000;
     box-shadow:
-      0 0 35px -10px rgba(255, 215, 0, 0.4),
-      0 20px 50px -20px rgba(0, 0, 0, 0.25),
-      0 4px 10px -5px rgba(255, 215, 0, 0.3);
+      0 0 20px -5px rgba(255, 215, 0, 0.3),
+      0 12px 35px -15px rgba(0, 0, 0, 0.2);
     transition: all 0.45s cubic-bezier(0.22, 1, 0.36, 1);
     isolation: isolate;
+    animation: gold-emerald-cycle 5s ease-in-out infinite;
   }
   .card-gold-elevated:hover {
-    transform: translateY(-12px);
+    transform: translateY(-8px);
     box-shadow:
-      0 0 60px -5px rgba(255, 215, 0, 0.6),
-      0 35px 80px -25px rgba(0, 0, 0, 0.45),
-      0 8px 16px -8px rgba(255, 215, 0, 0.4);
-    border-color: #FFC000;
+      0 0 50px -10px hsl(var(--brand-emerald) / 0.3),
+      0 30px 70px -25px rgba(0, 0, 0, 0.35),
+      0 8px 16px -8px hsl(var(--brand-emerald) / 0.2);
+    border-color: hsl(var(--brand-emerald) / 0.6);
   }
 
   .border-glow-gold {

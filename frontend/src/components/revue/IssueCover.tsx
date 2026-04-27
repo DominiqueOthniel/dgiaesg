@@ -43,7 +43,7 @@ export function IssueCover({ issue, size = "md", float = false, className }: Iss
         {/* Header: Brand + Issue Info */}
         <div className="flex justify-between items-start border-b border-white/20 pb-4 mb-4">
           <div className="space-y-0.5">
-            <p className="font-black uppercase tracking-[0.2em] text-white opacity-90">COOP-LABEL</p>
+            <p className="font-black uppercase tracking-[0.2em] text-white opacity-90">DGIAESG</p>
             <p className="font-medium uppercase tracking-[0.15em] text-white/70" style={{ fontSize: "0.7em" }}>
               Afrique Durable
             </p>
@@ -104,8 +104,8 @@ export function IssueCover({ issue, size = "md", float = false, className }: Iss
             </p>
           </div>
           <div
-            className="px-3 py-1.5 rounded-lg font-black text-black uppercase tracking-widest"
-            style={{ backgroundColor: accentColors[issue.coverAccent], fontSize: "0.55em" }}
+            className="px-4 py-1.5 rounded-lg font-black text-black uppercase tracking-[0.2em]"
+            style={{ backgroundColor: accentColors[issue.coverAccent], fontSize: "0.65em" }}
           >
             RELEVANCE
           </div>

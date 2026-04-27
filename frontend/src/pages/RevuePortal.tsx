@@ -219,7 +219,7 @@ export default function RevuePortal() {
               </span>
               , chaque mois.
             </motion.h2>
-            <p className="mt-3 text-foreground/70 max-w-2xl mx-auto">
+            <p className="mt-3 text-foreground font-medium max-w-2xl mx-auto">
               Une structure pensée pour décider vite, agir mieux et garder
               une longueur d'avance sur les enjeux ESG du continent.
             </p>
@@ -331,7 +331,7 @@ export default function RevuePortal() {
             />
             <div className="relative">
               <Quote className="w-10 h-10 mx-auto text-[hsl(var(--brand-gold))] mb-6" />
-              <p className="text-xl md:text-2xl font-serif italic text-primary-foreground leading-relaxed max-w-3xl mx-auto">
+              <p className="text-xl md:text-2xl font-serif font-bold italic text-primary-foreground leading-relaxed max-w-3xl mx-auto">
                 « La Revue est devenue notre rendez-vous mensuel pour
                 aligner stratégie et impact. Une lecture indispensable. »
               </p>

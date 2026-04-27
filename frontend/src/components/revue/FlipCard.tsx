@@ -46,13 +46,13 @@ export function FlipCard({ icon: Icon, label, desc, back, index }: FlipCardProps
             {label}
           </h3>
 
-          <p className="text-xs text-black/70 leading-relaxed max-w-[90%] font-medium">
+          <p className="text-xs font-bold leading-relaxed text-white">
             {back}
           </p>
 
           {/* Footer Text */}
-          <div className="mt-auto pt-4 text-[9px] font-black uppercase tracking-[0.22em] text-black/40">
-            COOP-LABEL • REVUE
+          <div className="mt-auto pt-4 text-[9px] font-black uppercase tracking-[0.25em] text-white">
+            DGIAESG • REVUE
           </div>
 
           {/* Subtle background pattern/texture if needed */}
