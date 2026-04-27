@@ -408,7 +408,7 @@ function LabelsPage() {
                       </div>
                     </div>
 
-                    <p className="relative z-10 text-sm text-foreground/75 leading-relaxed line-clamp-3 flex-1 mb-4">
+                    <p className="relative z-10 text-[15px] text-foreground/90 font-medium leading-relaxed line-clamp-3 flex-1 mb-4">
                       {getLocalized(label.description, lang) ||
                         t("labels.page.default_description")}
                     </p>

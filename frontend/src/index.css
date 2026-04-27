@@ -385,20 +385,21 @@
       0 18px 36px -18px hsl(160 40% 10% / 0.22);
   }
 
-  /* Golden pagination */
+  /* Golden pagination — Enhanced Contrast */
   .pagination-gold a,
   .pagination-gold button {
-    color: hsl(var(--brand-gold));
-    border: 1px solid hsl(var(--brand-gold) / 0.4);
-    background: transparent;
+    color: hsl(var(--brand-gold-dark));
+    border: 1px solid hsl(var(--brand-gold) / 0.6);
+    background: white;
     transition: all 0.25s ease;
+    font-weight: 700;
   }
   .pagination-gold a:hover,
   .pagination-gold button:hover {
-    background: hsl(var(--brand-gold) / 0.15);
-    border-color: hsl(var(--brand-gold));
-    box-shadow: 0 0 14px hsl(var(--brand-gold) / 0.45);
-    color: hsl(var(--brand-gold));
+    background: hsl(var(--brand-gold) / 0.1);
+    border-color: hsl(var(--brand-gold-dark));
+    box-shadow: 0 0 10px hsl(var(--brand-gold) / 0.2);
+    color: hsl(var(--brand-gold-dark));
   }
   .pagination-gold [aria-current="page"] {
     background: linear-gradient(135deg, hsl(var(--brand-gold)), hsl(var(--brand-gold-dark)));

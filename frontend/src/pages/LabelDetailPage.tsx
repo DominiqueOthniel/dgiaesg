@@ -281,23 +281,53 @@ function LabelDetailPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {relatedLabels.map((item) => (
-              <Link key={item._id} to={`/labels/${item._id}`} className="group bg-card border border-border rounded-xl p-6 hover-lift">
-                 <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mb-4 group-hover:bg-primary/5 transition-colors">
-                   {item.logoUrl ? (
-                     <img
-                       src={resolveImageUrl(item.logoUrl)}
-                       alt={getLocalized(item.name, lang)}
-                       className="w-full h-full object-contain p-2"
-                       onError={(e) => {
-                         (e.target as HTMLImageElement).src = IMAGE_FALLBACK;
-                       }}
-                     />
-                   ) : (
-                     <Award className="w-6 h-6 text-muted-foreground/30" />
-                   )}
-                 </div>
-                 <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors mb-2">{getLocalized(item.name, lang)}</h3>
-                 <p className="text-xs text-muted-foreground line-clamp-2">{getLocalized(item.description, lang)}</p>
+              <Link
+                key={item._id}
+                to={`/labels/${item._id}`}
+                className="label-card-elevated group block p-6 h-full flex flex-col relative"
+              >
+                {/* Gold corners */}
+                <span className="corner top-2 left-2 border-t-2 border-l-2" />
+                <span className="corner top-2 right-2 border-t-2 border-r-2" />
+                <span className="corner bottom-2 left-2 border-b-2 border-l-2" />
+                <span className="corner bottom-2 right-2 border-b-2 border-r-2" />
+
+                <div className="relative z-10 flex items-start gap-4 mb-4">
+                  <div className="w-14 h-14 shrink-0 rounded-xl bg-secondary border border-brand-gold/40 flex items-center justify-center overflow-hidden p-2 group-hover:border-brand-gold transition-colors">
+                    {item.logoUrl ? (
+                      <img
+                        src={resolveImageUrl(item.logoUrl)}
+                        alt={getLocalized(item.name, lang)}
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = IMAGE_FALLBACK;
+                        }}
+                      />
+                    ) : (
+                      <Award className="w-6 h-6 text-brand-gold/60" />
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1 pt-0.5">
+                    <h3 className="text-sm font-bold text-foreground leading-snug line-clamp-2 group-hover:text-brand-gold-dark transition-colors">
+                      {getLocalized(item.name, lang)}
+                    </h3>
+                    <div className="flex items-center gap-1.5 mt-2">
+                      <ShieldCheck className="w-3 h-3 text-brand-emerald" />
+                      <span className="text-[10px] font-bold text-brand-emerald uppercase tracking-wider">
+                        {i18n.language === "fr" ? "VÉRIFIÉ" : "VERIFIED"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <p className="relative z-10 text-[15px] text-foreground/90 font-medium leading-relaxed line-clamp-3 flex-1 mb-4">
+                  {getLocalized(item.description, lang)}
+                </p>
+
+                <span className="relative z-10 inline-flex items-center gap-1 text-xs font-semibold text-foreground group-hover:text-brand-gold-dark group-hover:gap-2 transition-all mt-auto">
+                  {i18n.language === "fr" ? "Explorer" : "Explore"}{" "}
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </span>
               </Link>
             ))}
           </div>
