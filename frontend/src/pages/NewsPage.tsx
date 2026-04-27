@@ -77,7 +77,7 @@ const FORMATS: {
   {
     value: "breve",
     label: "Brèves",
-    badgeClass: "bg-sky-600 text-white",
+    badgeClass: "bg-[hsl(var(--brand-emerald)/0.8)] text-white",
     readLabel: (_m) => `Flash ${_m} min`,
   },
   {
@@ -96,13 +96,13 @@ const FORMATS: {
   {
     value: "interview",
     label: "Interviews",
-    badgeClass: "bg-violet-600 text-white",
+    badgeClass: "bg-[hsl(var(--brand-gold)/0.9)] text-[hsl(var(--brand-gold-foreground))]",
     readLabel: (_m) => `Entretien ${_m} min`,
   },
   {
     value: "communique",
     label: "Communiqués",
-    badgeClass: "bg-slate-700 text-white",
+    badgeClass: "bg-[hsl(var(--brand-deep))] text-white",
     readLabel: (_m) => `Communiqué`,
   },
 ];

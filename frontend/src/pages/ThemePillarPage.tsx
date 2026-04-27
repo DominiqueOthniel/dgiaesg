@@ -31,14 +31,14 @@ type Article = {
 };
 
 const FORMAT_BADGE: Record<Article["format"], { label: string; cls: string }> = {
-  breve: { label: "Brève", cls: "bg-sky-600 text-white" },
+  breve: { label: "Brève", cls: "bg-[hsl(var(--brand-emerald)/0.8)] text-white" },
   analyse: { label: "Analyse", cls: "bg-[hsl(var(--brand-emerald))] text-white" },
   enquete: {
     label: "Enquête",
     cls: "bg-[hsl(var(--brand-gold))] text-[hsl(var(--brand-gold-foreground))]",
   },
-  interview: { label: "Interview", cls: "bg-violet-600 text-white" },
-  communique: { label: "Communiqué", cls: "bg-slate-700 text-white" },
+  interview: { label: "Interview", cls: "bg-[hsl(var(--brand-gold)/0.9)] text-[hsl(var(--brand-gold-foreground))]" },
+  communique: { label: "Communiqué", cls: "bg-[hsl(var(--brand-deep))] text-white" },
 };
 
 const PILLAR_MOCK: Article[] = [
