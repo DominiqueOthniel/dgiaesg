@@ -1,13 +1,15 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link, useLocation, Outlet, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { X, ShieldCheck, LogOut, ChevronRight, BookOpen, Play, Star, Building2, Newspaper, MapPin, Factory, Database, Info, Users, CalendarDays, PenLine } from "lucide-react";
+import { X, ShieldCheck, LogOut, ChevronRight, BookOpen, Play, Star, Building2, Newspaper, MapPin, Factory, Database, Info, Users, CalendarDays, PenLine, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChatbotWidget } from "./ChatbotWidget";
 
 import { SiteHeader, topNavItems } from "./coop/SiteHeader";
+
+import { Logo } from "./Logo";
 
 const SiteLayout = () => {
   const { t, i18n } = useTranslation();
@@ -30,6 +32,11 @@ const SiteLayout = () => {
       { key: "nav.about", href: "/a-propos", icon: Info },
       { key: "nav.team", href: "/equipe", icon: Users },
       { key: "nav.contribute", href: "/contribuer", icon: PenLine },
+      { midhead: "Légal & Support" },
+      { label: "Publicité & Partenariats", href: "/partenariats", icon: Building2 },
+      { label: "Contact", href: "/contact", icon: Mail },
+      { label: "Mentions légales", href: "/mentions-legales", icon: ShieldCheck },
+      { label: "CGU", href: "/conditions-utilisation", icon: BookOpen },
     ],
     [t, i18n.language],
   );
@@ -81,16 +88,9 @@ const SiteLayout = () => {
               className="fixed top-0 left-0 h-full w-[320px] bg-background border-r border-border z-[70] shadow-2xl flex flex-col"
             >
               <div className="p-6 border-b border-border flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                   <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                      <ShieldCheck className="w-4 h-4 text-primary-foreground" />
-                   </div>
-                   <span className="font-black text-sm uppercase tracking-tighter italic italic">
-                     {t("footer.sidebar_system_menu")}
-                   </span>
-                </div>
+                <Logo className="scale-75 origin-left" />
                 <button onClick={() => setSidebarOpen(false)} className="p-2 hover:bg-muted rounded-lg transition-colors">
-                  <X className="w-5 h-5" />
+                   <X className="w-5 h-5" />
                 </button>
               </div>
 
@@ -111,7 +111,7 @@ const SiteLayout = () => {
                     >
                       <div className="flex items-center gap-3">
                         {item.icon && <item.icon className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" />}
-                        {t(item.key!)}
+                        {item.key ? t(item.key) : item.label}
                       </div>
                       <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                     </Link>
@@ -154,20 +154,10 @@ const SiteLayout = () => {
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
-            <div className="md:col-span-12 lg:col-span-5">
-              <div className="flex items-center gap-3 mb-8 group">
-                <div className="w-12 h-12 bg-brand-gold rounded-2xl flex items-center justify-center shadow-2xl shadow-brand-gold/40">
-                  <ShieldCheck className="w-7 h-7 text-brand-dark" />
-                </div>
-                <div>
-                  <span className="text-xl md:text-2xl font-black italic block text-white uppercase tracking-tight">
-                    DGIA ESG
-                  </span>
-                  <span className="text-[10px] font-bold text-brand-gold uppercase tracking-[0.3em]">
-                    {t("footer.tagline_short")}
-                  </span>
-                </div>
-              </div>
+            <div className="md:col-span-12 lg:col-span-3">
+              <Link to="/" className="inline-block mb-8 group">
+                <Logo variant="footer" />
+              </Link>
               <p className="text-base text-white/85 max-w-sm leading-relaxed font-medium">
                 {t("footer.tagline_body")}
               </p>
@@ -207,6 +197,21 @@ const SiteLayout = () => {
               </div>
             </div>
 
+            {/* Services column — Partenariats & Contact */}
+            <div className="md:col-span-4 lg:col-span-2">
+              <h4 className="text-[11px] font-black mb-8 uppercase tracking-[0.2em] text-brand-gold">
+                Services
+              </h4>
+              <div className="flex flex-col gap-4">
+                <Link to="/partenariats" className="text-sm font-bold text-white/80 hover:text-brand-gold transition-colors">
+                  Publicité & Partenariats
+                </Link>
+                <Link to="/contact" className="text-sm font-bold text-white/80 hover:text-brand-gold transition-colors">
+                  Contact
+                </Link>
+              </div>
+            </div>
+
             <div className="md:col-span-4 lg:col-span-3">
               <h4 className="text-[11px] font-black mb-8 uppercase tracking-[0.2em] text-brand-gold">
                 {t("footer.column_newsletter")}
@@ -217,7 +222,6 @@ const SiteLayout = () => {
               <form 
                 onSubmit={(e) => {
                   e.preventDefault();
-                  // Existing submission logic elsewhere or can be added here
                 }}
                 className="relative"
               >
@@ -240,12 +244,19 @@ const SiteLayout = () => {
             <p className="text-[10px] font-bold text-white/60 uppercase tracking-[0.3em]">
               © {new Date().getFullYear()} DGIAESG — {t("footer.copyright_suffix")}
             </p>
-            <Link
-              to="/a-propos"
-              className="text-xs font-bold text-white/70 hover:text-brand-gold transition-colors"
-            >
-              {t("nav.about")}
-            </Link>
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 justify-center">
+              <Link to="/a-propos" className="text-xs font-bold text-white/70 hover:text-brand-gold transition-colors">
+                {t("nav.about")}
+              </Link>
+              <span className="w-1 h-1 rounded-full bg-white/20" aria-hidden />
+              <Link to="/mentions-legales" className="text-xs font-bold text-white/70 hover:text-brand-gold transition-colors">
+                Mentions légales
+              </Link>
+              <span className="w-1 h-1 rounded-full bg-white/20" aria-hidden />
+              <Link to="/conditions-utilisation" className="text-xs font-bold text-white/70 hover:text-brand-gold transition-colors">
+                CGU
+              </Link>
+            </div>
           </div>
         </div>
       </footer>
