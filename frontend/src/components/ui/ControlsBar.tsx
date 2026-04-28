@@ -5,6 +5,8 @@ import type { HTMLAttributes, ReactNode } from "react";
 interface ControlsBarProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
   footer?: ReactNode;
+  /** Hide the thin top hairline (can look like a stray white line). */
+  hideHairline?: boolean;
 }
 
 /**
@@ -18,6 +20,7 @@ interface ControlsBarProps extends HTMLAttributes<HTMLDivElement> {
 export function ControlsBar({
   children,
   footer,
+  hideHairline = false,
   className,
   ...rest
 }: ControlsBarProps) {
@@ -43,7 +46,10 @@ export function ControlsBar({
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-px animate-hairline"
+        className={cn(
+          "pointer-events-none absolute inset-x-0 top-0 h-px animate-hairline",
+          hideHairline && "hidden"
+        )}
         style={{
           background:
             "linear-gradient(90deg, transparent 0%, hsl(var(--brand-gold) / 0.15) 25%, hsl(var(--brand-gold) / 0.8) 50%, hsl(var(--brand-gold) / 0.15) 75%, transparent 100%)",

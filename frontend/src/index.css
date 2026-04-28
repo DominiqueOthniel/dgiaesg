@@ -610,13 +610,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background:
-      linear-gradient(180deg, hsl(var(--foreground) / 0.03), hsl(var(--foreground) / 0.01)),
-      repeating-linear-gradient(
-        135deg,
-        hsl(var(--foreground) / 0.02) 0 1px,
-        transparent 1px 16px
-      );
+    background: linear-gradient(180deg, hsl(var(--foreground) / 0.02), hsl(var(--foreground) / 0));
     pointer-events: none;
   }
 
@@ -689,12 +683,13 @@
   }
 
   .border-flow-gold-emerald {
+    /* Use theme tokens (avoid hard-coded colors that clash). */
     background: linear-gradient(
       90deg,
-      #FFBF00 0%,
-      #10b981 33%,
-      #FFBF00 66%,
-      #10b981 100%
+      hsl(var(--brand-gold) / 0.95) 0%,
+      hsl(var(--brand-emerald) / 0.85) 33%,
+      hsl(var(--brand-gold) / 0.95) 66%,
+      hsl(var(--brand-emerald) / 0.85) 100%
     );
     background-size: 300% 100%;
     animation: flow-border 6s linear infinite;

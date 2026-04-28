@@ -1,0 +1,344 @@
+﻿import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { motion } from "framer-motion";
+import { Search, X, SlidersHorizontal, ArrowRight, Tag, Calendar } from "lucide-react";
+import { HubSubpageShell } from "@/components/hub/HubCinematicHero";
+import { ControlsBar } from "@/components/ui/ControlsBar";
+import { cn, getLocalized } from "@/lib/utils";
+import {
+  CONTRIBUTIONS,
+  type Contribution,
+  type ContributionCategory,
+  type ContributionFormat,
+} from "@/lib/contributions-mock-data";
+
+type SortKey = "recent" | "readingTime";
+
+function uniq<T>(xs: T[]) {
+  return Array.from(new Set(xs));
+}
+
+function ContributionCard({ item, idx, lang }: { item: Contribution; idx: number; lang: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ delay: idx * 0.04, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <Link
+        to={`/contributions/${item.slug}`}
+        className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/70 bg-card p-6 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-xl hover:border-primary/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        {/* Soft halo (inspired by Ads page) */}
+        <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-primary/10 blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+        <div className="pointer-events-none absolute -left-12 -bottom-12 h-44 w-44 rounded-full bg-brand-gold/10 blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          {item.featured ? (
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-gold/40 bg-brand-gold/15 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-brand-gold-dark">
+              <Tag className="h-3 w-3" /> À la une
+            </span>
+          ) : null}
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/30 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-foreground/80">
+            {item.format}
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/30 px-2.5 py-1 text-[10px] font-bold tracking-wider text-foreground/70">
+            <Calendar className="h-3 w-3" />
+            {new Date(item.publishedAt).toLocaleDateString(lang, {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            })}
+          </span>
+        </div>
+
+        <h3 className="text-base font-extrabold leading-snug tracking-tight text-foreground group-hover:text-primary line-clamp-2">
+          {getLocalized(item.title, lang)}
+        </h3>
+        <p className="mt-2 text-sm leading-relaxed text-foreground/75 line-clamp-3">
+          {getLocalized(item.excerpt, lang)}
+        </p>
+
+        <div className="mt-4 flex items-center justify-between gap-3 border-t border-border/50 pt-3">
+          <div className="min-w-0">
+            <p className="text-xs font-bold text-foreground truncate">{item.authorName}</p>
+            <p className="text-xs text-foreground/70 truncate">
+              {item.authorOrg ? `${item.authorOrg} · ` : ""}
+              {item.category}
+            </p>
+          </div>
+          <div className="inline-flex items-center gap-2 text-[11px] font-bold text-foreground/70">
+            {item.readingMinutes} min{" "}
+            <ArrowRight className="h-4 w-4 text-primary opacity-0 transition-all duration-500 group-hover:translate-x-1 group-hover:opacity-100" />
+          </div>
+        </div>
+      </Link>
+    </motion.div>
+  );
+}
+
+export default function ContributionsPage() {
+  const { i18n, t } = useTranslation();
+  const lang = i18n.language;
+
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState<ContributionCategory | "all">("all");
+  const [format, setFormat] = useState<ContributionFormat | "all">("all");
+  const [tag, setTag] = useState<string | "all">("all");
+  const [featuredOnly, setFeaturedOnly] = useState(false);
+  const [sort, setSort] = useState<SortKey>("recent");
+
+  const categories = useMemo(
+    () => ["all" as const, ...uniq(CONTRIBUTIONS.map((c) => c.category))],
+    []
+  );
+  const formats = useMemo(() => ["all" as const, ...uniq(CONTRIBUTIONS.map((c) => c.format))], []);
+  const tags = useMemo(
+    () => [
+      "all" as const,
+      ...uniq(
+        CONTRIBUTIONS.flatMap((c) => c.tags)
+          .map((x) => x.trim())
+          .filter(Boolean)
+      ),
+    ],
+    []
+  );
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+
+    const base = CONTRIBUTIONS.filter((c) => {
+      const matchesQ =
+        !q ||
+        getLocalized(c.title, lang).toLowerCase().includes(q) ||
+        getLocalized(c.excerpt, lang).toLowerCase().includes(q) ||
+        c.authorName.toLowerCase().includes(q) ||
+        (c.authorOrg || "").toLowerCase().includes(q) ||
+        c.tags.some((tg) => tg.toLowerCase().includes(q));
+
+      const matchesCategory = category === "all" || c.category === category;
+      const matchesFormat = format === "all" || c.format === format;
+      const matchesTag = tag === "all" || c.tags.includes(tag);
+      const matchesFeatured = !featuredOnly || Boolean(c.featured);
+
+      return matchesQ && matchesCategory && matchesFormat && matchesTag && matchesFeatured;
+    });
+
+    const sorted = [...base].sort((a, b) => {
+      if (sort === "readingTime") return a.readingMinutes - b.readingMinutes;
+      return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+    });
+
+    // featured first (stable)
+    return sorted.sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)));
+  }, [category, featuredOnly, format, lang, query, sort, tag]);
+
+  const clear = () => {
+    setQuery("");
+    setCategory("all");
+    setFormat("all");
+    setTag("all");
+    setFeaturedOnly(false);
+    setSort("recent");
+  };
+
+  const hasActiveFilters =
+    Boolean(query) ||
+    category !== "all" ||
+    format !== "all" ||
+    tag !== "all" ||
+    featuredOnly ||
+    sort !== "recent";
+
+  return (
+    <HubSubpageShell
+      badgeIcon={SlidersHorizontal}
+      badgeLabel={t("pages.contributions.badge")}
+      sectionsKicker={t("pages.contributions.sections_kicker")}
+      titleLead={t("pages.contributions.hero_title_lead")}
+      titleBrand={t("pages.contributions.hero_title_brand")}
+      subtitle={t("pages.contributions.hero_subtitle")}
+      heroFooter={
+        <div className="flex flex-wrap gap-2">
+          {[
+            { value: CONTRIBUTIONS.length.toString(), label: t("pages.contributions.stats_total") },
+            {
+              value: uniq(CONTRIBUTIONS.map((c) => c.category)).length.toString(),
+              label: t("pages.contributions.stats_categories"),
+            },
+            { value: "5 j.", label: t("pages.contributions.stats_review") },
+          ].map((c) => (
+            <div
+              key={c.label}
+              className="inline-flex items-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-4 py-2 backdrop-blur-sm"
+            >
+              <span className="text-base font-black text-brand-gold tabular-nums">{c.value}</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-primary-foreground/60">
+                {c.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      }
+      contentMaxWidthClass="max-w-7xl"
+    >
+      <div className="mx-auto max-w-6xl">
+        <ControlsBar
+          hideHairline
+          className="!border-border/60"
+          footer={
+            <>
+              <div className="flex min-w-0 items-center gap-2.5 text-xs">
+                <span className="inline-flex h-7 min-w-7 items-center justify-center rounded-full border border-primary/20 bg-primary/10 px-2 text-xs font-black tabular-nums text-primary">
+                  {filtered.length}
+                </span>
+                <span className="font-semibold text-foreground/75">{t("pages.contributions.results")}</span>
+              </div>
+              {hasActiveFilters && (
+                <button
+                  type="button"
+                  onClick={clear}
+                  className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-primary hover:underline"
+                >
+                  <X className="h-3 w-3" /> {t("common.reset_filters")}
+                </button>
+              )}
+            </>
+          }
+        >
+          {/* Search */}
+          <div className="group relative flex-1">
+            <div className="relative flex h-12 items-center gap-3 rounded-2xl border border-border bg-card px-4 shadow-sm transition-all focus-within:border-primary/45 focus-within:ring-2 focus-within:ring-primary/10">
+              <Search className="h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
+              <input
+                type="text"
+                placeholder={t("pages.contributions.search_placeholder")}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none"
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => setQuery("")}
+                  className="rounded-full p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Filters */}
+          <div className="flex flex-wrap items-center gap-2">
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value as any)}
+              className="h-12 rounded-2xl border border-border bg-card px-4 text-[11px] font-bold uppercase tracking-[0.16em] text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/10"
+              aria-label={t("pages.contributions.filter_category")}
+            >
+              {categories.map((c) => (
+                <option key={c} value={c}>
+                  {c === "all" ? t("common.all") : c}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={format}
+              onChange={(e) => setFormat(e.target.value as any)}
+              className="h-12 rounded-2xl border border-border bg-card px-4 text-[11px] font-bold uppercase tracking-[0.16em] text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/10"
+              aria-label={t("pages.contributions.filter_format")}
+            >
+              {formats.map((f) => (
+                <option key={f} value={f}>
+                  {f === "all" ? t("common.all") : f}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={tag}
+              onChange={(e) => setTag(e.target.value)}
+              className="h-12 rounded-2xl border border-border bg-card px-4 text-[11px] font-bold uppercase tracking-[0.16em] text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/10"
+              aria-label={t("pages.contributions.filter_tag")}
+            >
+              {tags.map((tg) => (
+                <option key={tg} value={tg}>
+                  {tg === "all" ? t("common.all") : tg}
+                </option>
+              ))}
+            </select>
+
+            <button
+              type="button"
+              onClick={() => setFeaturedOnly((v) => !v)}
+              className={cn(
+                "inline-flex h-12 items-center gap-2 rounded-2xl px-4 text-[11px] font-bold uppercase tracking-[0.16em] transition-all",
+                featuredOnly
+                  ? "border border-brand-gold/35 bg-brand-gold/15 text-brand-gold-dark shadow-sm"
+                  : "border border-border bg-card text-foreground shadow-sm hover:border-brand-gold/30"
+              )}
+              aria-pressed={featuredOnly}
+            >
+              <Tag className="h-4 w-4" />
+              {t("pages.contributions.filter_featured")}
+            </button>
+          </div>
+
+          {/* Sort */}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setSort("recent")}
+              className={cn(
+                "inline-flex h-12 items-center gap-2 rounded-2xl px-4 text-[11px] font-bold uppercase tracking-[0.16em] transition-all",
+                sort === "recent"
+                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                  : "border border-border bg-card text-foreground shadow-sm hover:border-primary/40 hover:text-primary"
+              )}
+            >
+              {t("pages.contributions.sort_recent")}
+            </button>
+            <button
+              type="button"
+              onClick={() => setSort("readingTime")}
+              className={cn(
+                "inline-flex h-12 items-center gap-2 rounded-2xl px-4 text-[11px] font-bold uppercase tracking-[0.16em] transition-all",
+                sort === "readingTime"
+                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                  : "border border-border bg-card text-foreground shadow-sm hover:border-primary/40 hover:text-primary"
+              )}
+            >
+              {t("pages.contributions.sort_reading")}
+            </button>
+          </div>
+        </ControlsBar>
+
+        <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2">
+          {filtered.length > 0 ? (
+            filtered.map((c, idx) => <ContributionCard key={c.id} item={c} idx={idx} lang={lang} />)
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="col-span-full flex flex-col items-center justify-center rounded-3xl border border-dashed border-border/70 py-24 text-center"
+            >
+              <p className="text-xl font-black text-foreground">{t("common.no_results")}</p>
+              <p className="mt-2 text-base text-foreground/75">{t("pages.contributions.no_results_hint")}</p>
+              <button
+                onClick={clear}
+                className="mt-6 inline-flex items-center gap-2 rounded-2xl border border-border px-4 py-2 text-xs font-black uppercase tracking-wider text-foreground transition-all hover:border-primary/40"
+              >
+                <X className="h-3.5 w-3.5" /> {t("common.reset_filters")}
+              </button>
+            </motion.div>
+          )}
+        </div>
+      </div>
+    </HubSubpageShell>
+  );
+}

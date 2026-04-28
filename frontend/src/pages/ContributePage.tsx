@@ -158,7 +158,7 @@ function FormatCard({ fmt, idx }: { fmt: typeof FORMAT_CARDS[number]; idx: numbe
         <Icon className="h-5 w-5" />
       </div>
       <h3 className="mb-1 text-sm font-extrabold text-foreground">{fmt.label}</h3>
-      <p className="mb-3 text-xs leading-relaxed text-muted-foreground">{fmt.detail}</p>
+      <p className="mb-3 text-sm leading-relaxed text-foreground/75">{fmt.detail}</p>
       <div className={cn("inline-flex items-center gap-1.5 rounded-xl border px-2.5 py-1 text-[10px] font-black", c.text, c.bg, c.border)}>
         <FileText className="h-3 w-3" /> {fmt.words}
       </div>
@@ -175,9 +175,7 @@ function ProcessStep({ step, idx, isLast }: { step: typeof PROCESS_STEPS[number]
   return (
     <div ref={ref} className="relative flex gap-4">
       {/* connector */}
-      {!isLast && (
-        <div className="absolute left-5 top-10 h-full w-px bg-gradient-to-b from-border/60 to-transparent" />
-      )}
+      {/* Removed vertical connector line (was perceived as UI artifact). */}
       <motion.div
         initial={{ scale: 0, opacity: 0 }}
         animate={inView ? { scale: 1, opacity: 1 } : {}}
@@ -196,7 +194,7 @@ function ProcessStep({ step, idx, isLast }: { step: typeof PROCESS_STEPS[number]
           <span className={cn("text-[10px] font-black", c.text)}>{step.step}</span>
           <h4 className="text-sm font-extrabold text-foreground">{step.label}</h4>
         </div>
-        <p className="text-xs leading-relaxed text-muted-foreground">{step.desc}</p>
+        <p className="text-sm leading-relaxed text-foreground/75">{step.desc}</p>
       </motion.div>
     </div>
   );
@@ -216,7 +214,7 @@ function ContributionCard({ c: contrib, idx }: { c: typeof RECENT_CONTRIBUTIONS[
         {contrib.type}
       </div>
       <p className="mb-2 text-sm font-extrabold leading-snug text-foreground">{contrib.title}</p>
-      <p className="text-[11px] text-muted-foreground">{contrib.author} · {contrib.org}</p>
+      <p className="text-xs text-foreground/70">{contrib.author} · {contrib.org}</p>
     </motion.div>
   );
 }
@@ -426,7 +424,7 @@ export default function ContributePage() {
               <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-brand-gold/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-brand-gold-dark">
                 <Star className="h-3 w-3" /> Pourquoi contribuer ?
               </span>
-              <p className="text-sm leading-relaxed text-muted-foreground">{t("pages.contribute.why_body")}</p>
+              <p className="text-base leading-relaxed text-foreground/75">{t("pages.contribute.why_body")}</p>
               <div className="mt-4 space-y-2">
                 {["Visibilité auprès de 48 000 lecteurs", "Crédit auteur complet", "Diffusion multi-canal", "Archivage institutionnel"].map((b) => (
                   <div key={b} className="flex items-center gap-2 text-xs text-foreground">

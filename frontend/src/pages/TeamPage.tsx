@@ -292,6 +292,7 @@ export default function TeamPage() {
       sectionsKicker={t("pages.team.sections_kicker")}
       titleLead={t("pages.team.hero_title_lead")}
       titleBrand={t("pages.team.hero_title_brand")}
+      singleLineTitle
       subtitle={t("pages.team.hero_subtitle")}
       beforeBadge={
         <Link

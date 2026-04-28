@@ -54,6 +54,8 @@ const ThemePillarPage = lazy(() => import("./pages/ThemePillarPage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
 const TeamPage = lazy(() => import("./pages/TeamPage"));
 const ContributePage = lazy(() => import("./pages/ContributePage"));
+const ContributionsPage = lazy(() => import("./pages/ContributionsPage"));
+const ContributionDetailPage = lazy(() => import("./pages/ContributionDetailPage"));
 
 // Secondary pages (legal & partnerships)
 const PartenariatsPage = lazy(() => import("./pages/PartenariatsPage"));
@@ -125,6 +127,8 @@ function App() {
             <Route path="a-propos" element={<AboutPage />} />
             <Route path="equipe" element={<TeamPage />} />
             <Route path="contribuer" element={<ContributePage />} />
+            <Route path="contributions" element={<ContributionsPage />} />
+            <Route path="contributions/:slug" element={<ContributionDetailPage />} />
             <Route path="pricing" element={<PricingPage />} />
 
             {/* Secondary pages */}

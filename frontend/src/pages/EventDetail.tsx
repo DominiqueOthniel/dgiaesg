@@ -32,12 +32,54 @@ import { HubSubpageShell } from "@/components/hub/HubCinematicHero";
 /* ─── Type config (mirrors Events.tsx) ──────────────────────── */
 
 const TYPE_META: Record<IEvent["type"], { label: string; icon: React.ElementType; color: string; bg: string; border: string; bar: string }> = {
-  conference: { label: "Conférence", icon: Mic2, color: "text-sky-600 dark:text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/25", bar: "from-sky-500 to-blue-600" },
-  workshop: { label: "Atelier", icon: LayoutGrid, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/25", bar: "from-emerald-500 to-teal-600" },
-  training: { label: "Formation", icon: GraduationCap, color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/25", bar: "from-violet-500 to-purple-600" },
-  certification: { label: "Certification", icon: ShieldCheck, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/25", bar: "from-amber-500 to-orange-500" },
-  networking: { label: "Networking", icon: Network, color: "text-pink-600 dark:text-pink-400", bg: "bg-pink-500/10", border: "border-pink-500/25", bar: "from-pink-500 to-rose-500" },
-  other: { label: "Autre", icon: Calendar, color: "text-muted-foreground", bg: "bg-muted", border: "border-border", bar: "from-muted-foreground to-muted-foreground/60" },
+  conference: {
+    label: "Conférence",
+    icon: Mic2,
+    color: "text-[hsl(var(--brand-emerald))]",
+    bg: "bg-[hsl(var(--brand-emerald)/0.10)]",
+    border: "border-[hsl(var(--brand-emerald)/0.25)]",
+    bar: "bg-[hsl(var(--brand-emerald))]",
+  },
+  workshop: {
+    label: "Atelier",
+    icon: LayoutGrid,
+    color: "text-[hsl(var(--primary))]",
+    bg: "bg-[hsl(var(--primary)/0.10)]",
+    border: "border-[hsl(var(--primary)/0.22)]",
+    bar: "bg-[hsl(var(--primary))]",
+  },
+  training: {
+    label: "Formation",
+    icon: GraduationCap,
+    color: "text-[hsl(var(--brand-gold-dark))]",
+    bg: "bg-[hsl(var(--brand-gold)/0.14)]",
+    border: "border-[hsl(var(--brand-gold)/0.35)]",
+    bar: "bg-[hsl(var(--brand-gold))]",
+  },
+  certification: {
+    label: "Certification",
+    icon: ShieldCheck,
+    color: "text-[hsl(var(--brand-gold-dark))]",
+    bg: "bg-[hsl(var(--brand-gold)/0.14)]",
+    border: "border-[hsl(var(--brand-gold)/0.35)]",
+    bar: "bg-[hsl(var(--brand-gold))]",
+  },
+  networking: {
+    label: "Networking",
+    icon: Network,
+    color: "text-[hsl(var(--brand-emerald))]",
+    bg: "bg-[hsl(var(--brand-emerald)/0.10)]",
+    border: "border-[hsl(var(--brand-emerald)/0.25)]",
+    bar: "bg-[hsl(var(--brand-emerald))]",
+  },
+  other: {
+    label: "Autre",
+    icon: Calendar,
+    color: "text-muted-foreground",
+    bg: "bg-muted",
+    border: "border-border",
+    bar: "bg-muted-foreground/60",
+  },
 };
 
 /* ─── Helpers ────────────────────────────────────────────────── */
@@ -105,25 +147,24 @@ function ShareButton() {
 }
 
 function AgendaTimeline({ agenda, lang }: { agenda: NonNullable<IEvent["agenda"]>; lang: string }) {
-  const colors = ["emerald", "sky", "violet", "amber", "pink", "teal"];
+  // Keep agenda markers theme-aligned (few colors)
+  const colors = ["emerald", "gold", "primary"];
   return (
     <div className="space-y-0 divide-y divide-border/40">
       {agenda.map((item, idx) => {
         const color = colors[idx % colors.length];
         const dotColor =
-          color === "emerald" ? "bg-emerald-500"
-          : color === "sky" ? "bg-sky-500"
-          : color === "violet" ? "bg-violet-500"
-          : color === "amber" ? "bg-amber-500"
-          : color === "pink" ? "bg-pink-500"
-          : "bg-teal-500";
+          color === "emerald"
+            ? "bg-[hsl(var(--brand-emerald))]"
+            : color === "gold"
+            ? "bg-[hsl(var(--brand-gold))]"
+            : "bg-[hsl(var(--primary))]";
         const timeColor =
-          color === "emerald" ? "text-emerald-600 dark:text-emerald-400"
-          : color === "sky" ? "text-sky-600 dark:text-sky-400"
-          : color === "violet" ? "text-violet-600 dark:text-violet-400"
-          : color === "amber" ? "text-amber-600 dark:text-amber-400"
-          : color === "pink" ? "text-pink-600 dark:text-pink-400"
-          : "text-teal-600 dark:text-teal-400";
+          color === "emerald"
+            ? "text-[hsl(var(--brand-emerald))]"
+            : color === "gold"
+            ? "text-[hsl(var(--brand-gold-dark))]"
+            : "text-[hsl(var(--primary))]";
 
         return (
           <motion.div

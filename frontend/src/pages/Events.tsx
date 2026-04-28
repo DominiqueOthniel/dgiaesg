@@ -34,42 +34,43 @@ const TYPE_META: Record<
   conference: {
     label: "Conférence",
     icon: Mic2,
-    color: "text-sky-600 dark:text-sky-400",
-    bg: "bg-sky-500/10",
-    border: "border-sky-500/25",
-    bar: "from-sky-500 to-blue-600",
+    // Theme-aligned palette (few colors only)
+    color: "text-[hsl(var(--brand-emerald))]",
+    bg: "bg-[hsl(var(--brand-emerald)/0.10)]",
+    border: "border-[hsl(var(--brand-emerald)/0.25)]",
+    bar: "bg-[hsl(var(--brand-emerald))]",
   },
   workshop: {
     label: "Atelier",
     icon: LayoutGrid,
-    color: "text-emerald-600 dark:text-emerald-400",
-    bg: "bg-emerald-500/10",
-    border: "border-emerald-500/25",
-    bar: "from-emerald-500 to-teal-600",
+    color: "text-[hsl(var(--primary))]",
+    bg: "bg-[hsl(var(--primary)/0.10)]",
+    border: "border-[hsl(var(--primary)/0.22)]",
+    bar: "bg-[hsl(var(--primary))]",
   },
   training: {
     label: "Formation",
     icon: GraduationCap,
-    color: "text-violet-600 dark:text-violet-400",
-    bg: "bg-violet-500/10",
-    border: "border-violet-500/25",
-    bar: "from-violet-500 to-purple-600",
+    color: "text-[hsl(var(--brand-gold-dark))]",
+    bg: "bg-[hsl(var(--brand-gold)/0.14)]",
+    border: "border-[hsl(var(--brand-gold)/0.35)]",
+    bar: "bg-[hsl(var(--brand-gold))]",
   },
   certification: {
     label: "Certification",
     icon: ShieldCheck,
-    color: "text-amber-600 dark:text-amber-400",
-    bg: "bg-amber-500/10",
-    border: "border-amber-500/25",
-    bar: "from-amber-500 to-orange-500",
+    color: "text-[hsl(var(--brand-gold-dark))]",
+    bg: "bg-[hsl(var(--brand-gold)/0.14)]",
+    border: "border-[hsl(var(--brand-gold)/0.35)]",
+    bar: "bg-[hsl(var(--brand-gold))]",
   },
   networking: {
     label: "Networking",
     icon: Network,
-    color: "text-pink-600 dark:text-pink-400",
-    bg: "bg-pink-500/10",
-    border: "border-pink-500/25",
-    bar: "from-pink-500 to-rose-500",
+    color: "text-[hsl(var(--brand-emerald))]",
+    bg: "bg-[hsl(var(--brand-emerald)/0.10)]",
+    border: "border-[hsl(var(--brand-emerald)/0.25)]",
+    bar: "bg-[hsl(var(--brand-emerald))]",
   },
   other: {
     label: "Autre",
@@ -77,7 +78,7 @@ const TYPE_META: Record<
     color: "text-muted-foreground",
     bg: "bg-muted",
     border: "border-border",
-    bar: "from-muted-foreground to-muted-foreground/60",
+    bar: "bg-muted-foreground/60",
   },
 };
 
@@ -227,7 +228,7 @@ function FeaturedEventCard({ event, lang }: { event: IEvent; lang: string }) {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_hsl(var(--brand-gold)/0.13),transparent_50%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_hsl(var(--brand-emerald)/0.09),transparent_55%)]" />
       {/* Featured color bar */}
-      <div className={cn("h-1.5 w-full bg-gradient-to-r", meta.bar)} />
+      <div className={cn("h-1.5 w-full opacity-85", meta.bar)} />
 
       <div className="relative grid grid-cols-1 gap-6 p-6 md:grid-cols-[auto_1fr_auto] md:items-center md:gap-8 md:p-8 lg:p-10">
         {/* Date block */}
@@ -306,7 +307,7 @@ function EventCard({ event, idx, lang }: { event: IEvent; idx: number; lang: str
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_hsl(var(--brand-gold)/0.05),transparent_55%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
         {/* Type bar */}
-        <div className={cn("h-1 w-full bg-gradient-to-r opacity-70", meta.bar)} />
+        <div className={cn("h-1 w-full opacity-75", meta.bar)} />
 
         {/* Image or placeholder */}
         {event.imageUrl ? (

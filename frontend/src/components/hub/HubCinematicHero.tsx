@@ -44,6 +44,7 @@ export function HubCinematicHero({
   useSparklesInBadge = false,
   compact = false,
   beforeBadge,
+  singleLineTitle = false,
 }: {
   badgeIcon: LucideIcon;
   badgeLabel: string;
@@ -61,6 +62,8 @@ export function HubCinematicHero({
   compact?: boolean;
   /** Lien retour ou métadonnées au-dessus du badge. */
   beforeBadge?: ReactNode;
+  /** Force titleLead + titleBrand on one line (e.g. "Notre équipe"). */
+  singleLineTitle?: boolean;
 }) {
   const reduce = useReducedMotion();
   const heroRef = useRef<HTMLElement | null>(null);
@@ -158,14 +161,21 @@ export function HubCinematicHero({
               transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
               className={cn(
                 "font-black tracking-[-0.04em] leading-[1.02] text-primary-foreground",
+                singleLineTitle && "whitespace-nowrap",
                 compact
                   ? "text-2xl sm:text-3xl md:text-5xl lg:text-6xl"
                   : "text-3xl sm:text-4xl md:text-6xl lg:text-7xl"
               )}
             >
-              <span className="block text-primary-foreground/90">{titleLead}</span>
+              <span className={cn(singleLineTitle ? "inline text-primary-foreground/90" : "block text-primary-foreground/90")}>
+                {titleLead}
+                {singleLineTitle ? " " : null}
+              </span>
               <span
-                className="block mt-1 md:mt-2 bg-clip-text text-transparent [background-size:200%_auto] animate-gradient-pan"
+                className={cn(
+                  "bg-clip-text text-transparent [background-size:200%_auto] animate-gradient-pan",
+                  singleLineTitle ? "inline" : "block mt-1 md:mt-2"
+                )}
                 style={{
                   backgroundImage:
                     "linear-gradient(100deg, hsl(var(--brand-gold)), hsl(45 100% 85%), hsl(var(--brand-emerald)), hsl(var(--brand-gold)))",
@@ -264,6 +274,8 @@ type HubSubpageShellProps = {
   children: ReactNode;
   /** Classes pour le conteneur du corps (ex. max-w-4xl). */
   contentMaxWidthClass?: string;
+  /** Force titleLead + titleBrand on one line (e.g. "Notre équipe"). */
+  singleLineTitle?: boolean;
 };
 
 /** Même coque visuelle que les hubs : héro cinématique compact + bandeau gradient + contenu. */
@@ -278,6 +290,7 @@ export function HubSubpageShell({
   heroFooter,
   children,
   contentMaxWidthClass = "max-w-7xl",
+  singleLineTitle,
 }: HubSubpageShellProps) {
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-background">
@@ -291,11 +304,11 @@ export function HubSubpageShell({
         titleBrand={titleBrand}
         subtitle={subtitle}
         beforeBadge={beforeBadge}
+        singleLineTitle={singleLineTitle}
       >
         {heroFooter}
       </HubCinematicHero>
-      <div className="gradient-flow-bg relative mt-2">
-        <div className="pointer-events-none absolute left-0 top-0 h-40 w-full bg-gradient-to-b from-primary to-transparent opacity-30" />
+      <div className="gradient-flow-bg relative">
         <div
           className={cn(
             "relative z-10 mx-auto px-4 py-10 sm:px-6 md:py-14 lg:px-8",
@@ -333,17 +346,16 @@ type HubBentoProps = {
 export function HubBentoLink({ to, id, variant, className, children }: HubBentoProps) {
   if (variant === "flagship") {
     return (
-      <div className={cn("p-[1px] rounded-3xl border-flow-gold-emerald shadow-2xl shadow-black/10 h-full", className)}>
-        <Link
-          to={to}
-          id={id}
-          className={cn(
-            "golden-glow relative block h-full min-h-full rounded-[calc(1.5rem-1px)] border-border/90 bg-card p-6 overflow-hidden shadow-[0_30px_72px_-30px_rgba(13,77,51,0.58)]"
-          )}
-        >
-          {children}
-        </Link>
-      </div>
+      <Link
+        to={to}
+        id={id}
+        className={cn(
+          "group relative block h-full min-h-full overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          className
+        )}
+      >
+        <div className="relative text-foreground">{children}</div>
+      </Link>
     );
   }
   if (variant === "offset") {
@@ -352,12 +364,11 @@ export function HubBentoLink({ to, id, variant, className, children }: HubBentoP
         to={to}
         id={id}
         className={cn(
-          "emerald-glow group relative block h-full min-h-full rounded-3xl border border-border/80 bg-gradient-to-br from-card via-card to-emerald-950/5 p-6 overflow-hidden shadow-[0_30px_72px_-30px_rgba(13,77,51,0.5)] transition-transform duration-500 md:-rotate-1 md:hover:rotate-0",
+          "group relative block h-full min-h-full overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
           className
         )}
       >
-        <div className="pointer-events-none absolute -left-6 top-1/2 h-32 w-32 -translate-y-1/2 rounded-full bg-emerald-500/10 blur-3xl" />
-        <div className="relative">{children}</div>
+        <div className="relative text-foreground">{children}</div>
       </Link>
     );
   }
@@ -366,12 +377,11 @@ export function HubBentoLink({ to, id, variant, className, children }: HubBentoP
       to={to}
       id={id}
       className={cn(
-        "relative block h-full min-h-full overflow-hidden rounded-3xl border border-dashed border-primary/30 bg-card/60 p-6 shadow-[0_24px_58px_-26px_rgba(13,77,51,0.45)] backdrop-blur-sm transition-all hover:border-primary/45 hover:bg-card/80",
+        "group relative block h-full min-h-full overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         className
       )}
     >
-      <div className="pointer-events-none absolute inset-0 opacity-[0.3] [background:repeating-linear-gradient(-45deg,hsl(var(--border)/0.45)_0_1px,transparent_1px_10px)]" />
-      <div className="relative z-[1]">{children}</div>
+      <div className="relative z-[1] text-foreground">{children}</div>
     </Link>
   );
 }
