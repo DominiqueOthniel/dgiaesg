@@ -438,7 +438,7 @@ const resources = {
                     hero_title_lead: "Appel à",
                     hero_title_brand: "contributions",
                     hero_subtitle: "Guide pour experts et praticiens — partagez vos analyses, études de cas et retours terrain sur l'ESG en Afrique.",
-                    back_about: "Retour à À propos",
+                    back_about: "Retour à À propos",\n                    view_contributions: "Consulter les contributions",
                     why_title: "Pourquoi contribuer ?",
                     why_body: "DGIAESG est une plateforme collaborative. Vos expertises enrichissent les décideurs, les investisseurs et les praticiens du continent. Chaque contribution est vérifiée par notre équipe éditoriale et créditée à l'auteur.",
                     formats_title: "Formats acceptés",
@@ -502,7 +502,7 @@ const resources = {
                     hero_title_brand: "équipe",
                     hero_subtitle: "Portraits des journalistes et experts.",
                     hero_nav_chip: "Notre équipe",
-                    back_about: "Retour à À propos",
+                    back_about: "Retour à À propos",\n                    view_contributions: "Consulter les contributions",
                     members: [
                         {
                             name: "Aminata Kouyaté",
@@ -1297,7 +1297,7 @@ const resources = {
                     hero_title_lead: "Call for",
                     hero_title_brand: "contributions",
                     hero_subtitle: "A guide for experts and practitioners — share your analyses, case studies, and field insights on ESG in Africa.",
-                    back_about: "Back to About",
+                    back_about: "Back to About",\n                    view_contributions: "Browse contributions",
                     why_title: "Why contribute?",
                     why_body: "DGIAESG is a collaborative platform. Your expertise enriches decision-makers, investors, and practitioners across the continent. Each contribution is reviewed by our editorial team and credited to the author.",
                     formats_title: "Accepted formats",
@@ -1361,7 +1361,7 @@ const resources = {
                     hero_title_brand: "team",
                     hero_subtitle: "Portraits of journalists and experts.",
                     hero_nav_chip: "Our team",
-                    back_about: "Back to About",
+                    back_about: "Back to About",\n                    view_contributions: "Browse contributions",
                     members: [
                         {
                             name: "Aminata Kouyate",
@@ -1740,4 +1740,5 @@ i18n
     });
 
 export default i18n;
+
 

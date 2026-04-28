@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+﻿import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion, useInView } from "framer-motion";
@@ -23,47 +23,47 @@ import {
 import { HubSubpageShell } from "@/components/hub/HubCinematicHero";
 import { cn } from "@/lib/utils";
 
-/* ─── Data ──────────────────────────────────────────────────── */
+/* â”€â”€â”€ Data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const IMPACT_STATS = [
   { value: "340+", label: "publications", sub: "depuis 2019", icon: BookOpen },
   { value: "48k", label: "lecteurs/mois", sub: "audience active", icon: Users },
-  { value: "55", label: "pays couverts", sub: "par nos données", icon: Globe },
-  { value: "5 j.", label: "délai moyen", sub: "de réponse éditoriale", icon: Clock },
+  { value: "55", label: "pays couverts", sub: "par nos donnÃ©es", icon: Globe },
+  { value: "5 j.", label: "dÃ©lai moyen", sub: "de rÃ©ponse Ã©ditoriale", icon: Clock },
 ];
 
 const FORMAT_CARDS = [
   {
     icon: PenLine,
     label: "Tribune d'expert",
-    desc: "Analyse ou prise de position (800–1 500 mots).",
-    detail: "Format court, impact fort. Idéal pour réagir à l'actualité ESG ou partager une opinion documentée.",
+    desc: "Analyse ou prise de position (800â€“1 500 mots).",
+    detail: "Format court, impact fort. IdÃ©al pour rÃ©agir Ã  l'actualitÃ© ESG ou partager une opinion documentÃ©e.",
     color: "emerald",
-    words: "800–1 500 mots",
+    words: "800â€“1 500 mots",
   },
   {
     icon: Microscope,
-    label: "Étude de cas",
-    desc: "Retour terrain documenté avec données et résultats.",
-    detail: "Documentez un projet, une certification ou une transformation ESG vécue sur le terrain. Données et méthodologie requises.",
+    label: "Ã‰tude de cas",
+    desc: "Retour terrain documentÃ© avec donnÃ©es et rÃ©sultats.",
+    detail: "Documentez un projet, une certification ou une transformation ESG vÃ©cue sur le terrain. DonnÃ©es et mÃ©thodologie requises.",
     color: "sky",
-    words: "1 500–4 000 mots",
+    words: "1 500â€“4 000 mots",
   },
   {
     icon: FileText,
-    label: "Note de synthèse",
-    desc: "Résumé exécutif d'un rapport ou d'une politique publique.",
-    detail: "Vulgarisez un rapport ou une politique pour notre lectorat. Inclure les recommandations clés et les limites.",
+    label: "Note de synthÃ¨se",
+    desc: "RÃ©sumÃ© exÃ©cutif d'un rapport ou d'une politique publique.",
+    detail: "Vulgarisez un rapport ou une politique pour notre lectorat. Inclure les recommandations clÃ©s et les limites.",
     color: "violet",
-    words: "500–1 000 mots",
+    words: "500â€“1 000 mots",
   },
   {
     icon: Database,
-    label: "Données & indicateurs",
-    desc: "Jeux de données propres avec méthodologie explicite.",
-    detail: "Partagez des données originales ou une méthodologie de mesure. Nous prenons en charge la visualisation.",
+    label: "DonnÃ©es & indicateurs",
+    desc: "Jeux de donnÃ©es propres avec mÃ©thodologie explicite.",
+    detail: "Partagez des donnÃ©es originales ou une mÃ©thodologie de mesure. Nous prenons en charge la visualisation.",
     color: "amber",
-    words: "Tableau + note méthodologique",
+    words: "Tableau + note mÃ©thodologique",
   },
 ];
 
@@ -71,66 +71,66 @@ const PROCESS_STEPS = [
   {
     step: "01",
     label: "Soumission",
-    desc: "Envoyez votre texte ou résumé via le formulaire ci-dessous. Aucune mise en forme particulière requise.",
+    desc: "Envoyez votre texte ou rÃ©sumÃ© via le formulaire ci-dessous. Aucune mise en forme particuliÃ¨re requise.",
     icon: Send,
     color: "emerald",
   },
   {
     step: "02",
-    label: "Revue éditoriale",
-    desc: "Notre équipe évalue la rigueur des sources, la pertinence et l'originalité sous 5 jours ouvrés.",
+    label: "Revue Ã©ditoriale",
+    desc: "Notre Ã©quipe Ã©value la rigueur des sources, la pertinence et l'originalitÃ© sous 5 jours ouvrÃ©s.",
     icon: BookOpen,
     color: "sky",
   },
   {
     step: "03",
     label: "Retours & ajustements",
-    desc: "Échanges directs avec l'auteur pour affiner le propos, clarifier les sources ou enrichir les données.",
+    desc: "Ã‰changes directs avec l'auteur pour affiner le propos, clarifier les sources ou enrichir les donnÃ©es.",
     icon: PenLine,
     color: "violet",
   },
   {
     step: "04",
     label: "Publication & diffusion",
-    desc: "Mise en ligne avec crédit auteur complet, diffusion newsletter et promotion sur nos réseaux.",
+    desc: "Mise en ligne avec crÃ©dit auteur complet, diffusion newsletter et promotion sur nos rÃ©seaux.",
     icon: TrendingUp,
     color: "amber",
   },
 ];
 
 const REQUIREMENTS = [
-  "Sources primaires ou institutionnelles vérifiables",
-  "Données factuelles différenciées des opinions",
-  "Pertinence pour l'économie ou la durabilité africaine",
-  "Anglais ou français (traduction prise en charge si besoin)",
-  "Pas de conflit d'intérêt non déclaré",
+  "Sources primaires ou institutionnelles vÃ©rifiables",
+  "DonnÃ©es factuelles diffÃ©renciÃ©es des opinions",
+  "Pertinence pour l'Ã©conomie ou la durabilitÃ© africaine",
+  "Anglais ou franÃ§ais (traduction prise en charge si besoin)",
+  "Pas de conflit d'intÃ©rÃªt non dÃ©clarÃ©",
 ];
 
 const RECENT_CONTRIBUTIONS = [
   {
-    title: "Financement vert en Afrique de l'Ouest : état des lieux 2025",
+    title: "Financement vert en Afrique de l'Ouest : Ã©tat des lieux 2025",
     author: "Dr. Fatoumata Bah",
-    org: "Université de Conakry",
-    type: "Étude de cas",
+    org: "UniversitÃ© de Conakry",
+    type: "Ã‰tude de cas",
     color: "sky",
   },
   {
-    title: "RSE minière au Katanga : entre engagement et réalité",
+    title: "RSE miniÃ¨re au Katanga : entre engagement et rÃ©alitÃ©",
     author: "Emmanuel Kabila",
-    org: "Centre d'Études Environnementales",
+    org: "Centre d'Ã‰tudes Environnementales",
     type: "Tribune",
     color: "emerald",
   },
   {
-    title: "Reporting IFRS S1/S2 : défis pour les PME africaines",
-    author: "Mariam Traoré",
+    title: "Reporting IFRS S1/S2 : dÃ©fis pour les PME africaines",
+    author: "Mariam TraorÃ©",
     org: "Cabinet Traore & Partners",
-    type: "Note de synthèse",
+    type: "Note de synthÃ¨se",
     color: "violet",
   },
 ];
 
-/* ─── Components ─────────────────────────────────────────────── */
+/* â”€â”€â”€ Components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const colorMap: Record<string, { text: string; bg: string; border: string; ring: string }> = {
   emerald: { text: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/25", ring: "ring-emerald-500/20" },
@@ -214,12 +214,12 @@ function ContributionCard({ c: contrib, idx }: { c: typeof RECENT_CONTRIBUTIONS[
         {contrib.type}
       </div>
       <p className="mb-2 text-sm font-extrabold leading-snug text-foreground">{contrib.title}</p>
-      <p className="text-xs text-foreground/70">{contrib.author} · {contrib.org}</p>
+      <p className="text-xs text-foreground/70">{contrib.author} Â· {contrib.org}</p>
     </motion.div>
   );
 }
 
-/* ─── Form ───────────────────────────────────────────────────── */
+/* â”€â”€â”€ Form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 function ContributeForm({ formats }: { formats: { label: string; desc: string }[] }) {
   const { t } = useTranslation();
@@ -241,13 +241,13 @@ function ContributeForm({ formats }: { formats: { label: string; desc: string }[
           <CheckCircle2 className="h-10 w-10 text-emerald-500" />
         </div>
         <div>
-          <h3 className="text-2xl font-black tracking-tight text-foreground">Contribution reçue !</h3>
+          <h3 className="text-2xl font-black tracking-tight text-foreground">Contribution reÃ§ue !</h3>
           <p className="mt-2 max-w-md text-sm text-muted-foreground">
-            Merci pour votre envoi. Notre équipe éditoriale reviendra vers vous sous 5 jours ouvrés avec ses retours.
+            Merci pour votre envoi. Notre Ã©quipe Ã©ditoriale reviendra vers vous sous 5 jours ouvrÃ©s avec ses retours.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
-          {["Délai de réponse : 5 j. ouvrés", "Crédit auteur garanti", "Diffusion newsletter"].map((f) => (
+          {["DÃ©lai de rÃ©ponse : 5 j. ouvrÃ©s", "CrÃ©dit auteur garanti", "Diffusion newsletter"].map((f) => (
             <span key={f} className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
               <Check className="h-3 w-3" /> {f}
             </span>
@@ -302,7 +302,7 @@ function ContributeForm({ formats }: { formats: { label: string; desc: string }[
               required
               className="w-full rounded-xl border border-border/70 bg-muted/30 px-4 py-2.5 text-sm text-foreground transition-all focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/15"
             >
-              <option value="" disabled>Sélectionner un format</option>
+              <option value="" disabled>SÃ©lectionner un format</option>
               {formats.map((f, i) => (
                 <option key={i} value={f.label}>{f.label}</option>
               ))}
@@ -319,7 +319,7 @@ function ContributeForm({ formats }: { formats: { label: string; desc: string }[
               value={form.message}
               onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
               required
-              placeholder="Décrivez votre contribution en quelques phrases. Vous pouvez également joindre un résumé ou un extrait..."
+              placeholder="DÃ©crivez votre contribution en quelques phrases. Vous pouvez Ã©galement joindre un rÃ©sumÃ© ou un extrait..."
               className="w-full resize-none rounded-xl border border-border/70 bg-muted/30 px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/40 transition-all focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/15"
             />
           </div>
@@ -327,7 +327,7 @@ function ContributeForm({ formats }: { formats: { label: string; desc: string }[
 
         {/* Requirements note */}
         <div className="rounded-2xl border border-border/50 bg-muted/20 p-4">
-          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Critères de sélection</p>
+          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">CritÃ¨res de sÃ©lection</p>
           <ul className="space-y-1">
             {REQUIREMENTS.map((r) => (
               <li key={r} className="flex items-start gap-2 text-xs text-muted-foreground">
@@ -350,7 +350,7 @@ function ContributeForm({ formats }: { formats: { label: string; desc: string }[
   );
 }
 
-/* ─── Page ───────────────────────────────────────────────────── */
+/* â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 export default function ContributePage() {
   const { t } = useTranslation();
@@ -426,7 +426,7 @@ export default function ContributePage() {
               </span>
               <p className="text-base leading-relaxed text-foreground/75">{t("pages.contribute.why_body")}</p>
               <div className="mt-4 space-y-2">
-                {["Visibilité auprès de 48 000 lecteurs", "Crédit auteur complet", "Diffusion multi-canal", "Archivage institutionnel"].map((b) => (
+                {["VisibilitÃ© auprÃ¨s de 48 000 lecteurs", "CrÃ©dit auteur complet", "Diffusion multi-canal", "Archivage institutionnel"].map((b) => (
                   <div key={b} className="flex items-center gap-2 text-xs text-foreground">
                     <div className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-primary/10">
                       <Check className="h-2.5 w-2.5 text-primary" />
@@ -455,7 +455,7 @@ export default function ContributePage() {
           {/* Recent contributions */}
           <div>
             <div className="mb-4 flex items-center gap-3">
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Contributions récentes</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Contributions rÃ©centes</p>
               <div className="h-px flex-1 bg-border/50" />
             </div>
             <div className="space-y-3">
@@ -466,7 +466,7 @@ export default function ContributePage() {
           </div>
         </div>
 
-        {/* Right — Formats + Form */}
+        {/* Right â€” Formats + Form */}
         <div className="space-y-7 lg:col-span-2">
 
           {/* Formats */}
@@ -500,14 +500,14 @@ export default function ContributePage() {
           <div className="overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-br from-card via-card to-emerald-950/5 p-5">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-sm font-extrabold text-foreground">Rejoindre l'équipe permanente ?</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">Voir les postes ouverts et les profils recherchés.</p>
+                <p className="text-sm font-extrabold text-foreground">Rejoindre l'Ã©quipe permanente ?</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">Voir les postes ouverts et les profils recherchÃ©s.</p>
               </div>
               <Link
                 to="/equipe"
                 className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-xs font-black uppercase tracking-wider text-foreground transition-all hover:border-primary/40"
               >
-                Notre équipe <ArrowRight className="h-3.5 w-3.5" />
+                Notre Ã©quipe <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
           </div>
@@ -516,3 +516,4 @@ export default function ContributePage() {
     </HubSubpageShell>
   );
 }
+
