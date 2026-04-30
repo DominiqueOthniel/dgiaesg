@@ -56,12 +56,12 @@ export function ControlsBar({
         }}
       />
 
-      <div className="relative flex flex-col gap-3 p-3 sm:gap-3.5 sm:p-4 lg:flex-row lg:items-center lg:gap-3">
+      <div className="relative flex min-w-0 w-full flex-col gap-3 p-3 sm:gap-3.5 sm:p-4 lg:flex-row lg:items-center lg:gap-3">
         {children}
       </div>
 
       {footer && (
-        <div className="relative flex flex-wrap items-center justify-between gap-3 border-t border-border/50 bg-muted/20 px-4 py-2.5 sm:px-5 sm:py-3">
+        <div className="relative flex min-w-0 w-full flex-col gap-3 border-t border-border/50 bg-muted/20 px-4 py-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:px-5 sm:py-3">
           {footer}
         </div>
       )}

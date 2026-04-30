@@ -10,6 +10,7 @@ import AdminLayout from "./layouts/AdminLayout";
 
 // Public pages with lazy loading
 const Home = lazy(() => import("./pages/Home"));
+const HomeClassic = lazy(() => import("./pages/HomeClassic"));
 const LabelsPage = lazy(() => import("./pages/LabelsPage"));
 const LabelDetailPage = lazy(() => import("./pages/LabelDetailPage"));
 const DirectoryPage = lazy(() => import("./pages/DirectoryPage"));
@@ -96,6 +97,7 @@ function App() {
         <Routes>
           <Route path="/" element={<SiteLayout />}>
             <Route index element={<Home />} />
+            <Route path="accueil-portail" element={<HomeClassic />} />
             <Route path="labels" element={<LabelsPage />} />
             <Route path="labels/:id" element={<LabelDetailPage />} />
             <Route path="directory" element={<DirectoryPage />} />

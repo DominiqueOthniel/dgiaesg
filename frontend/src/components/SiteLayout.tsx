@@ -68,7 +68,7 @@ const SiteLayout = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
+    <div className="min-h-screen flex flex-col bg-background text-foreground overflow-x-hidden">
       {/* ═══ SIDEBAR DRAWER ═══ */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -142,7 +142,7 @@ const SiteLayout = () => {
 
       <SiteHeader scrolled={scrolled} onMenuClick={() => setSidebarOpen(true)} />
 
-      <main className="flex-1">
+      <main className="flex-1 min-w-0 w-full max-w-[100vw]">
         <Outlet />
       </main>
 

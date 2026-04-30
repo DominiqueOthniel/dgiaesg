@@ -1,29 +1,43 @@
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import api from "@/services/api";
-import { useCompanies } from "@/hooks/useCompanies";
 import { useEvents } from "@/hooks/useEvents";
 import { useMagazines } from "@/hooks/useMagazines";
 import { useNews } from "@/hooks/useNews";
+import { getLocalized } from "@/lib/utils";
 
-import { HeroSection } from "@/components/home/HeroSection";
-import { MissionSection } from "@/components/home/MissionSection";
-import { EditorialSection } from "@/components/home/EditorialSection";
-import { PublicationsSection } from "@/components/home/PublicationsSection";
-import { AnnuaireSection } from "@/components/home/AnnuaireSection";
+import { JournalMasthead } from "@/components/home/JournalMasthead";
+import { BreakingBar } from "@/components/home/BreakingBar";
+import { TopicShortcuts } from "@/components/home/TopicShortcuts";
+import {
+  HomeFilters,
+  applyHomeFilters,
+  applyMagazineFilters,
+  DEFAULT_HOME_FILTERS,
+  type HomeFilterState,
+} from "@/components/home/HomeFilters";
+import { NewsHomeFront } from "@/components/home/NewsHomeFront";
+import { MagazineFeed } from "@/components/home/MagazineFeed";
+import { PillarColumns } from "@/components/home/PillarColumns";
+import { OpinionPicks } from "@/components/home/OpinionPicks";
+import { DataPulse } from "@/components/home/DataPulse";
 import { MultimediaSection } from "@/components/home/MultimediaSection";
-import { ConformiteSection } from "@/components/home/ConformiteSection";
 import { SynergiesSection } from "@/components/home/SynergiesSection";
 
+/**
+ * Accueil orienté actualités avec filtres partagés Journal + Revue.
+ */
 function Home() {
   const { i18n } = useTranslation();
   const lang = i18n.language;
 
-  // Data Fetching
-  const { data: newsData } = useNews({ page: 1, limit: 12 });
-  const { data: companiesData, isLoading: companiesLoading } = useCompanies({
-    limit: 6,
-    status: "certified",
+  const [filters, setFilters] = useState<HomeFilterState>(DEFAULT_HOME_FILTERS);
+  const resetFilters = () => setFilters(DEFAULT_HOME_FILTERS);
+
+  const { data: newsData, isLoading: newsLoading } = useNews({
+    page: 1,
+    limit: 30,
   });
   const { data: events, isLoading: eventsLoading } = useEvents({
     limit: 6,
@@ -32,9 +46,20 @@ function Home() {
   const { data: magazines, isLoading: magazinesLoading } = useMagazines();
 
   const news = newsData?.data || [];
-  const companies = companiesData?.data || [];
+  const allMagazines = magazines || [];
 
-  // Multimedia Query
+  const filteredNews = useMemo(
+    () => applyHomeFilters(news, filters, lang, getLocalized),
+    [news, filters, lang],
+  );
+  const filteredMagazines = useMemo(
+    () => applyMagazineFilters(allMagazines, filters, lang, getLocalized),
+    [allMagazines, filters, lang],
+  );
+
+  const showJournal = filters.source === "all" || filters.source === "journal";
+  const showRevue = filters.source === "all" || filters.source === "revue";
+
   const { data: multimediaData } = useQuery({
     queryKey: ["homepage-multimedia"],
     queryFn: async () => {
@@ -49,40 +74,46 @@ function Home() {
 
   return (
     <div className="flex flex-col">
-      {/* 0. Hero + Ticker (Combined as 1 section) */}
-      <HeroSection news={news} lang={lang} />
+      <BreakingBar news={news} lang={lang} />
+      <JournalMasthead />
+      <TopicShortcuts />
 
-      {/* 1. Vision & Mission + Certified Companies Sidebar */}
-      <MissionSection
-        companies={companies}
-        companiesLoading={companiesLoading}
+      <HomeFilters
+        state={filters}
+        onChange={setFilters}
+        newsCount={news.length}
+        newsFiltered={filteredNews.length}
+        revueCount={allMagazines.length}
+        revueFiltered={filteredMagazines.length}
       />
 
-      {/* 2. Intelligence Éditoriale (News) */}
-      <EditorialSection news={news} />
+      {showJournal && (
+        <NewsHomeFront
+          news={filteredNews}
+          lang={lang}
+          isLoading={newsLoading}
+          onResetFilters={resetFilters}
+        />
+      )}
 
-      {/* 3. Publications & Revues (Kiosk) */}
-      <PublicationsSection
-        magazines={magazines}
-        magazinesLoading={magazinesLoading}
-      />
+      {showRevue && (
+        <MagazineFeed
+          magazines={filteredMagazines}
+          totalCount={allMagazines.length}
+          loading={magazinesLoading}
+          lang={lang}
+          onResetFilters={resetFilters}
+        />
+      )}
 
-      {/* 4. Certified Enterprises (Annuaire Grid) */}
-      <AnnuaireSection
-        companies={companies}
-        companiesLoading={companiesLoading}
-      />
+      <PillarColumns news={news} lang={lang} />
 
-      {/* 5. Multimedia Hub (DGIA TV) */}
-      <MultimediaSection
-        videoItems={videoItems}
-        podcastItems={podcastItems}
-      />
+      <OpinionPicks news={news} lang={lang} />
 
-      {/* 6. Conformité Stratégique (CTA + Stats) */}
-      <ConformiteSection />
+      <DataPulse />
 
-      {/* 7. Synergies & Événements (Newsletter + Events) */}
+      <MultimediaSection videoItems={videoItems} podcastItems={podcastItems} />
+
       <SynergiesSection events={events} eventsLoading={eventsLoading} />
     </div>
   );
