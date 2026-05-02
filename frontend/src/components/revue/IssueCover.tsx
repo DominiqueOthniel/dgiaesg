@@ -8,9 +8,17 @@ interface IssueCoverProps {
   size?: "sm" | "md" | "lg";
   float?: boolean;
   className?: string;
+  /** Libellé du bouton bas de couverture (ex. « Découvrir » sur le hero accueil). */
+  footerActionLabel?: string;
 }
 
-export function IssueCover({ issue, size = "md", float = false, className }: IssueCoverProps) {
+export function IssueCover({
+  issue,
+  size = "md",
+  float = false,
+  className,
+  footerActionLabel = "RELEVANCE",
+}: IssueCoverProps) {
   const sizeClasses = {
     sm: "w-32 sm:w-40 text-[0.6rem]",
     md: "w-full text-xs",
@@ -107,7 +115,7 @@ export function IssueCover({ issue, size = "md", float = false, className }: Iss
             className="px-4 py-1.5 rounded-lg font-black text-black uppercase tracking-[0.2em]"
             style={{ backgroundColor: accentColors[issue.coverAccent], fontSize: "0.65em" }}
           >
-            RELEVANCE
+            {footerActionLabel}
           </div>
         </div>
       </div>

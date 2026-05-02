@@ -9,6 +9,8 @@ export interface MonthlyReview {
     pdfUrl: string;
     publishDate: string;
     featured: boolean;
+    /** Numéro d'édition affiché sur la couverture (optionnel). */
+    issue?: string | number;
 }
 
 export const useMagazines = () => {

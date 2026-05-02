@@ -18,6 +18,7 @@ import {
   type HomeFilterState,
 } from "@/components/home/HomeFilters";
 import { NewsHomeFront } from "@/components/home/NewsHomeFront";
+import { RevuePrincipalHero } from "@/components/home/RevuePrincipalHero";
 import { MagazineFeed } from "@/components/home/MagazineFeed";
 import { PillarColumns } from "@/components/home/PillarColumns";
 import { OpinionPicks } from "@/components/home/OpinionPicks";
@@ -97,13 +98,21 @@ function Home() {
       )}
 
       {showRevue && (
-        <MagazineFeed
-          magazines={filteredMagazines}
-          totalCount={allMagazines.length}
-          loading={magazinesLoading}
-          lang={lang}
-          onResetFilters={resetFilters}
-        />
+        <>
+          <RevuePrincipalHero
+            lang={lang}
+            magazines={filteredMagazines}
+            fallbackMagazines={allMagazines}
+            loading={magazinesLoading}
+          />
+          <MagazineFeed
+            magazines={filteredMagazines}
+            totalCount={allMagazines.length}
+            loading={magazinesLoading}
+            lang={lang}
+            onResetFilters={resetFilters}
+          />
+        </>
       )}
 
       <PillarColumns news={news} lang={lang} />

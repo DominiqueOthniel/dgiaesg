@@ -894,11 +894,11 @@
   }
   .group:hover .magazine-cover,
   .magazine-cover:hover {
-    transform: translateY(-6px) rotate(-0.6deg);
+    transform: translateY(-8px) scale(1.02) rotate(-0.5deg);
     box-shadow:
       0 1px 0 rgba(255, 215, 0, 0.45) inset,
-      0 30px 60px -18px rgba(255, 215, 0, 0.35),
-      0 14px 36px -16px rgba(13, 77, 51, 0.55);
+      0 34px 64px -18px rgba(255, 215, 0, 0.38),
+      0 18px 42px -18px rgba(13, 77, 51, 0.58);
   }
   .magazine-spine {
     position: absolute;
