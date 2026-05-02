@@ -95,6 +95,7 @@ export function RevuePrincipalHero({
         }}
       />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.12)_0%,transparent_35%,transparent_65%,rgba(0,0,0,.2)_100%)]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent via-white/85 to-white" />
 
       <div className="relative max-w-7xl mx-auto min-w-0 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 xl:gap-20 items-center">
