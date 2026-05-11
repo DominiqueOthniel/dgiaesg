@@ -17,7 +17,6 @@ import {
   Layers,
   Briefcase,
   ArrowUpDown,
-  Sparkles,
   Zap,
   Clock
 } from "lucide-react";

@@ -9,7 +9,6 @@ import {
   ArrowUpDown,
   ChevronLeft,
   ChevronRight,
-  Filter,
   LayoutGrid,
   List,
   StretchHorizontal,

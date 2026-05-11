@@ -11,7 +11,6 @@ import {
   ExternalLink,
   Share2,
   Info,
-  Users,
   Clock,
   Star,
   Check,
@@ -251,7 +250,6 @@ function EventDetailPage() {
   const meta = TYPE_META[event.type] ?? TYPE_META.other;
   const TypeIcon = meta.icon;
   const startDate = new Date(event.startDate);
-  const endDate = new Date(event.endDate);
   const days = daysUntil(event.startDate);
   const duration = formatDuration(event.startDate, event.endDate);
   const isPast = days < 0;

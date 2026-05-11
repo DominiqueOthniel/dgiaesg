@@ -181,8 +181,6 @@ function FeaturedReport({ report, idx }: { report: Report; idx: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.2 });
 
-  const m = CATEGORY_META[report.category];
-
   return (
     <motion.article
       ref={ref}

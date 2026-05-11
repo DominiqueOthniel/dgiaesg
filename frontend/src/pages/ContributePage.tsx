@@ -166,7 +166,7 @@ function FormatCard({ fmt, idx }: { fmt: typeof FORMAT_CARDS[number]; idx: numbe
   );
 }
 
-function ProcessStep({ step, idx, isLast }: { step: typeof PROCESS_STEPS[number]; idx: number; isLast: boolean }) {
+function ProcessStep({ step, idx, isLast: _isLast }: { step: typeof PROCESS_STEPS[number]; idx: number; isLast: boolean }) {
   const Icon = step.icon;
   const c = colorMap[step.color];
   const ref = useRef<HTMLDivElement>(null);

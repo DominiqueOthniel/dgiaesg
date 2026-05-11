@@ -7,8 +7,6 @@ import {
   ArrowLeft,
   Linkedin,
   Twitter,
-  Globe,
-  Leaf,
   BarChart3,
   Newspaper,
   Mic,
@@ -156,7 +154,6 @@ function Avatar({ member, size = "md" }: { member: TeamMember; size?: "md" | "lg
 function FeaturedCard({ member }: { member: TeamMember }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.25 });
-  const DeptIcon = DEPT_ICON[member.department];
 
   return (
     <motion.article

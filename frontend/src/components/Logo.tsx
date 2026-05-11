@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-import { Leaf, Sprout, Globe } from "lucide-react";
 
 interface LogoProps {
   variant?: "main" | "footer";
