@@ -7,15 +7,35 @@ import PDFDocument from "pdfkit";
 import fs from "fs";
 import path from "path";
 
-const CERT_DIR = path.join(__dirname, "../../uploads/certificates");
+/** Sur Vercel le FS est read-only sauf `/tmp` ; pas de mkdir au chargement du module. */
+function getCertDir(): string {
+    if (process.env.VERCEL || process.env.VERCEL_ENV) {
+        return path.join("/tmp", "dgiaesg-certificates");
+    }
+    return path.join(__dirname, "../../uploads/certificates");
+}
 
-// Ensure certificates directory exists
-if (!fs.existsSync(CERT_DIR)) {
-    fs.mkdirSync(CERT_DIR, { recursive: true });
+function ensureCertDir(): void {
+    const dir = getCertDir();
+    try {
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+    } catch (err) {
+        console.error("[certificate] ensureCertDir:", err);
+        throw err;
+    }
+}
+
+function resolveCertFileOnDisk(storedUrl: string): string {
+    const fileName = path.basename(storedUrl);
+    return path.join(getCertDir(), fileName);
 }
 
 // POST /api/certificates/:applicationId/generate — generate PDF certificate
 export const generateCertificate = asyncHandler(async (req: Request, res: Response) => {
+    ensureCertDir();
+
     const { applicationId } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(applicationId as string)) {
@@ -42,7 +62,7 @@ export const generateCertificate = asyncHandler(async (req: Request, res: Respon
 
     // Generate PDF
     const fileName = `certificate_${application._id}.pdf`;
-    const filePath = path.join(CERT_DIR, fileName);
+    const filePath = path.join(getCertDir(), fileName);
 
     const doc = new PDFDocument({
         size: "A4",
@@ -184,7 +204,7 @@ export const downloadCertificate = asyncHandler(async (req: Request, res: Respon
         throw new AppError("No certificate available for this application", 404);
     }
 
-    const filePath = path.join(__dirname, "../../", application.certificateUrl);
+    const filePath = resolveCertFileOnDisk(application.certificateUrl);
 
     if (!fs.existsSync(filePath)) {
         throw new AppError("Certificate file not found on server", 404);
