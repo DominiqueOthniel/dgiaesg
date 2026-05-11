@@ -3,6 +3,6 @@
   "private": true,
   "scripts": {
     "build": "npm run build --prefix frontend",
-    "install:all": "npm ci --prefix frontend && npm ci --prefix backend"
+    "install:all": "echo \"[install:all] frontend\" && npm ci --prefix frontend && echo \"[install:all] backend\" && npm ci --prefix backend && echo \"[install:all] OK\""
   }
 }
