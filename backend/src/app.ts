@@ -13,11 +13,16 @@ import { notFound, errorHandler } from "./middleware/errorHandler";
 
 const app = express();
 
+/** Détection serverless Vercel (VAR env officielles). */
+const IS_VERCEL_SERVERLESS = Boolean(
+    process.env.VERCEL || process.env.VERCEL_ENV,
+);
+
 /**
  * Sur Vercel (serverless), MongoDB est branché au premier passage sur cette chaîne.
  * En local, `server.ts` appelle `connectDB()` avant `listen()` ; les appels suivants sont no-op grâce au cache dans `db.ts`.
  */
-if (process.env.VERCEL) {
+if (IS_VERCEL_SERVERLESS) {
   app.use(async (_req, _res, next) => {
     try {
       await connectDB();

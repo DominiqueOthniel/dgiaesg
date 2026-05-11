@@ -34,8 +34,18 @@ const options: swaggerJsdoc.Options = {
     apis: ['./src/routes/*.ts', './src/models/*.ts'], // Path to the API docs
 };
 
-const swaggerSpec = swaggerJsdoc(options);
-
+/**
+ * Sur Vercel, le filesystem du bundle ne contient pas ces chemins ; `swaggerJsdoc`
+ * au chargement faisait planter la fonction serverless (500 FUNCTION_INVOCATION_FAILED).
+ */
 export const setupSwagger = (app: Express) => {
-    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+    if (process.env.VERCEL || process.env.VERCEL_ENV) {
+        return;
+    }
+    try {
+        const swaggerSpec = swaggerJsdoc(options);
+        app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+    } catch (err) {
+        console.error('[swagger] setup failed:', err);
+    }
 };

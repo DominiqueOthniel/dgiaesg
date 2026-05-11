@@ -25,6 +25,6 @@ const startServer = async () => {
 };
 
 /** Déployé sur Vercel : pas de serveur HTTP — `/api/index.ts` charge cette app en serverless. */
-if (!process.env.VERCEL) {
+if (!(process.env.VERCEL || process.env.VERCEL_ENV)) {
   startServer();
 }
