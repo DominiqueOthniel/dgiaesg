@@ -3,6 +3,7 @@ import { Application, Company, Criteria, Notification, User } from "../models";
 import { AppError } from "../middleware/errorHandler";
 import asyncHandler from "../middleware/asyncHandler";
 import mongoose from "mongoose";
+import { generateCertificate } from "./certificate.controller";
 
 // GET /api/applications — list all applications (Admin/Auditor)
 export const getApplications = asyncHandler(async (req: Request, res: Response) => {
@@ -319,8 +320,6 @@ export const reviewApplication = asyncHandler(async (req: Request, res: Response
 
         // Auto-generate certificate (fire and forget — non-blocking)
         try {
-            const { generateCertificate } = await import("./certificate.controller");
-            // Create a mock request/response to call the generator
             const mockReq = { params: { applicationId: id } } as any;
             const mockRes = { json: () => { }, status: () => ({ json: () => { } }) } as any;
             const mockNext = () => { };

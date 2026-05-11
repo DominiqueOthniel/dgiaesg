@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { Comment, Notification, News } from "../models";
+import { Comment, Notification, News, User } from "../models";
 import { AppError } from "../middleware/errorHandler";
 import asyncHandler from "../middleware/asyncHandler";
 import mongoose from "mongoose";
@@ -57,7 +57,6 @@ export const createComment = asyncHandler(async (req: Request, res: Response) =>
         const article = await News.findById(targetId);
         if (article) {
             // Notify all admins about new comment
-            const User = mongoose.model("User");
             const admins = await User.find({ role: "admin" }).select("_id");
             for (const admin of admins) {
                 await Notification.create({
