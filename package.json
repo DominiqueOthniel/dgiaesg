@@ -1,0 +1,8 @@
+{
+  "name": "dgiaesgreview",
+  "private": true,
+  "scripts": {
+    "build": "npm run build --prefix frontend",
+    "install:all": "npm ci --prefix frontend && npm ci --prefix backend"
+  }
+}
