@@ -82,96 +82,6 @@ const TYPE_META: Record<
   },
 };
 
-/* ─── Mock data fallback ─────────────────────────────────────── */
-
-const MOCK_EVENTS: IEvent[] = [
-  {
-    _id: "m1",
-    title: { fr: "Forum ESG Afrique 2026", en: "ESG Africa Forum 2026" },
-    description: { fr: "Le rendez-vous annuel des décideurs et praticiens de la durabilité en Afrique. Trois jours de panels, ateliers et networking autour des enjeux ESG continentaux.", en: "The annual meeting of sustainability decision-makers and practitioners in Africa." },
-    type: "conference",
-    startDate: "2026-06-15T09:00:00Z",
-    endDate: "2026-06-17T18:00:00Z",
-    location: { fr: "Abidjan, Côte d'Ivoire", en: "Abidjan, Ivory Coast" },
-    organizer: { fr: "DGIAESG & BRVM", en: "DGIAESG & BRVM" },
-    imageUrl: "",
-    registrationUrl: "#",
-    published: true,
-    featured: true,
-    createdAt: "",
-    updatedAt: "",
-    agenda: [
-      { time: "09:00", label: { fr: "Cérémonie d'ouverture", en: "Opening ceremony" }, description: { fr: "Allocutions officielles et présentation du rapport ESG Africa 2026", en: "" } },
-      { time: "11:00", label: { fr: "Panel : Finance climatique africaine", en: "Panel: African Climate Finance" }, description: { fr: "Mobilisation des capitaux verts et obligations durables", en: "" } },
-      { time: "14:00", label: { fr: "Ateliers thématiques", en: "Thematic workshops" }, description: { fr: "5 ateliers parallèles : E, S, G, Reporting, Investisseurs", en: "" } },
-    ],
-  },
-  {
-    _id: "m2",
-    title: { fr: "Certification ESG — Session Dakar", en: "ESG Certification — Dakar Session" },
-    description: { fr: "Formation intensive de 3 jours pour obtenir la certification ESG Africa. Programme académique accrédité, études de cas et examen final.", en: "" },
-    type: "certification",
-    startDate: "2026-05-20T08:30:00Z",
-    endDate: "2026-05-22T17:00:00Z",
-    location: { fr: "Dakar, Sénégal", en: "Dakar, Senegal" },
-    organizer: { fr: "DGIAESG Academy", en: "DGIAESG Academy" },
-    imageUrl: "",
-    registrationUrl: "#",
-    published: true,
-    featured: false,
-    createdAt: "",
-    updatedAt: "",
-  },
-  {
-    _id: "m3",
-    title: { fr: "Atelier Reporting IFRS S1/S2", en: "IFRS S1/S2 Reporting Workshop" },
-    description: { fr: "Comprendre et appliquer les nouvelles normes IFRS de durabilité S1 (risques généraux) et S2 (risques climatiques) pour les entreprises africaines.", en: "" },
-    type: "workshop",
-    startDate: "2026-05-08T09:00:00Z",
-    endDate: "2026-05-08T17:00:00Z",
-    location: { fr: "Casablanca, Maroc", en: "Casablanca, Morocco" },
-    organizer: { fr: "CGEM ESG Lab", en: "CGEM ESG Lab" },
-    imageUrl: "",
-    registrationUrl: "#",
-    published: true,
-    featured: false,
-    createdAt: "",
-    updatedAt: "",
-  },
-  {
-    _id: "m4",
-    title: { fr: "Formation : Analyse ESG pour investisseurs", en: "Training: ESG Analysis for Investors" },
-    description: { fr: "Programme de 2 jours couvrant l'intégration ESG dans les décisions d'investissement, les outils de screening et les stratégies d'engagement actionnarial.", en: "" },
-    type: "training",
-    startDate: "2026-07-03T09:00:00Z",
-    endDate: "2026-07-04T17:00:00Z",
-    location: { fr: "Nairobi, Kenya", en: "Nairobi, Kenya" },
-    organizer: { fr: "Nairobi Securities Exchange", en: "Nairobi Securities Exchange" },
-    imageUrl: "",
-    registrationUrl: "#",
-    published: true,
-    featured: false,
-    createdAt: "",
-    updatedAt: "",
-  },
-  {
-    _id: "m5",
-    title: { fr: "Networking ESG — Johannesburg", en: "ESG Networking — Johannesburg" },
-    description: { fr: "Soirée networking dédiée aux professionnels ESG d'Afrique australe. Échanges informels et présentations flash de projets durables.", en: "" },
-    type: "networking",
-    startDate: "2026-06-04T18:00:00Z",
-    endDate: "2026-06-04T21:00:00Z",
-    location: { fr: "Johannesburg, Afrique du Sud", en: "Johannesburg, South Africa" },
-    organizer: { fr: "ESG Africa Network", en: "ESG Africa Network" },
-    imageUrl: "",
-    registrationUrl: "#",
-    published: true,
-    featured: false,
-    createdAt: "",
-    updatedAt: "",
-  },
-];
-
 /* ─── Helpers ────────────────────────────────────────────────── */
 
 function daysUntil(dateStr: string) {
@@ -384,8 +294,7 @@ function EventsPage() {
     },
   });
 
-  // Use mock data if API returns nothing
-  const events = apiEvents && apiEvents.length > 0 ? apiEvents : MOCK_EVENTS;
+  const events = apiEvents ?? [];
 
   const categories = [
     { id: "all", label: t("common.all") || "Tous" },
@@ -420,7 +329,14 @@ function EventsPage() {
           {[
             { value: events.length.toString(), label: "événements" },
             { value: featured.length.toString(), label: "à la une" },
-            { value: "5 pays", label: "représentés" },
+            {
+              value: String(
+                new Set(
+                  events.map((e) => getLocalized(e.location, lang)).filter(Boolean),
+                ).size || 0,
+              ),
+              label: "lieux",
+            },
           ].map((c) => (
             <div key={c.label} className="inline-flex items-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-4 py-2 backdrop-blur-sm">
               <span className="text-base font-black text-brand-gold">{c.value}</span>

@@ -8,29 +8,31 @@ import {
   Sparkles,
   Zap,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { PILLARS, PILLAR_BY_SLUG, isPillarSlug } from "@/lib/pillars";
+import { useTranslation } from "react-i18next";
+import { cn, getLocalized } from "@/lib/utils";
+import { PILLARS, PILLAR_BY_SLUG, isPillarSlug, type PillarSlug } from "@/lib/pillars";
+import { useNews } from "@/hooks/useNews";
+import type { INews } from "@/types";
 
 const IMAGE_FALLBACK =
   "https://placehold.co/800x400/e2e8f0/94a3b8?text=Article";
 
-// ---------------------------------------------------------------------------
-// Local mock dataset — same shape as NewsPage. Replace with API call.
-// ---------------------------------------------------------------------------
+type ArticleFormat = "breve" | "analyse" | "enquete" | "interview" | "communique";
+
 type Article = {
   _id: string;
   slug: string;
   title: string;
   excerpt: string;
-  category: string;     // pillar slug
-  subCategory: string;  // matches Pillar.subCategories[].value
-  format: "breve" | "analyse" | "enquete" | "interview" | "communique";
-  readingTime: number;
+  category: string;
+  subCategory: string;
+  format: ArticleFormat;
+  readingTime: string;
   imageUrl: string;
   publishedAt: string;
 };
 
-const FORMAT_BADGE: Record<Article["format"], { label: string; cls: string }> = {
+const FORMAT_BADGE: Record<ArticleFormat, { label: string; cls: string }> = {
   breve: { label: "Brève", cls: "bg-[hsl(var(--brand-emerald)/0.8)] text-white" },
   analyse: { label: "Analyse", cls: "bg-[hsl(var(--brand-emerald))] text-white" },
   enquete: {
@@ -41,28 +43,51 @@ const FORMAT_BADGE: Record<Article["format"], { label: string; cls: string }> = 
   communique: { label: "Communiqué", cls: "bg-[hsl(var(--brand-deep))] text-white" },
 };
 
-const PILLAR_MOCK: Article[] = [
-  {
-    _id: "p1",
-    slug: "afrique-renouvelables-record",
-    title: "Renouvelables : l'Afrique signe un record d'investissements",
-    excerpt:
-      "Plus de 15 milliards USD mobilisés en un an pour le solaire et l'éolien sur le continent.",
-    category: "climat-energie",
-    subCategory: "renouvelables",
-    format: "analyse",
-    readingTime: 9,
-    imageUrl:
-      "https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=1200&q=80",
-    publishedAt: "2025-03-18T08:00:00Z",
-  },
-  // ... more mock data if needed, but for now we rely on the logic
-];
+function subCategorySlug(n: INews): string {
+  const s = n.subCategory;
+  if (typeof s === "object" && s && "slug" in s && (s as { slug?: string }).slug) {
+    return String((s as { slug: string }).slug);
+  }
+  return "general";
+}
+
+function inferFormat(n: INews): ArticleFormat {
+  const raw = String(n.readingTime || "5 min");
+  const mins = parseInt(raw.replace(/\D/g, ""), 10) || 5;
+  if (mins <= 3) return "breve";
+  return "analyse";
+}
+
+function mapNewsToArticle(n: INews, pillarSlug: string, lang: string): Article {
+  return {
+    _id: n._id,
+    slug: n.slug,
+    title: getLocalized(n.title, lang),
+    excerpt: getLocalized(n.excerpt, lang),
+    category: pillarSlug,
+    subCategory: subCategorySlug(n),
+    format: inferFormat(n),
+    readingTime: n.readingTime || "5 min",
+    imageUrl: n.imageUrl || "",
+    publishedAt: n.publishedAt || n.createdAt,
+  };
+}
 
 export default function ThemePillarPage() {
   const { pillar: slug } = useParams();
+  const { i18n } = useTranslation();
+  const lang = i18n.language;
   const [sub, setSub] = useState("all");
   const contentRef = useRef<HTMLDivElement>(null);
+
+  const pillarSlug: PillarSlug | undefined =
+    slug && isPillarSlug(slug) ? slug : undefined;
+
+  const { data: newsPage, isLoading } = useNews({
+    limit: 48,
+    published: true,
+    categorySlug: pillarSlug,
+  });
 
   useEffect(() => {
     if (contentRef.current) {
@@ -78,17 +103,17 @@ export default function ThemePillarPage() {
   const Icon = pillar.icon;
 
   const articles = useMemo(() => {
-    let list = PILLAR_MOCK.filter((a) => a.category === pillar.slug);
-    if (sub !== "all") list = list.filter((a) => a.subCategory === sub);
-    return list.sort(
+    const list = newsPage?.data ?? [];
+    let mapped = list.map((n) => mapNewsToArticle(n, pillar.slug, lang));
+    if (sub !== "all") mapped = mapped.filter((a) => a.subCategory === sub);
+    return mapped.sort(
       (a, b) =>
         new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
     );
-  }, [pillar.slug, sub]);
+  }, [newsPage, pillar.slug, sub, lang]);
 
   return (
     <div className="min-h-screen news-bg text-foreground">
-      {/* Hero — pillar accent color */}
       <section className={cn("relative overflow-hidden", pillar.color.bg)}>
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.18),transparent_70%)]" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 relative z-10">
@@ -112,7 +137,6 @@ export default function ThemePillarPage() {
         </div>
       </section>
 
-      {/* Sub-category bar */}
       <div ref={contentRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         <div
           aria-label="Sous-catégories"
@@ -126,6 +150,7 @@ export default function ThemePillarPage() {
             return (
               <button
                 key={s.value}
+                type="button"
                 onClick={() => setSub(s.value)}
                 className={cn(
                   "shrink-0 h-9 px-3.5 rounded-full text-[11px] font-bold transition-all border",
@@ -149,7 +174,7 @@ export default function ThemePillarPage() {
             <Sparkles className="w-3 h-3" />
           </span>
           <span className="text-[11px] font-black uppercase tracking-[0.16em] text-foreground">
-            {articles.length}{" "}
+            {isLoading ? "…" : articles.length}{" "}
             <span className="text-muted-foreground font-semibold normal-case tracking-normal">
               article{articles.length > 1 ? "s" : ""}
             </span>
@@ -157,9 +182,14 @@ export default function ThemePillarPage() {
         </div>
       </div>
 
-      {/* Articles grid — same card-gold language as /actualites */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        {articles.length > 0 ? (
+        {isLoading ? (
+          <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-72 rounded-2xl bg-muted animate-pulse" />
+            ))}
+          </div>
+        ) : articles.length > 0 ? (
           <div className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {articles.map((article) => {
               const fmt = FORMAT_BADGE[article.format];
@@ -170,7 +200,6 @@ export default function ThemePillarPage() {
                   to={`/news/${article.slug}`}
                   className="group card-gold block bg-card rounded-2xl overflow-hidden h-full flex flex-col"
                 >
-                  {/* Golden corners for elevation effect */}
                   <div className="corner corner-tl" />
                   <div className="corner corner-tr" />
                   <div className="corner corner-bl" />
@@ -216,7 +245,7 @@ export default function ThemePillarPage() {
                       <span className="flex items-center gap-1 group-hover:text-primary transition-colors">
                         <Calendar className="w-3 h-3" />
                         {new Date(article.publishedAt).toLocaleDateString(
-                          "fr-FR",
+                          lang.startsWith("en") ? "en-GB" : "fr-FR",
                         )}
                       </span>
                       <span className="flex items-center gap-1 text-muted-foreground">
@@ -225,9 +254,7 @@ export default function ThemePillarPage() {
                         ) : (
                           <Clock className="w-3 h-3" />
                         )}
-                        {isFlash
-                          ? `Flash ${article.readingTime} min`
-                          : `Lecture ${article.readingTime} min`}
+                        {isFlash ? `Flash ${article.readingTime}` : `Lecture ${article.readingTime}`}
                       </span>
                       <ArrowRight className="w-4 h-4 text-primary group-hover:text-[hsl(var(--brand-emerald))] group-hover:translate-x-1.5 transition-all duration-300" />
                     </div>
@@ -242,6 +269,7 @@ export default function ThemePillarPage() {
               Aucun article dans cette sous-catégorie pour le moment.
             </p>
             <button
+              type="button"
               onClick={() => setSub("all")}
               className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-md bg-primary text-primary-foreground text-sm font-semibold"
             >
@@ -251,7 +279,6 @@ export default function ThemePillarPage() {
         )}
       </div>
 
-      {/* Cross-link to other pillars */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <h2 className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground mb-4">
           Explorer les autres piliers

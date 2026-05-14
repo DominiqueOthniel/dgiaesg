@@ -11,6 +11,8 @@ export interface CompanyFilters {
     page?: number;
     limit?: number;
     includeDeleted?: boolean;
+    /** Tri MongoDB, ex. `-score`, `-createdAt` */
+    sort?: string;
 }
 
 export const useCompanies = (filters: CompanyFilters = {}) => {
@@ -26,6 +28,7 @@ export const useCompanies = (filters: CompanyFilters = {}) => {
             if (filters.page) params.append("page", filters.page.toString());
             if (filters.limit) params.append("limit", filters.limit.toString());
             if (filters.includeDeleted) params.append("includeDeleted", "true");
+            if (filters.sort) params.append("sort", filters.sort);
 
             const response = await api.get<PaginatedResponse<ICompany>>(`/companies`, { params });
             return response.data;

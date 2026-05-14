@@ -17,8 +17,9 @@ export const useMagazines = () => {
     return useQuery({
         queryKey: ["magazines"],
         queryFn: async () => {
-            const response = await api.get("/reviews"); // Assuming /reviews maps to MonthlyReview
-            return response.data.data as MonthlyReview[];
+            const response = await api.get("/reviews");
+            const raw = response.data?.data;
+            return Array.isArray(raw) ? (raw as MonthlyReview[]) : [];
         },
     });
 };

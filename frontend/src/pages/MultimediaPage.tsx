@@ -32,8 +32,6 @@ function MultimediaPage() {
     getLocalized(i.title, lang).toLowerCase().includes(search.trim().toLowerCase())
   );
 
-  const mockCount = 6;
-
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Hero */}
@@ -294,50 +292,9 @@ function MultimediaPage() {
             ))}
           </div>
         ) : (
-          <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
-            initial="hidden"
-            animate="visible"
-            variants={{
-              hidden: {},
-              visible: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
-            }}
-          >
-            {Array.from({ length: mockCount }).map((_, idx) => (
-              <motion.div
-                key={`mock-${idx}`}
-                className="group hover-lift-soft"
-                variants={{
-                  hidden: { opacity: 0, y: 18 },
-                  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
-                }}
-              >
-                <div className="aspect-video rounded-2xl overflow-hidden border border-border shadow-md bg-gradient-to-br from-primary/20 via-primary/10 to-[hsl(var(--brand-gold)/0.15)] relative">
-                  <div className="absolute inset-0 opacity-30 [background:repeating-linear-gradient(135deg,rgba(255,255,255,.4)_0_2px,transparent_2px_14px)]" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <motion.div
-                      className="w-14 h-14 rounded-full bg-primary/90 text-primary-foreground flex items-center justify-center shadow-2xl"
-                      whileHover={{ scale: 1.08 }}
-                      whileTap={{ scale: 0.95 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                    >
-                      {idx % 2 === 0 ? <Play className="w-6 h-6 fill-current" /> : <Headphones className="w-6 h-6" />}
-                    </motion.div>
-                  </div>
-                  <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/55 to-transparent">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-white/90">
-                      {idx % 2 === 0 ? t("pages.multimedia.mock_video") : t("pages.multimedia.mock_podcast")} ·{" "}
-                      {t("pages.multimedia.mock_episode")} {String(idx + 1).padStart(2, "0")}
-                    </span>
-                  </div>
-                </div>
-                <div className="mt-3 space-y-2">
-                  <div className="h-3 rounded-full bg-muted" />
-                  <div className="h-3 rounded-full bg-muted/70 w-4/5" />
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
+          <div className="rounded-3xl border border-dashed border-border/70 py-20 text-center text-muted-foreground">
+            {t("common.no_results")}
+          </div>
         )}
       </div>
     </div>

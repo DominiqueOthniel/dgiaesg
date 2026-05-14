@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { ArrowRight } from "lucide-react";
 import { IssueCover } from "@/components/revue/IssueCover";
 import { resolveImageUrl } from "@/lib/image";
-import { getLatestIssue } from "@/lib/revue-mock-data";
+import { monthlyReviewsToMagazineIssues } from "@/lib/revue-map";
 import type { MonthlyReview } from "@/hooks/useMagazines";
 import { cn } from "@/lib/utils";
 import { getLocalized, handleImageError, Skeleton } from "./_shared";
@@ -32,12 +32,18 @@ export function RevuePrincipalHero({
   loading: boolean;
 }) {
   const { t } = useTranslation();
-  const latestMock = useMemo(() => getLatestIssue(), []);
   const heroMag = useMemo(() => {
     const primary = pickLatestMag(magazines);
     if (primary) return primary;
     return pickLatestMag(fallbackMagazines);
   }, [magazines, fallbackMagazines]);
+
+  const coverIssue = useMemo(() => {
+    if (!heroMag) return undefined;
+    return monthlyReviewsToMagazineIssues([heroMag], lang)[0];
+  }, [heroMag, lang]);
+
+  const latestMock = coverIssue;
 
   const locale = lang === "en" ? "en-GB" : "fr-FR";
   const formatMonth = (iso: string | undefined) => {
@@ -55,14 +61,16 @@ export function RevuePrincipalHero({
   const coverUrl = heroMag?.coverImageUrl
     ? resolveImageUrl(heroMag.coverImageUrl)
     : null;
-  const heroTitle = heroMag ? getLocalized(heroMag.title, lang) : latestMock.title;
-  const heroMonth = formatMonth(heroMag?.publishDate ?? latestMock.publishDate);
-  const pageCount = latestMock.pageCount;
+  const heroTitle = heroMag ? getLocalized(heroMag.title, lang) : "";
+  const heroMonth = formatMonth(heroMag?.publishDate);
+  const pageCount = latestMock?.pageCount ?? 48;
   const issueNum =
     heroMag && typeof heroMag.issue !== "undefined" && heroMag.issue !== ""
       ? String(heroMag.issue).padStart(2, "0")
-      : String(latestMock.number).padStart(2, "0");
-  const issueLink = `/revue/numeros/${latestMock.slug}`;
+      : latestMock
+        ? String(latestMock.number).padStart(2, "0")
+        : "—";
+  const issueLink = latestMock ? `/revue/numeros/${latestMock.slug}` : "/revue/numeros";
 
   const stats = [
     {
@@ -209,7 +217,7 @@ export function RevuePrincipalHero({
                   </div>
                 </div>
               </Link>
-            ) : (
+            ) : latestMock ? (
               <Link
                 to={issueLink}
                 className="group block w-full max-w-[300px] md:max-w-[320px] [perspective:1400px]"
@@ -230,6 +238,13 @@ export function RevuePrincipalHero({
                     )}
                   />
                 </div>
+              </Link>
+            ) : (
+              <Link
+                to="/revue/numeros"
+                className="text-sm font-bold text-white/80 underline underline-offset-4 hover:text-white"
+              >
+                {t("home.revue_hero.all_issues", "Voir tous les numéros")}
               </Link>
             )}
 

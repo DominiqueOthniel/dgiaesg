@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { News } from "../models";
+import { News, Category, SubCategory } from "../models";
 import { AppError } from "../middleware/errorHandler";
 import asyncHandler from "../middleware/asyncHandler";
 import mongoose from "mongoose";
@@ -23,6 +23,8 @@ export const getNews = asyncHandler(async (req: Request, res: Response) => {
     limit = "10",
     includeDeleted,
     sector,
+    categorySlug,
+    subCategorySlug,
   } = req.query;
 
   const isAdmin = (req as any).user?.role === 'admin';
@@ -40,6 +42,19 @@ export const getNews = asyncHandler(async (req: Request, res: Response) => {
   }
   if (sector && typeof sector === "string") {
     filter.sector = sector;
+  }
+
+  if (categorySlug && typeof categorySlug === "string") {
+    const cat = await Category.findOne({ slug: categorySlug.toLowerCase().trim() });
+    if (cat) {
+      filter.category = cat._id;
+    }
+  }
+  if (subCategorySlug && typeof subCategorySlug === "string") {
+    const sub = await SubCategory.findOne({ slug: subCategorySlug.toLowerCase().trim() });
+    if (sub) {
+      filter.subCategory = sub._id;
+    }
   }
 
   const pageNum = Math.max(1, parseInt(page as string, 10) || 1);

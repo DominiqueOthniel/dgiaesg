@@ -44,8 +44,6 @@ function KioskPage() {
     return list;
   }, [reviews, searchQuery, featuredOnly, sortBy, lang]);
 
-  const mockCovers = Array.from({ length: 10 });
-
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Hero */}
@@ -303,40 +301,8 @@ function KioskPage() {
             ))}
           </div>
         ) : (
-          <div className="space-y-8">
-            <motion.div
-              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8"
-              initial="hidden"
-              animate="visible"
-              variants={{
-                hidden: {},
-                visible: { transition: { staggerChildren: 0.06, delayChildren: 0.05 } },
-              }}
-            >
-              {mockCovers.map((_, idx) => (
-                <motion.div
-                  key={`mock-${idx}`}
-                  className="group hover-lift-soft"
-                  variants={{
-                    hidden: { opacity: 0, y: 18 },
-                    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
-                  }}
-                >
-                  <div className="aspect-[3/4] rounded-2xl overflow-hidden border border-border shadow-md bg-gradient-to-br from-primary/20 via-primary/10 to-accent/15 relative">
-                    <div className="absolute inset-0 opacity-35 [background:repeating-linear-gradient(135deg,rgba(255,255,255,.45)_0_2px,transparent_2px_14px)]" />
-                    <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/55 to-transparent">
-                      <span className="text-[10px] font-black uppercase tracking-wider text-white/90">
-                        {t("pages.kiosk.edition")} {String(idx + 1).padStart(2, "0")}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="mt-3 space-y-2">
-                    <div className="h-3 rounded-full bg-muted" />
-                    <div className="h-3 rounded-full bg-muted/70 w-4/5" />
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
+          <div className="rounded-3xl border border-dashed border-border/60 py-20 text-center text-muted-foreground">
+            {t("common.no_results", { defaultValue: "Aucun résultat" })}
           </div>
         )}
 

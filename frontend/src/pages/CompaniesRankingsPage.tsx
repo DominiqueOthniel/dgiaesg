@@ -2,17 +2,25 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Crown, Lock, ArrowRight } from "lucide-react";
 import { HubSubpageShell } from "@/components/hub/HubCinematicHero";
-
-const MOCK_RANKING = [
-  { rank: 1, name: "OCP Group", score: 92 },
-  { rank: 2, name: "Safaricom", score: 90 },
-  { rank: 3, name: "Attijariwafa bank", score: 88 },
-  { rank: 4, name: "Nedbank", score: 86 },
-  { rank: 5, name: "Sonatel", score: 84 },
-];
+import { useCompanies } from "@/hooks/useCompanies";
+import { getLocalized } from "@/lib/utils";
 
 export default function CompaniesRankingsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
+
+  const { data, isLoading } = useCompanies({
+    status: "certified",
+    sort: "-score",
+    limit: 15,
+  });
+
+  const rows =
+    data?.data?.map((c, i) => ({
+      rank: i + 1,
+      name: getLocalized(c.name, lang),
+      score: c.score ?? 0,
+    })) ?? [];
 
   return (
     <HubSubpageShell
@@ -30,17 +38,25 @@ export default function CompaniesRankingsPage() {
           </h2>
         </div>
         <div className="divide-y divide-border">
-          {MOCK_RANKING.map((item) => (
-            <div key={item.rank} className="px-6 md:px-8 py-4 flex items-center justify-between gap-4">
-              <div className="flex items-center gap-4 min-w-0">
-                <span className="w-8 h-8 rounded-full bg-primary/10 text-primary text-xs font-black flex items-center justify-center ring-1 ring-primary/25">
-                  {item.rank}
-                </span>
-                <p className="font-bold text-foreground truncate">{item.name}</p>
+          {isLoading ? (
+            <div className="px-6 py-10 text-center text-muted-foreground">…</div>
+          ) : rows.length > 0 ? (
+            rows.map((item) => (
+              <div key={item.rank} className="px-6 md:px-8 py-4 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-4 min-w-0">
+                  <span className="w-8 h-8 rounded-full bg-primary/10 text-primary text-xs font-black flex items-center justify-center ring-1 ring-primary/25">
+                    {item.rank}
+                  </span>
+                  <p className="font-bold text-foreground truncate">{item.name}</p>
+                </div>
+                <p className="text-sm font-black text-primary px-2 py-1 rounded-md bg-primary/10">{item.score}/100</p>
               </div>
-              <p className="text-sm font-black text-primary px-2 py-1 rounded-md bg-primary/10">{item.score}/100</p>
+            ))
+          ) : (
+            <div className="px-6 py-10 text-center text-muted-foreground text-sm">
+              Aucune entreprise certifiée avec score pour le moment.
             </div>
-          ))}
+          )}
         </div>
       </div>
 

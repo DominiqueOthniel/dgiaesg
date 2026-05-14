@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useParams, Link, Navigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -12,19 +12,31 @@ import {
   CheckCircle2,
   Share2,
 } from "lucide-react";
-import { getIssueBySlug, getAdjacentIssues } from "@/lib/revue-mock-data";
+import { useTranslation } from "react-i18next";
+import { useMagazines } from "@/hooks/useMagazines";
+import { getAdjacentMagazineIssues, getMagazineIssueBySlug } from "@/lib/revue-map";
 import { IssueCover } from "@/components/revue/IssueCover";
 import { cn } from "@/lib/utils";
+import { resolveImageUrl } from "@/lib/image";
 
 export default function RevueIssuePage() {
   const { slug } = useParams();
-  const navigate = useNavigate();
-  const issue = getIssueBySlug(slug || "");
-  const { newer, older } = getAdjacentIssues(slug || "");
-  const [activeSection, setActiveSection] = useState("edito");
+  const { i18n } = useTranslation();
+  const lang = i18n.language;
+  const { data: reviews = [], isLoading } = useMagazines();
+
+  const issue = useMemo(
+    () => getMagazineIssueBySlug(slug, reviews, lang),
+    [slug, reviews, lang],
+  );
+  const { newer, older } = useMemo(
+    () => getAdjacentMagazineIssues(slug || "", reviews, lang),
+    [slug, reviews, lang],
+  );
+
+  const [activeSection, setActiveSection] = useState("resume");
   const [isTocOpen, setIsTocOpen] = useState(false);
 
-  // Scroll spy or just click-to-scroll logic
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
     if (el) {
@@ -36,7 +48,7 @@ export default function RevueIssuePage() {
 
       window.scrollTo({
         top: offsetPosition,
-        behavior: "smooth"
+        behavior: "smooth",
       });
       setActiveSection(id);
       setIsTocOpen(false);
@@ -44,17 +56,25 @@ export default function RevueIssuePage() {
   };
 
   useEffect(() => {
-    if (!issue) {
-       // navigate("/revue/numeros");
-    }
     window.scrollTo(0, 0);
-  }, [issue, navigate]);
+  }, [slug]);
 
-  if (!issue) return null;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="h-12 w-12 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
+  if (!issue) {
+    return <Navigate to="/revue/numeros" replace />;
+  }
+
+  const pdfHref = issue.pdfUrl ? resolveImageUrl(issue.pdfUrl) : undefined;
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Top Bar Navigation */}
       <nav className="sticky top-0 z-[60] bg-background/80 backdrop-blur-md border-b border-border h-16">
         <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -77,6 +97,7 @@ export default function RevueIssuePage() {
 
           <div className="flex items-center gap-2">
             <button
+              type="button"
               onClick={() => setIsTocOpen(true)}
               className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-primary/5 text-primary text-[10px] font-black uppercase tracking-widest hover:bg-primary/10 transition-all"
             >
@@ -84,7 +105,10 @@ export default function RevueIssuePage() {
               <span className="hidden sm:inline">Sommaire</span>
             </button>
             <Link to="/abonnement">
-              <button className="h-10 px-6 rounded-xl bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-105 transition-all">
+              <button
+                type="button"
+                className="h-10 px-6 rounded-xl bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-105 transition-all"
+              >
                 S'abonner
               </button>
             </Link>
@@ -92,34 +116,36 @@ export default function RevueIssuePage() {
         </div>
       </nav>
 
-      {/* Main Layout: Sidebar (L) + Content (R) */}
       <div className="max-w-7xl mx-auto px-4 py-12 grid lg:grid-cols-[380px_1fr] gap-16 items-start">
-        {/* Sidebar: Sticky Cover + Quick Info */}
         <aside className="sticky top-28 space-y-10">
           <div className="flex justify-center lg:justify-start">
-             <IssueCover issue={issue} size="lg" />
+            <IssueCover issue={issue} size="lg" />
           </div>
 
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-               <h3 className="text-sm font-black uppercase tracking-widest text-foreground">
-                 À propos
-               </h3>
-               <div className="flex gap-1">
-                 {newer && (
-                   <Link to={`/revue/numeros/${newer.slug}`} className="p-1.5 rounded-lg hover:bg-muted transition-colors">
-                     <ChevronLeft className="w-4 h-4" />
-                   </Link>
-                 )}
-                 {older && (
-                   <Link to={`/revue/numeros/${older.slug}`} className="p-1.5 rounded-lg hover:bg-muted transition-colors">
-                     <ChevronRight className="w-4 h-4" />
-                   </Link>
-                 )}
-               </div>
+              <h3 className="text-sm font-black uppercase tracking-widest text-foreground">À propos</h3>
+              <div className="flex gap-1">
+                {newer && (
+                  <Link
+                    to={`/revue/numeros/${newer.slug}`}
+                    className="p-1.5 rounded-lg hover:bg-muted transition-colors"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </Link>
+                )}
+                {older && (
+                  <Link
+                    to={`/revue/numeros/${older.slug}`}
+                    className="p-1.5 rounded-lg hover:bg-muted transition-colors"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </Link>
+                )}
+              </div>
             </div>
             <div className="space-y-4 text-sm text-foreground/70 leading-relaxed italic">
-              <p>"{issue.tagline}"</p>
+              <p>&quot;{issue.tagline}&quot;</p>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="p-4 rounded-2xl bg-muted/40 border border-border/50">
@@ -131,14 +157,22 @@ export default function RevueIssuePage() {
                 <p className="font-bold">N°{String(issue.number).padStart(2, "0")}</p>
               </div>
             </div>
-            <button className="w-full flex items-center justify-center gap-3 h-14 rounded-2xl border-2 border-primary text-primary text-[11px] font-black uppercase tracking-[0.2em] hover:bg-primary hover:text-white transition-all group">
-               <Download className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" />
-               Télécharger (PDF)
-            </button>
+            {pdfHref ? (
+              <a
+                href={pdfHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center justify-center gap-3 h-14 rounded-2xl border-2 border-primary text-primary text-[11px] font-black uppercase tracking-[0.2em] hover:bg-primary hover:text-white transition-all group"
+              >
+                <Download className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" />
+                Télécharger (PDF)
+              </a>
+            ) : (
+              <p className="text-xs text-muted-foreground text-center">PDF non disponible pour ce numéro.</p>
+            )}
           </div>
         </aside>
 
-        {/* Content Area */}
         <main className="space-y-24 pb-20">
           {issue.sections.map((section, idx) => (
             <motion.section
@@ -153,11 +187,9 @@ export default function RevueIssuePage() {
               <div className="flex items-baseline justify-between gap-4 mb-6 border-b border-border pb-4">
                 <div className="flex items-center gap-3">
                   <span className="text-3xl font-serif italic text-primary opacity-20">
-                    {String(idx + 1).padStart(2, '0')}
+                    {String(idx + 1).padStart(2, "0")}
                   </span>
-                  <h2 className="text-sm font-black uppercase tracking-[0.25em] text-primary">
-                    {section.label}
-                  </h2>
+                  <h2 className="text-sm font-black uppercase tracking-[0.25em] text-primary">{section.label}</h2>
                 </div>
                 <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
                   {section.pages}
@@ -165,14 +197,9 @@ export default function RevueIssuePage() {
               </div>
 
               <div className="space-y-6">
-                <h3 className="text-2xl md:text-4xl font-black tracking-tight leading-tight">
-                  {section.title}
-                </h3>
-                <p className="text-lg md:text-xl text-foreground/80 leading-relaxed font-medium">
-                  {section.excerpt}
-                </p>
+                <h3 className="text-2xl md:text-4xl font-black tracking-tight leading-tight">{section.title}</h3>
+                <p className="text-lg md:text-xl text-foreground/80 leading-relaxed font-medium">{section.excerpt}</p>
 
-                {/* Content Blocker for Premium Sections */}
                 {section.access !== "free" ? (
                   <div className="relative mt-12 p-8 md:p-12 rounded-3xl overflow-hidden bg-muted/30 border border-border/50 group">
                     <div className="relative z-10 flex flex-col items-center text-center max-w-lg mx-auto">
@@ -181,35 +208,54 @@ export default function RevueIssuePage() {
                       </div>
                       <h4 className="text-xl font-bold mb-3">Contenu Premium</h4>
                       <p className="text-sm text-muted-foreground mb-8">
-                        Cette section de {section.label} est réservée aux abonnés {section.access === "revue" ? "Revue + Digital" : "Digital"}.
-                        Rejoignez notre communauté pour accéder à l'intégralité des analyses mensuelles.
+                        Cette section est réservée aux abonnés {section.access === "revue" ? "Revue + Digital" : "Digital"}.
                       </p>
                       <Link to="/abonnement" className="w-full sm:w-auto">
-                         <button className="w-full sm:px-10 h-14 rounded-2xl bg-primary text-primary-foreground text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all">
-                           Voir les formules
-                         </button>
+                        <button
+                          type="button"
+                          className="w-full sm:px-10 h-14 rounded-2xl bg-primary text-primary-foreground text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all"
+                        >
+                          Voir les formules
+                        </button>
                       </Link>
                     </div>
-                    {/* Faded Background Pattern */}
                     <div className="absolute inset-0 opacity-[0.03] select-none pointer-events-none text-[8px] leading-tight overflow-hidden">
-                      {Array.from({ length: 40 }).map((_, i) => (
-                        <p key={i}>Sustainable development goals Africa strategy ESG finance carbon green bond RSE impact monitoring verification certification compliance...</p>
+                      {Array.from({ length: 20 }).map((_, i) => (
+                        <p key={i}>
+                          Sustainable development goals Africa strategy ESG finance carbon green bond RSE impact…
+                        </p>
                       ))}
                     </div>
                   </div>
                 ) : (
                   <div className="pt-8 flex flex-col items-start gap-8">
                     <div className="space-y-4 text-foreground/70 leading-relaxed">
-                      <p>Cette section est disponible en accès libre pour tous nos lecteurs.</p>
-                      <p>Pour lire la suite de cette analyse complète incluant les graphiques exclusifs et les données de terrain, vous pouvez consulter la version PDF intégrale ou vous abonner.</p>
+                      <p>Cette partie du numéro est en accès libre.</p>
+                      <p>
+                        Pour lire l’ensemble des analyses, graphiques et données, ouvrez le{" "}
+                        {pdfHref ? (
+                          <a href={pdfHref} className="font-bold text-primary underline" target="_blank" rel="noreferrer">
+                            PDF complet
+                          </a>
+                        ) : (
+                          "PDF complet"
+                        )}
+                        .
+                      </p>
                     </div>
                     <div className="flex flex-wrap gap-4">
-                       <button className="flex items-center gap-2 px-6 h-12 rounded-xl bg-primary/5 text-primary text-[10px] font-black uppercase tracking-widest hover:bg-primary/10 transition-all">
-                         <Share2 className="w-4 h-4" /> Partager
-                       </button>
-                       <button className="flex items-center gap-2 px-6 h-12 rounded-xl border border-border text-[10px] font-black uppercase tracking-widest hover:bg-muted transition-all">
-                         <CheckCircle2 className="w-4 h-4 text-success" /> Lu
-                       </button>
+                      <button
+                        type="button"
+                        className="flex items-center gap-2 px-6 h-12 rounded-xl bg-primary/5 text-primary text-[10px] font-black uppercase tracking-widest hover:bg-primary/10 transition-all"
+                      >
+                        <Share2 className="w-4 h-4" /> Partager
+                      </button>
+                      <button
+                        type="button"
+                        className="flex items-center gap-2 px-6 h-12 rounded-xl border border-border text-[10px] font-black uppercase tracking-widest hover:bg-muted transition-all"
+                      >
+                        <CheckCircle2 className="w-4 h-4 text-success" /> Lu
+                      </button>
                     </div>
                   </div>
                 )}
@@ -219,7 +265,6 @@ export default function RevueIssuePage() {
         </main>
       </div>
 
-      {/* Floating TOC Mobile/Tablet Drawer */}
       <AnimatePresence>
         {isTocOpen && (
           <>
@@ -239,24 +284,25 @@ export default function RevueIssuePage() {
             >
               <div className="flex items-center justify-between mb-10">
                 <h2 className="text-xl font-black uppercase tracking-tighter">Sommaire</h2>
-                <button onClick={() => setIsTocOpen(false)} className="p-2 -mr-2 rounded-full hover:bg-muted">
+                <button type="button" onClick={() => setIsTocOpen(false)} className="p-2 -mr-2 rounded-full hover:bg-muted">
                   <X className="w-6 h-6" />
                 </button>
               </div>
               <nav className="flex-1 space-y-1">
                 {issue.sections.map((section, idx) => (
                   <button
+                    type="button"
                     key={section.id}
                     onClick={() => scrollTo(section.id)}
                     className={cn(
                       "w-full flex items-center justify-between px-6 py-4 rounded-2xl transition-all group",
                       activeSection === section.id
                         ? "bg-primary/10 text-primary"
-                        : "hover:bg-muted text-foreground/70"
+                        : "hover:bg-muted text-foreground/70",
                     )}
                   >
                     <div className="flex items-center gap-4">
-                      <span className="text-xs font-bold opacity-30">{String(idx + 1).padStart(2, '0')}</span>
+                      <span className="text-xs font-bold opacity-30">{String(idx + 1).padStart(2, "0")}</span>
                       <span className="text-xs font-black uppercase tracking-widest">{section.label}</span>
                     </div>
                     {section.access !== "free" && <Lock className="w-3.5 h-3.5 opacity-40" />}
@@ -265,7 +311,10 @@ export default function RevueIssuePage() {
               </nav>
               <div className="mt-auto pt-10">
                 <Link to="/abonnement">
-                  <button className="w-full h-14 rounded-2xl bg-primary text-primary-foreground text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20">
+                  <button
+                    type="button"
+                    className="w-full h-14 rounded-2xl bg-primary text-primary-foreground text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20"
+                  >
                     S'abonner maintenant
                   </button>
                 </Link>

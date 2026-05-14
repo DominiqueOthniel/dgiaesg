@@ -53,8 +53,8 @@ export interface INews {
   excerpt: { fr: string; en: string };
   author: string;
   imageUrl: string;
-  category?: string | { _id: string; name: string };
-  subCategory?: string | { _id: string; name: string };
+  category?: string | { _id: string; name?: { fr: string; en: string }; slug?: string };
+  subCategory?: string | { _id: string; name?: string; slug?: string };
   sector?: string;
   readingTime?: string;
   published: boolean;

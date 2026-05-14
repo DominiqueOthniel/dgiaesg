@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { MagazineIssue } from "@/lib/revue-mock-data";
+import type { MagazineIssue } from "@/lib/revue-types";
+import { resolveImageUrl } from "@/lib/image";
 
 interface IssueCoverProps {
   issue: MagazineIssue;
@@ -40,8 +41,19 @@ export function IssueCover({
         className
       )}
     >
-      {/* Dynamic Background Gradient */}
-      <div className={cn("absolute inset-0 bg-gradient-to-br", issue.coverGradient)} />
+      {/* Dynamic Background: image réelle ou dégradé */}
+      {issue.coverImageUrl ? (
+        <>
+          <img
+            src={resolveImageUrl(issue.coverImageUrl)}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-black/75 via-black/45 to-black/65" />
+        </>
+      ) : (
+        <div className={cn("absolute inset-0 bg-gradient-to-br", issue.coverGradient)} />
+      )}
 
       {/* Magazine Spine Shadow */}
       <div className="magazine-spine" />

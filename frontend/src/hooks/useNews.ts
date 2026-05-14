@@ -2,16 +2,38 @@ import { useQuery } from "@tanstack/react-query";
 import api from "../services/api";
 import type { INews, ApiResponse, PaginatedResponse } from "../types";
 
-export const useNews = (filters: { page?: number; limit?: number; search?: string; includeDeleted?: boolean; published?: boolean; sector?: string } = {}) => {
-    const { page = 1, limit = 10, search, includeDeleted, published = true, sector } = filters;
+export const useNews = (
+  filters: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    includeDeleted?: boolean;
+    published?: boolean;
+    sector?: string;
+    categorySlug?: string;
+    subCategorySlug?: string;
+  } = {},
+) => {
+    const {
+        page = 1,
+        limit = 10,
+        search,
+        includeDeleted,
+        published = true,
+        sector,
+        categorySlug,
+        subCategorySlug,
+    } = filters;
     return useQuery({
         queryKey: ["news", filters],
         queryFn: async () => {
-            const params: any = { page, limit };
+            const params: Record<string, string | number | boolean> = { page, limit };
             if (published !== undefined) params.published = published;
             if (search) params.search = search;
             if (includeDeleted) params.includeDeleted = true;
             if (sector) params.sector = sector;
+            if (categorySlug) params.categorySlug = categorySlug;
+            if (subCategorySlug) params.subCategorySlug = subCategorySlug;
 
             const response = await api.get<PaginatedResponse<INews>>("/news", {
                 params,

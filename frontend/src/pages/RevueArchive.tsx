@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import {
   BookOpen,
   Search,
@@ -14,13 +15,20 @@ import {
   StretchHorizontal,
   ArrowUpRight,
 } from "lucide-react";
-import { ISSUES } from "@/lib/revue-mock-data";
+import { useMagazines } from "@/hooks/useMagazines";
+import { monthlyReviewsToMagazineIssues } from "@/lib/revue-map";
 import { IssueCover } from "@/components/revue/IssueCover";
 import { cn } from "@/lib/utils";
 
 const ITEMS_PER_PAGE = 8;
 
 export default function RevueArchive() {
+  const { i18n } = useTranslation();
+  const { data: reviews = [], isLoading } = useMagazines();
+  const issues = useMemo(
+    () => monthlyReviewsToMagazineIssues(reviews, i18n.language),
+    [reviews, i18n.language],
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [featuredOnly, setFeaturedOnly] = useState(false);
   const [sortBy, setSortBy] = useState<"latest" | "oldest" | "az">("latest");
@@ -29,7 +37,7 @@ export default function RevueArchive() {
 
   const filtered = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
-    const result = ISSUES.filter((issue) => {
+    const result = issues.filter((issue) => {
       const matchesSearch =
         issue.title.toLowerCase().includes(query) ||
         issue.monthLabel.toLowerCase().includes(query);
@@ -43,7 +51,7 @@ export default function RevueArchive() {
     });
     
     return result;
-  }, [searchQuery, featuredOnly, sortBy]);
+  }, [searchQuery, featuredOnly, sortBy, issues]);
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const currentItems = filtered.slice(
@@ -195,6 +203,13 @@ export default function RevueArchive() {
       {/* Grid Content — Scroll Reveal + Layout Modes */}
       <section className="py-24 aurora-bg aurora-bg-soft min-h-[600px]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {isLoading ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="aspect-[3/4] rounded-2xl bg-muted animate-pulse" />
+              ))}
+            </div>
+          ) : (
           <AnimatePresence mode="wait">
             {currentItems.length > 0 ? (
               <motion.div
@@ -354,6 +369,7 @@ export default function RevueArchive() {
               </motion.div>
             )}
           </AnimatePresence>
+          )}
         </div>
       </section>
 

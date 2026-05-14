@@ -6,12 +6,8 @@ import { Search, X, SlidersHorizontal, ArrowRight, Tag, Calendar } from "lucide-
 import { HubSubpageShell } from "@/components/hub/HubCinematicHero";
 import { ControlsBar } from "@/components/ui/ControlsBar";
 import { cn, getLocalized } from "@/lib/utils";
-import {
-  CONTRIBUTIONS,
-  type Contribution,
-  type ContributionCategory,
-  type ContributionFormat,
-} from "@/lib/contributions-mock-data";
+import { useNews } from "@/hooks/useNews";
+import type { INews } from "@/types";
 
 type SortKey = "recent" | "readingTime";
 
@@ -19,7 +15,17 @@ function uniq<T>(xs: T[]) {
   return Array.from(new Set(xs));
 }
 
-function ContributionCard({ item, idx, lang }: { item: Contribution; idx: number; lang: string }) {
+function sectorOf(n: INews): string {
+  return n.sector || "—";
+}
+
+function readingMinutes(n: INews): number {
+  const m = parseInt(String(n.readingTime || "5").replace(/\D/g, ""), 10);
+  return Number.isFinite(m) ? m : 5;
+}
+
+function ContributionCard({ item, idx, lang }: { item: INews; idx: number; lang: string }) {
+  const published = item.publishedAt || item.createdAt;
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -31,26 +37,27 @@ function ContributionCard({ item, idx, lang }: { item: Contribution; idx: number
         to={`/contributions/${item.slug}`}
         className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/70 bg-card p-6 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-xl hover:border-primary/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        {/* Soft halo (inspired by Ads page) */}
         <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-primary/10 blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
         <div className="pointer-events-none absolute -left-12 -bottom-12 h-44 w-44 rounded-full bg-brand-gold/10 blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
         <div className="mb-3 flex flex-wrap items-center gap-2">
-          {item.featured ? (
+          {item.premium ? (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-gold/40 bg-brand-gold/15 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-brand-gold-dark">
               <Tag className="h-3 w-3" /> À la une
             </span>
           ) : null}
           <span className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/30 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-foreground/80">
-            {item.format}
+            Article
           </span>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/30 px-2.5 py-1 text-[10px] font-bold tracking-wider text-foreground/70">
             <Calendar className="h-3 w-3" />
-            {new Date(item.publishedAt).toLocaleDateString(lang, {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            })}
+            {published
+              ? new Date(published).toLocaleDateString(lang, {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })
+              : "—"}
           </span>
         </div>
 
@@ -63,14 +70,11 @@ function ContributionCard({ item, idx, lang }: { item: Contribution; idx: number
 
         <div className="mt-4 flex items-center justify-between gap-3 border-t border-border/50 pt-3">
           <div className="min-w-0">
-            <p className="text-xs font-bold text-foreground truncate">{item.authorName}</p>
-            <p className="text-xs text-foreground/70 truncate">
-              {item.authorOrg ? `${item.authorOrg} · ` : ""}
-              {item.category}
-            </p>
+            <p className="text-xs font-bold text-foreground truncate">{item.author}</p>
+            <p className="text-xs text-foreground/70 truncate">{sectorOf(item)}</p>
           </div>
           <div className="inline-flex items-center gap-2 text-[11px] font-bold text-foreground/70">
-            {item.readingMinutes} min{" "}
+            {readingMinutes(item)} min{" "}
             <ArrowRight className="h-4 w-4 text-primary opacity-0 transition-all duration-500 group-hover:translate-x-1 group-hover:opacity-100" />
           </div>
         </div>
@@ -83,75 +87,55 @@ export default function ContributionsPage() {
   const { i18n, t } = useTranslation();
   const lang = i18n.language;
 
+  const { data: newsPage, isLoading } = useNews({ limit: 80, published: true });
+  const articles = newsPage?.data ?? [];
+
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<ContributionCategory | "all">("all");
-  const [format, setFormat] = useState<ContributionFormat | "all">("all");
-  const [tag, setTag] = useState<string | "all">("all");
+  const [sector, setSector] = useState<string | "all">("all");
   const [featuredOnly, setFeaturedOnly] = useState(false);
   const [sort, setSort] = useState<SortKey>("recent");
 
-  const categories = useMemo(
-    () => ["all" as const, ...uniq(CONTRIBUTIONS.map((c) => c.category))],
-    []
-  );
-  const formats = useMemo(() => ["all" as const, ...uniq(CONTRIBUTIONS.map((c) => c.format))], []);
-  const tags = useMemo(
-    () => [
-      "all" as const,
-      ...uniq(
-        CONTRIBUTIONS.flatMap((c) => c.tags)
-          .map((x) => x.trim())
-          .filter(Boolean)
-      ),
-    ],
-    []
+  const sectors = useMemo(
+    () => ["all" as const, ...uniq(articles.map((a) => sectorOf(a)).filter((s) => s !== "—"))],
+    [articles],
   );
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
 
-    const base = CONTRIBUTIONS.filter((c) => {
+    const base = articles.filter((c) => {
       const matchesQ =
         !q ||
         getLocalized(c.title, lang).toLowerCase().includes(q) ||
         getLocalized(c.excerpt, lang).toLowerCase().includes(q) ||
-        c.authorName.toLowerCase().includes(q) ||
-        (c.authorOrg || "").toLowerCase().includes(q) ||
-        c.tags.some((tg) => tg.toLowerCase().includes(q));
+        c.author.toLowerCase().includes(q);
 
-      const matchesCategory = category === "all" || c.category === category;
-      const matchesFormat = format === "all" || c.format === format;
-      const matchesTag = tag === "all" || c.tags.includes(tag);
-      const matchesFeatured = !featuredOnly || Boolean(c.featured);
+      const matchesSector = sector === "all" || sectorOf(c) === sector;
+      const matchesFeatured = !featuredOnly || Boolean(c.premium);
 
-      return matchesQ && matchesCategory && matchesFormat && matchesTag && matchesFeatured;
+      return matchesQ && matchesSector && matchesFeatured;
     });
 
     const sorted = [...base].sort((a, b) => {
-      if (sort === "readingTime") return a.readingMinutes - b.readingMinutes;
-      return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+      if (sort === "readingTime") return readingMinutes(a) - readingMinutes(b);
+      const da = new Date(a.publishedAt || a.createdAt).getTime();
+      const db = new Date(b.publishedAt || b.createdAt).getTime();
+      return db - da;
     });
 
-    // featured first (stable)
-    return sorted.sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)));
-  }, [category, featuredOnly, format, lang, query, sort, tag]);
+    return sorted.sort((a, b) => Number(Boolean(b.premium)) - Number(Boolean(a.premium)));
+  }, [articles, featuredOnly, lang, query, sector, sort]);
 
   const clear = () => {
     setQuery("");
-    setCategory("all");
-    setFormat("all");
-    setTag("all");
+    setSector("all");
     setFeaturedOnly(false);
     setSort("recent");
   };
 
-  const hasActiveFilters =
-    Boolean(query) ||
-    category !== "all" ||
-    format !== "all" ||
-    tag !== "all" ||
-    featuredOnly ||
-    sort !== "recent";
+  const hasActiveFilters = Boolean(query) || sector !== "all" || featuredOnly || sort !== "recent";
+
+  const sectorCount = uniq(articles.map((a) => sectorOf(a)).filter((s) => s !== "—")).length;
 
   return (
     <HubSubpageShell
@@ -164,12 +148,12 @@ export default function ContributionsPage() {
       heroFooter={
         <div className="flex flex-wrap gap-2">
           {[
-            { value: CONTRIBUTIONS.length.toString(), label: t("pages.contributions.stats_total") },
+            { value: String(articles.length), label: t("pages.contributions.stats_total") },
             {
-              value: uniq(CONTRIBUTIONS.map((c) => c.category)).length.toString(),
+              value: String(Math.max(sectorCount, 1)),
               label: t("pages.contributions.stats_categories"),
             },
-            { value: "5 j.", label: t("pages.contributions.stats_review") },
+            { value: "—", label: t("pages.contributions.stats_review") },
           ].map((c) => (
             <div
               key={c.label}
@@ -193,7 +177,7 @@ export default function ContributionsPage() {
             <>
               <div className="flex min-w-0 items-center gap-2.5 text-xs">
                 <span className="inline-flex h-7 min-w-7 items-center justify-center rounded-full border border-primary/20 bg-primary/10 px-2 text-xs font-black tabular-nums text-primary">
-                  {filtered.length}
+                  {isLoading ? "…" : filtered.length}
                 </span>
                 <span className="font-semibold text-foreground/75">{t("pages.contributions.results")}</span>
               </div>
@@ -209,7 +193,6 @@ export default function ContributionsPage() {
             </>
           }
         >
-          {/* Search */}
           <div className="group relative flex-1">
             <div className="relative flex h-12 items-center gap-3 rounded-2xl border border-border bg-card px-4 shadow-sm transition-all focus-within:border-primary/45 focus-within:ring-2 focus-within:ring-primary/10">
               <Search className="h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
@@ -232,43 +215,16 @@ export default function ContributionsPage() {
             </div>
           </div>
 
-          {/* Filters */}
           <div className="flex flex-wrap items-center gap-2">
             <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value as any)}
+              value={sector}
+              onChange={(e) => setSector(e.target.value as typeof sector)}
               className="h-12 rounded-2xl border border-border bg-card px-4 text-[11px] font-bold uppercase tracking-[0.16em] text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/10"
               aria-label={t("pages.contributions.filter_category")}
             >
-              {categories.map((c) => (
-                <option key={c} value={c}>
-                  {c === "all" ? t("common.all") : c}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={format}
-              onChange={(e) => setFormat(e.target.value as any)}
-              className="h-12 rounded-2xl border border-border bg-card px-4 text-[11px] font-bold uppercase tracking-[0.16em] text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/10"
-              aria-label={t("pages.contributions.filter_format")}
-            >
-              {formats.map((f) => (
-                <option key={f} value={f}>
-                  {f === "all" ? t("common.all") : f}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={tag}
-              onChange={(e) => setTag(e.target.value)}
-              className="h-12 rounded-2xl border border-border bg-card px-4 text-[11px] font-bold uppercase tracking-[0.16em] text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/10"
-              aria-label={t("pages.contributions.filter_tag")}
-            >
-              {tags.map((tg) => (
-                <option key={tg} value={tg}>
-                  {tg === "all" ? t("common.all") : tg}
+              {sectors.map((s) => (
+                <option key={s} value={s}>
+                  {s === "all" ? t("common.all") : s}
                 </option>
               ))}
             </select>
@@ -280,7 +236,7 @@ export default function ContributionsPage() {
                 "inline-flex h-12 items-center gap-2 rounded-2xl px-4 text-[11px] font-bold uppercase tracking-[0.16em] transition-all",
                 featuredOnly
                   ? "border border-brand-gold/35 bg-brand-gold/15 text-brand-gold-dark shadow-sm"
-                  : "border border-border bg-card text-foreground shadow-sm hover:border-brand-gold/30"
+                  : "border border-border bg-card text-foreground shadow-sm hover:border-brand-gold/30",
               )}
               aria-pressed={featuredOnly}
             >
@@ -289,7 +245,6 @@ export default function ContributionsPage() {
             </button>
           </div>
 
-          {/* Sort */}
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -298,7 +253,7 @@ export default function ContributionsPage() {
                 "inline-flex h-12 items-center gap-2 rounded-2xl px-4 text-[11px] font-bold uppercase tracking-[0.16em] transition-all",
                 sort === "recent"
                   ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-                  : "border border-border bg-card text-foreground shadow-sm hover:border-primary/40 hover:text-primary"
+                  : "border border-border bg-card text-foreground shadow-sm hover:border-primary/40 hover:text-primary",
               )}
             >
               {t("pages.contributions.sort_recent")}
@@ -310,7 +265,7 @@ export default function ContributionsPage() {
                 "inline-flex h-12 items-center gap-2 rounded-2xl px-4 text-[11px] font-bold uppercase tracking-[0.16em] transition-all",
                 sort === "readingTime"
                   ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-                  : "border border-border bg-card text-foreground shadow-sm hover:border-primary/40 hover:text-primary"
+                  : "border border-border bg-card text-foreground shadow-sm hover:border-primary/40 hover:text-primary",
               )}
             >
               {t("pages.contributions.sort_reading")}
@@ -319,8 +274,10 @@ export default function ContributionsPage() {
         </ControlsBar>
 
         <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2">
-          {filtered.length > 0 ? (
-            filtered.map((c, idx) => <ContributionCard key={c.id} item={c} idx={idx} lang={lang} />)
+          {isLoading ? (
+            <div className="col-span-full py-20 text-center text-muted-foreground">…</div>
+          ) : filtered.length > 0 ? (
+            filtered.map((c, idx) => <ContributionCard key={c._id} item={c} idx={idx} lang={lang} />)
           ) : (
             <motion.div
               initial={{ opacity: 0, y: 16 }}
@@ -330,6 +287,7 @@ export default function ContributionsPage() {
               <p className="text-xl font-black text-foreground">{t("common.no_results")}</p>
               <p className="mt-2 text-base text-foreground/75">{t("pages.contributions.no_results_hint")}</p>
               <button
+                type="button"
                 onClick={clear}
                 className="mt-6 inline-flex items-center gap-2 rounded-2xl border border-border px-4 py-2 text-xs font-black uppercase tracking-wider text-foreground transition-all hover:border-primary/40"
               >

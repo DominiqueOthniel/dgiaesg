@@ -4,14 +4,27 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Calendar, Clock, Tag } from "lucide-react";
 import { HubSubpageShell } from "@/components/hub/HubCinematicHero";
 import { cn, getLocalized } from "@/lib/utils";
-import { CONTRIBUTIONS } from "@/lib/contributions-mock-data";
+import { useNewsArticle } from "@/hooks/useNews";
+
+function readingMinutesLabel(raw: string | undefined): string {
+  const m = parseInt(String(raw || "5").replace(/\D/g, ""), 10);
+  return `${Number.isFinite(m) ? m : 5} min`;
+}
 
 export default function ContributionDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const { i18n, t } = useTranslation();
   const lang = i18n.language;
 
-  const item = CONTRIBUTIONS.find((c) => c.slug === slug);
+  const { data: item, isLoading } = useNewsArticle(slug);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="h-10 w-10 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      </div>
+    );
+  }
 
   if (!item) {
     return (
@@ -25,7 +38,7 @@ export default function ContributionDetailPage() {
     );
   }
 
-  const published = new Date(item.publishedAt);
+  const published = new Date(item.publishedAt || item.createdAt);
 
   return (
     <HubSubpageShell
@@ -34,30 +47,30 @@ export default function ContributionDetailPage() {
       sectionsKicker={t("pages.contributions.sections_kicker")}
       titleLead={getLocalized(item.title, lang)}
       titleBrand={t("pages.contributions.detail_brand")}
-      subtitle={`${item.category} · ${item.format}`}
+      subtitle={`${item.sector || "—"} · Article`}
       beforeBadge={
         <Link
           to="/contributions"
           className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-sm text-primary-foreground/80 backdrop-blur-sm transition-colors hover:text-primary-foreground"
         >
-          <ArrowLeft className="h-4 w-4 shrink-0" />
+          <ArrowLeft className="w-4 h-4 shrink-0" />
           {t("pages.contributions.back_to_list")}
         </Link>
       }
       heroFooter={
         <div className="flex flex-wrap items-center gap-3">
-          {item.featured ? (
+          {item.premium ? (
             <span className="inline-flex items-center gap-2 rounded-xl border border-brand-gold/40 bg-brand-gold/20 px-3.5 py-2 text-[11px] font-black uppercase tracking-wider text-brand-gold backdrop-blur-sm">
-              <Tag className="h-4 w-4" /> À la une
+              <Tag className="w-4 h-4" /> À la une
             </span>
           ) : null}
           <span className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3.5 py-2 text-[11px] font-bold uppercase tracking-wider text-primary-foreground/80 backdrop-blur-sm">
-            <Calendar className="h-4 w-4 text-brand-gold" />
+            <Calendar className="w-4 h-4 text-brand-gold" />
             {published.toLocaleDateString(lang, { day: "numeric", month: "short", year: "numeric" })}
           </span>
           <span className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3.5 py-2 text-[11px] font-bold uppercase tracking-wider text-primary-foreground/80 backdrop-blur-sm">
-            <Clock className="h-4 w-4 text-brand-gold" />
-            {item.readingMinutes} min
+            <Clock className="w-4 h-4 text-brand-gold" />
+            {readingMinutesLabel(item.readingTime)}
           </span>
         </div>
       }
@@ -87,18 +100,7 @@ export default function ContributionDetailPage() {
               </p>
             </div>
             <div className="px-6 py-5 space-y-2">
-              <p className="text-base font-extrabold text-foreground">{item.authorName}</p>
-              {item.authorRole ? (
-                <p className="text-sm text-foreground/70">{item.authorRole}</p>
-              ) : null}
-              {item.authorOrg ? (
-                <p className="text-sm font-bold text-foreground/75">{item.authorOrg}</p>
-              ) : null}
-              {(item.city || item.country) ? (
-                <p className="text-xs text-foreground/65">
-                  {[item.city, item.country].filter(Boolean).join(" · ")}
-                </p>
-              ) : null}
+              <p className="text-base font-extrabold text-foreground">{item.author}</p>
             </div>
           </div>
 
@@ -111,23 +113,20 @@ export default function ContributionDetailPage() {
             <div className="px-6 py-5 space-y-2">
               <div className="flex items-center justify-between gap-3 text-sm">
                 <span className="text-foreground/70">{t("pages.contributions.category")}</span>
-                <span className="font-bold text-foreground">{item.category}</span>
+                <span className="font-bold text-foreground">{item.sector || "—"}</span>
               </div>
               <div className="flex items-center justify-between gap-3 text-sm">
                 <span className="text-foreground/70">{t("pages.contributions.format")}</span>
-                <span className="font-bold text-foreground">{item.format}</span>
+                <span className="font-bold text-foreground">Article</span>
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
-                {item.tags.map((tg) => (
-                  <span
-                    key={tg}
-                    className={cn(
-                      "rounded-xl border border-border/60 bg-muted/30 px-2.5 py-1 text-[11px] font-bold text-foreground/70"
-                    )}
-                  >
-                    {tg}
-                  </span>
-                ))}
+                <span
+                  className={cn(
+                    "rounded-xl border border-border/60 bg-muted/30 px-2.5 py-1 text-[11px] font-bold text-foreground/70",
+                  )}
+                >
+                  {item.slug}
+                </span>
               </div>
             </div>
           </div>
@@ -136,4 +135,3 @@ export default function ContributionDetailPage() {
     </HubSubpageShell>
   );
 }
-

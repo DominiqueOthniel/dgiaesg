@@ -9,7 +9,7 @@ import {
   SearchX,
   Sparkles,
 } from "lucide-react";
-import { ISSUES, type MagazineIssue } from "@/lib/revue-mock-data";
+import type { MagazineIssue } from "@/lib/revue-types";
 import { cn } from "@/lib/utils";
 import { getLocalized, Skeleton } from "./_shared";
 
@@ -48,20 +48,8 @@ const ACCENT: Record<CoverAccent, string> = {
   deep: "hsl(var(--brand-deep))",
 };
 
-function isPremium(mag: { featured?: boolean }, mock?: MagazineIssue) {
-  return Boolean(mag.featured || mock?.featured);
-}
-
-function findMockIssueForDate(publishDate: string | undefined) {
-  if (!publishDate) return undefined;
-  const d = new Date(publishDate);
-  if (Number.isNaN(d.getTime())) return undefined;
-  const y = d.getFullYear();
-  const m = d.getMonth() + 1;
-  return ISSUES.find((issue) => {
-    const [iy, im] = issue.publishDate.split("-").map(Number);
-    return iy === y && im === m;
-  });
+function isPremium(mag: { featured?: boolean }) {
+  return Boolean(mag.featured);
 }
 
 function deriveGlyph(title: string, idx: number) {
@@ -78,34 +66,28 @@ function deriveGlyph(title: string, idx: number) {
 }
 
 function cardVisualsForMagazine(
-  mag: any,
+  mag: { excerpt?: { fr?: string; en?: string } },
   title: string,
   idx: number,
+  lang: string,
 ): {
   gradient: string;
   tagline: string;
   glyph: string;
   pageCount: number;
   accent: CoverAccent;
-  mock?: MagazineIssue;
 } {
-  const mock = findMockIssueForDate(mag.publishDate);
-  if (mock) {
-    return {
-      gradient: mock.coverGradient,
-      tagline: mock.tagline,
-      glyph: mock.coverGlyph,
-      pageCount: mock.pageCount,
-      accent: mock.coverAccent,
-      mock,
-    };
-  }
   const fb = SLIDER_FALLBACK[idx % SLIDER_FALLBACK.length];
+  const excerpt = mag.excerpt;
+  const tag =
+    excerpt && typeof excerpt === "object"
+      ? (lang.startsWith("en") ? excerpt.en : excerpt.fr) || ""
+      : "";
   return {
     gradient: fb.gradient,
-    tagline: "",
+    tagline: tag.slice(0, 120) || "",
     glyph: deriveGlyph(title, idx),
-    pageCount: 50,
+    pageCount: 48,
     accent: fb.accent,
   };
 }
@@ -125,17 +107,11 @@ function formatCaptionStrip(iso: string | undefined, locale: string) {
   }
 }
 
-/** Ligne mois sous N° : mock FR littéral ou date localisée. */
+/** Ligne mois sous N° : date localisée. */
 function headerMonthLine(
-  mock: MagazineIssue | undefined,
   publishDate: string | undefined,
-  lang: string,
   locale: string,
 ) {
-  if (mock && String(lang).toLowerCase().startsWith("fr")) {
-    const raw = mock.monthLabel || "";
-    return raw.toUpperCase();
-  }
   return formatCaptionStrip(publishDate, locale);
 }
 
@@ -277,34 +253,26 @@ export function MagazineFeed({
             >
               {magazines.map((mag: any, idx: number) => {
                 const title = getLocalized(mag.title, lang);
-                const {
-                  gradient,
-                  tagline,
-                  glyph,
-                  pageCount,
-                  accent,
-                  mock,
-                } = cardVisualsForMagazine(mag, title, idx);
+                const { gradient, tagline, glyph, pageCount, accent } = cardVisualsForMagazine(
+                  mag,
+                  title,
+                  idx,
+                  lang,
+                );
                 const subtitle =
                   tagline ||
                   t(
                     "home.news_front.magazine_slider_tagline",
                     "Analyses, données et décryptages pour décider.",
                   );
-                const premium = isPremium(mag, mock);
-                const issueNumRaw = mock
-                  ? mock.number
-                  : typeof mag.issue !== "undefined" && mag.issue !== ""
+                const premium = isPremium(mag);
+                const issueNumRaw =
+                  typeof mag.issue !== "undefined" && mag.issue !== ""
                     ? mag.issue
                     : idx + 1;
                 const issueNumStr = String(issueNumRaw).padStart(2, "0");
                 const captionDate = formatCaptionStrip(mag.publishDate, locale);
-                const monthHeader = headerMonthLine(
-                  mock,
-                  mag.publishDate,
-                  lang,
-                  locale,
-                );
+                const monthHeader = headerMonthLine(mag.publishDate, locale);
 
                 return (
                   <motion.div
@@ -320,7 +288,7 @@ export function MagazineFeed({
                     className={cn("flex snap-start flex-col", CARD_BOX)}
                   >
                     <Link
-                      to="/revue/numeros"
+                      to={`/revue/numeros/${mag._id}`}
                       className="group block min-h-0 w-full rounded-[1.25rem] outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand-gold))] focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                     >
                       <div className="magazine-cover h-full w-full">

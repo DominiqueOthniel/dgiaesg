@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useMemo } from "react";
 import {
   ArrowRight,
   BookOpen,
@@ -13,7 +15,8 @@ import {
   CalendarDays,
   Quote,
 } from "lucide-react";
-import { ISSUES, getLatestIssue } from "@/lib/revue-mock-data";
+import { useMagazines } from "@/hooks/useMagazines";
+import { monthlyReviewsToMagazineIssues } from "@/lib/revue-map";
 import { IssueCover } from "@/components/revue/IssueCover";
 import { FlipCard } from "@/components/revue/FlipCard";
 
@@ -69,13 +72,14 @@ const STATS = [
 ];
 
 export default function RevuePortal() {
-  const latest = getLatestIssue();
-  const recent = [...ISSUES]
-    .sort(
-      (a, b) =>
-        new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime()
-    )
-    .slice(0, 4);
+  const { i18n } = useTranslation();
+  const { data: reviews = [], isLoading } = useMagazines();
+  const issues = useMemo(
+    () => monthlyReviewsToMagazineIssues(reviews, i18n.language),
+    [reviews, i18n.language],
+  );
+  const latest = issues[0];
+  const recent = issues.slice(0, 4);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -174,15 +178,25 @@ export default function RevuePortal() {
                 aria-hidden
                 className="absolute -inset-10 rounded-full bg-[hsl(var(--brand-gold)/0.2)] blur-3xl"
               />
-              <Link to={`/revue/numeros/${latest.slug}`} className="block group relative">
-                <IssueCover issue={latest} size="lg" float />
-                <div className="absolute -top-3 -left-3 px-3 py-1.5 bg-[hsl(var(--brand-gold))] text-[hsl(var(--brand-gold-foreground))] text-[9px] font-black uppercase tracking-[0.22em] rounded-full shadow-lg">
-                  Numéro en cours
-                </div>
-              </Link>
-              <p className="mt-6 text-center text-[11px] font-bold uppercase tracking-[0.22em] text-primary-foreground/60">
-                {latest.monthLabel} · {latest.pageCount} pages
-              </p>
+              {isLoading ? (
+                <div className="h-[420px] w-[min(100%,320px)] rounded-2xl bg-white/10 animate-pulse mx-auto" />
+              ) : latest ? (
+                <>
+                  <Link to={`/revue/numeros/${latest.slug}`} className="block group relative">
+                    <IssueCover issue={latest} size="lg" float />
+                    <div className="absolute -top-3 -left-3 px-3 py-1.5 bg-[hsl(var(--brand-gold))] text-[hsl(var(--brand-gold-foreground))] text-[9px] font-black uppercase tracking-[0.22em] rounded-full shadow-lg">
+                      Numéro en cours
+                    </div>
+                  </Link>
+                  <p className="mt-6 text-center text-[11px] font-bold uppercase tracking-[0.22em] text-primary-foreground/60">
+                    {latest.monthLabel} · {latest.pageCount} pages
+                  </p>
+                </>
+              ) : (
+                <p className="text-center text-primary-foreground/80 text-sm max-w-sm">
+                  Les numéros paraîtront ici dès publication dans l&apos;administration.
+                </p>
+              )}
             </div>
           </motion.div>
         </div>
